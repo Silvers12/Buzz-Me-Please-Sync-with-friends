@@ -108,10 +108,17 @@ sans appareil ni émulateur :
 GitHub et le publie en artefact (`buzz-me-debug`), avec le rapport de tests. Le workflow se
 déclenche à chaque push et peut aussi être lancé à la main depuis l'onglet *Actions*.
 
-Il faut pour cela que GitHub Actions soit actif sur le dépôt : sur un dépôt **privé**, les runs
-consomment des minutes et échouent immédiatement (`startup_failure`, durée nulle) si le quota est
-épuisé ou si la limite de dépense est à zéro. À vérifier dans *Settings → Actions → General* et
-dans *Billing → Spending limits*. Sur un dépôt public, Actions est gratuit et sans quota.
+Ce dépôt étant public, Actions y est gratuit et sans quota sur les runners standards. Sur un
+dépôt **privé** en revanche, les runs consomment les minutes incluses du compte et échouent
+instantanément — `startup_failure`, durée nulle, message *« The job was not started because
+recent account payments have failed or your spending limit needs to be increased »* — dès que le
+quota est épuisé ou qu'un paiement a échoué. Cela se règle dans *Settings → Billing & plans →
+Spending limits*, au niveau du compte et non du dépôt.
+
+Le dépôt ne contient volontairement **aucun secret** : ni `google-services.json`, ni keystore, ni
+clé d'API. La configuration Firebase se saisit dans l'application, et la signature de la variante
+`release` utilise la clé de debug — à remplacer par la vôtre, conservée hors du dépôt, avant
+toute publication.
 
 ## Organisation du code
 
