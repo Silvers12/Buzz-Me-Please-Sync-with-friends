@@ -3,9 +3,10 @@ name: APK
 on:
   push:
     branches: ['**']
-  pull_request:
   workflow_dispatch:
 
+# Uniquement des actions publiées par GitHub : les dépôts dont la politique
+# n'autorise pas les actions tierces refusent le démarrage du workflow.
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -18,21 +19,22 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
+          cache: gradle
 
-      - name: SDK Android
-        uses: android-actions/setup-android@v3
-
+      # Le SDK Android est préinstallé sur les runners Ubuntu ; on complète
+      # seulement ce qui pourrait manquer, avec le sdkmanager de l'image.
       - name: Composants du SDK
-        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
-
-      - name: Gradle
-        uses: gradle/actions/setup-gradle@v4
+        run: |
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null 2>&1 || true
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" \
+            "platforms;android-35" "build-tools;35.0.0" "platform-tools"
 
       - name: Tests unitaires
-        run: ./gradlew testDebugUnitTest --no-daemon
+        run: ./gradlew testDebugUnitTest --no-daemon --stacktrace
 
       - name: APK de debug
-        run: ./gradlew assembleDebug --no-daemon
+        run: ./gradlew assembleDebug --no-daemon --stacktrace
 
       - name: Rapport de tests
         if: always()
@@ -42,7 +44,7 @@ jobs:
           path: app/build/reports/tests/
           if-no-files-found: ignore
 
-      # Installable directement : « buzz-me-debug » à télécharger depuis la page du run.
+      # Installable directement : « buzz-me-debug » à télécharger sur la page du run.
       - name: Publier l'APK
         uses: actions/upload-artifact@v4
         with:
