@@ -95,6 +95,24 @@ cd Buzz-Me-Please-Sync-with-friends
 qu'un clone se compile sans mise en place de keystore. Remplacez cette configuration par la
 vôtre avant toute publication.
 
+Les tests unitaires du moteur de jeu, du protocole et de la synchronisation d'horloge tournent
+sans appareil ni émulateur :
+
+```bash
+./gradlew test
+```
+
+### APK par intégration continue
+
+[`.github/workflows/build.yml`](.github/workflows/build.yml) compile l'APK de debug sur un runner
+GitHub et le publie en artefact (`buzz-me-debug`), avec le rapport de tests. Le workflow se
+déclenche à chaque push et peut aussi être lancé à la main depuis l'onglet *Actions*.
+
+Il faut pour cela que GitHub Actions soit actif sur le dépôt : sur un dépôt **privé**, les runs
+consomment des minutes et échouent immédiatement (`startup_failure`, durée nulle) si le quota est
+épuisé ou si la limite de dépense est à zéro. À vérifier dans *Settings → Actions → General* et
+dans *Billing → Spending limits*. Sur un dépôt public, Actions est gratuit et sans quota.
+
 ## Organisation du code
 
 ```
