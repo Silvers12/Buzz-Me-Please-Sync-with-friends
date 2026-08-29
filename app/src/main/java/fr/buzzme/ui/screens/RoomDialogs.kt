@@ -25,6 +25,10 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -51,6 +55,10 @@ fun PlayerActionsDialog(
     onTransferHost: () -> Unit,
     onKick: () -> Unit,
 ) {
+    // Passer l'animation change de main le pupitre entier et ne se rattrape que si le nouvel
+    // animateur veut bien vous le rendre : jamais sur un appui isolé, au milieu d'une partie.
+    var confirmTransfer by remember(player.id) { mutableStateOf(false) }
+
     AlertDialog(
         onDismissRequest = onDismiss,
         containerColor = Stage.Panel,
@@ -108,7 +116,7 @@ fun PlayerActionsDialog(
                     GhostAction(
                         text = "Passer l'animation",
                         icon = Icons.Filled.Star,
-                        onClick = onTransferHost,
+                        onClick = { confirmTransfer = true },
                         accent = Stage.Gold,
                         modifier = Modifier.fillMaxWidth(),
                     )
@@ -126,6 +134,55 @@ fun PlayerActionsDialog(
         confirmButton = {
             TextButton(onClick = onDismiss) {
                 Text("Fermer", color = Stage.VioletSoft)
+            }
+        },
+    )
+
+    if (confirmTransfer) {
+        ConfirmDialog(
+            title = "Passer l'animation ?",
+            message = "${player.name} deviendra l'animateur du salon : c'est cette personne qui " +
+                "lancera les tops, comptera les points et réglera la partie. Vous redeviendrez " +
+                "un joueur ordinaire, et il faudra qu'elle vous la rende pour reprendre la main.",
+            confirmLabel = "Passer l'animation",
+            accent = Stage.Gold,
+            onConfirm = {
+                confirmTransfer = false
+                onTransferHost()
+            },
+            onDismiss = { confirmTransfer = false },
+        )
+    }
+}
+
+/** Garde-fou devant une action qui ne se rattrape pas d'un simple appui. */
+@Composable
+private fun ConfirmDialog(
+    title: String,
+    message: String,
+    confirmLabel: String,
+    accent: Color,
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = Stage.Panel,
+        shape = RoundedCornerShape(24.dp),
+        title = {
+            Text(title, style = MaterialTheme.typography.headlineMedium, color = Stage.TextPrimary)
+        },
+        text = {
+            Text(message, style = MaterialTheme.typography.bodyLarge, color = Stage.TextSecondary)
+        },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text(confirmLabel, color = accent, fontWeight = FontWeight.Bold)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Annuler", color = Stage.TextSecondary)
             }
         },
     )
