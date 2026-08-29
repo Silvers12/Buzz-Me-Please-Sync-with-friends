@@ -35,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.ImeAction
@@ -156,12 +157,37 @@ fun SettingsScreen(
                 style = MaterialTheme.typography.bodyMedium,
                 color = Stage.TextMuted,
             )
+            Spacer(Modifier.height(6.dp))
+            Text(
+                stringResource(R.string.settings_version, rememberVersionName()),
+                style = MaterialTheme.typography.bodyMedium,
+                color = Stage.TextMuted,
+            )
+            Text(
+                stringResource(R.string.settings_copyright),
+                style = MaterialTheme.typography.bodyMedium,
+                color = Stage.TextMuted,
+            )
 
             Spacer(Modifier.height(40.dp))
         }
     }
 }
 
+
+/**
+ * Le numéro de version tel qu'il est installé, lu sur le paquet : rien à tenir à jour à la
+ * main ici, c'est `versionName` du module qui fait foi.
+ */
+@Composable
+private fun rememberVersionName(): String {
+    val context = LocalContext.current
+    return remember(context) {
+        runCatching {
+            context.packageManager.getPackageInfo(context.packageName, 0).versionName
+        }.getOrNull().orEmpty()
+    }
+}
 
 /** Une des trois langues possibles : système, français, anglais. */
 @Composable

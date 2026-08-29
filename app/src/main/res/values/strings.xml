@@ -49,6 +49,8 @@
     <string name="settings_howto_body">The full manual: create a room, call the go, knock players out, keep score, hand over hosting.</string>
     <string name="settings_open_tutorial">Open the tutorial</string>
     <string name="settings_footer">Buzz Me Please · synchronised quiz buzzer</string>
+    <string name="settings_version">Version %1$s</string>
+    <string name="settings_copyright">© 2026 Olivier SALA</string>
 
     <!-- Salon -->
     <string name="room_code_label">Room code</string>

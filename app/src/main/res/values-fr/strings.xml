@@ -47,6 +47,8 @@
     <string name="settings_howto_body">Le mode d\'emploi complet : créer un salon, lancer le go, éliminer, compter les points, passer l\'animation.</string>
     <string name="settings_open_tutorial">Ouvrir le tutoriel</string>
     <string name="settings_footer">Buzz Me Please · buzzer de quiz synchronisé</string>
+    <string name="settings_version">Version %1$s</string>
+    <string name="settings_copyright">© 2026 Olivier SALA</string>
 
     <!-- Salon -->
     <string name="room_code_label">Code du salon</string>
