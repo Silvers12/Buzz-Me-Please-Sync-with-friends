@@ -3,6 +3,7 @@ package com.osala.BuzzMePlease.core
 import android.content.Context
 import android.media.AudioAttributes
 import android.media.MediaPlayer
+import java.text.Collator
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,8 +25,9 @@ data class SoundClip(val id: String, val label: String, val resId: Int)
 object SoundLibrary {
 
     /**
-     * Sons proposés, dans l'ordre de la liste de choix. Le libellé de chacun vit dans
-     * `strings.xml` sous la clé `sound_<id>`, pour être traduit comme le reste.
+     * Sons proposés. L'ordre est sans importance : la liste de choix est classée par libellé.
+     * Le libellé de chacun vit dans `strings.xml` sous la clé `sound_<id>`, pour être traduit
+     * comme le reste.
      */
     private val CATALOG = listOf(
         // Verdicts : les deux touches qu'un animateur pose en premier.
@@ -37,10 +39,17 @@ object SoundLibrary {
         "shut_up", "baby_crying", "meow", "goat", "frog", "rooster_crowing", "wet_fart",
     )
 
-    /** Les sons réellement présents dans l'application, dans l'ordre du catalogue. */
+    /**
+     * Les sons réellement présents dans l'application, classés par libellé.
+     *
+     * Le tri suit la langue affichée — un [Collator] plutôt qu'une comparaison de chaînes, pour
+     * que « Éclat de rire » se range à sa place et non après le Z. Trente-six sons, on doit
+     * pouvoir en retrouver un sans balayer la liste.
+     */
     fun clips(context: Context): List<SoundClip> {
         val res = context.resources
         val packageName = context.packageName
+        val collator = Collator.getInstance(AppLocale.locale)
         return CATALOG.mapNotNull { id ->
             @Suppress("DiscouragedApi")
             val resId = res.getIdentifier(id, "raw", packageName)
@@ -48,7 +57,7 @@ object SoundLibrary {
             @Suppress("DiscouragedApi")
             val labelId = res.getIdentifier("sound_$id", "string", packageName)
             SoundClip(id, if (labelId == 0) id else context.getString(labelId), resId)
-        }
+        }.sortedWith { a, b -> collator.compare(a.label, b.label) }
     }
 
     /** Nombre de touches de la sonothèque : trois rangées de trois, à portée du pouce. */
