@@ -113,7 +113,9 @@ private val steps = listOf(
         body = "Le bouton à curseurs, à droite du top, ouvre les règles de la partie. Le mode " +
             "duel peut être désactivé au profit du mode course, où tout le monde buzze et où " +
             "l'on obtient un classement complet — pratique pour un tie-break ou un jeu de " +
-            "rapidité. Le décompte et les sons se coupent au même endroit.",
+            "rapidité. « Scores masqués » garde le suspense : chaque joueur ne voit plus que " +
+            "le sien, vous gardez le tableau complet. Le décompte et les sons se coupent au " +
+            "même endroit.",
         accent = Stage.VioletSoft,
     ),
 )

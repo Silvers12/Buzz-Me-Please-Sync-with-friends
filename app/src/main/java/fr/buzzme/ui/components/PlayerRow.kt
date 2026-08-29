@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EmojiEvents
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -67,6 +68,8 @@ fun PlayerRow(
     showControls: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    /** Faux quand l'animateur a masqué les scores : la pastille reste, le chiffre disparaît. */
+    showScore: Boolean = true,
 ) {
     val accent = accentFor(visual)
     val animatedAccent by animateColorAsState(accent, label = "accent")
@@ -201,13 +204,14 @@ fun PlayerRow(
             Spacer(Modifier.width(10.dp))
         }
 
-        ScorePill(score = player.score)
+        ScorePill(score = player.score, visible = showScore)
     }
 }
 
 @Composable
-private fun ScorePill(score: Int, modifier: Modifier = Modifier) {
+private fun ScorePill(score: Int, visible: Boolean, modifier: Modifier = Modifier) {
     val color = when {
+        !visible -> Stage.TextMuted
         score > 0 -> Stage.Gold
         score < 0 -> Stage.Red
         else -> Stage.TextMuted
@@ -217,12 +221,22 @@ private fun ScorePill(score: Int, modifier: Modifier = Modifier) {
             .background(color.copy(alpha = 0.12f), RoundedCornerShape(12.dp))
             .border(1.dp, color.copy(alpha = 0.35f), RoundedCornerShape(12.dp))
             .padding(horizontal = 10.dp, vertical = 6.dp),
+        contentAlignment = Alignment.Center,
     ) {
-        Text(
-            text = score.toString(),
-            style = MonoDigits,
-            color = color,
-            fontWeight = FontWeight.Black,
-        )
+        if (visible) {
+            Text(
+                text = score.toString(),
+                style = MonoDigits,
+                color = color,
+                fontWeight = FontWeight.Black,
+            )
+        } else {
+            Icon(
+                Icons.Filled.VisibilityOff,
+                contentDescription = "Score masqué par l'animateur",
+                tint = color,
+                modifier = Modifier.size(16.dp),
+            )
+        }
     }
 }

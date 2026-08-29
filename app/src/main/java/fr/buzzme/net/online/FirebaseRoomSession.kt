@@ -328,6 +328,8 @@ class FirebaseRoomSession(
             mode = mode,
             countdown = child("countdown").getValue(Boolean::class.java) ?: initialOptions.countdown,
             sound = child("sound").getValue(Boolean::class.java) ?: initialOptions.sound,
+            hideScores = child("hideScores").getValue(Boolean::class.java)
+                ?: initialOptions.hideScores,
         )
     }
 
@@ -466,6 +468,7 @@ class FirebaseRoomSession(
         "mode" to mode.name,
         "countdown" to countdown,
         "sound" to sound,
+        "hideScores" to hideScores,
     )
 
     companion object {

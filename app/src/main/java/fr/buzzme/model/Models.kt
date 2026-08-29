@@ -51,6 +51,11 @@ data class RoomOptions(
     val countdown: Boolean = true,
     /** Son + vibration à l'armement et au buzz. */
     val sound: Boolean = true,
+    /**
+     * Scores masqués sur les téléphones des joueurs : chacun ne voit plus que le sien, et
+     * l'animateur garde le tableau complet. De quoi garder le suspense jusqu'au dénouement.
+     */
+    val hideScores: Boolean = false,
 )
 
 @Serializable

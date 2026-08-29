@@ -23,7 +23,8 @@ Le jeu fonctionne **en Wi-Fi local, sans Internet et sans serveur**.
 - **Le plateau de l'animateur.** Pseudos, état de chaque buzzer, heure du buzz, temps de
   réaction, écart avec le meilleur, marge d'incertitude, qualité de la liaison.
 - **Élimination.** Buzzer noir en un appui, réactivation quand l'animateur le décide.
-- **Scores.** +1, +3, −1 par joueur, remise à zéro globale.
+- **Scores.** +1, +3, −1 par joueur, remise à zéro globale. L'animateur peut les masquer sur les
+  téléphones des joueurs : chacun ne voit plus que le sien, le tableau complet reste au pupitre.
 - **Relance / reset.** Nouvelle manche immédiate, même si un buzzer est déjà pris.
 - **Passation d'animation.** Le rôle change de téléphone sans que personne ne quitte le salon,
   scores et statuts compris.
