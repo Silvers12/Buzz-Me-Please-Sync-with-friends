@@ -1,8 +1,6 @@
 package com.osala.BuzzMePlease.ui
 
 import android.content.Context
-import android.content.res.Configuration
-import android.os.LocaleList
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,6 +23,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.osala.BuzzMePlease.core.AppLanguage
+import com.osala.BuzzMePlease.core.AppLocale
 import com.osala.BuzzMePlease.ui.screens.HomeScreen
 import com.osala.BuzzMePlease.ui.screens.JoinScreen
 import com.osala.BuzzMePlease.ui.screens.RoomScreen
@@ -32,7 +31,6 @@ import com.osala.BuzzMePlease.ui.screens.SettingsScreen
 import com.osala.BuzzMePlease.ui.screens.TutorialScreen
 import com.osala.BuzzMePlease.ui.theme.BuzzMeTheme
 import com.osala.BuzzMePlease.ui.theme.Stage
-import java.util.Locale
 
 @Composable
 fun BuzzMeApp(viewModel: AppViewModel = viewModel()) {
@@ -41,6 +39,7 @@ fun BuzzMeApp(viewModel: AppViewModel = viewModel()) {
     val session by viewModel.session.collectAsStateWithLifecycle()
     val notice by viewModel.notice.collectAsStateWithLifecycle()
     val playingClip by viewModel.clipPlayer.playing.collectAsStateWithLifecycle()
+    val soundLibrary by viewModel.soundLibrary.collectAsStateWithLifecycle()
 
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -93,7 +92,7 @@ fun BuzzMeApp(viewModel: AppViewModel = viewModel()) {
                             session = current,
                             soundFx = viewModel.soundFx,
                             onLeave = viewModel::leaveRoom,
-                            soundLibrary = viewModel.soundLibrary,
+                            soundLibrary = soundLibrary,
                             soundboard = settings.soundboard,
                             playingClipId = playingClip,
                             onPlayClip = viewModel::playClip,
@@ -149,11 +148,5 @@ fun BuzzMeApp(viewModel: AppViewModel = viewModel()) {
 @Composable
 private fun rememberLocalizedContext(language: AppLanguage): Context {
     val base = LocalContext.current
-    return remember(base, language) {
-        val tag = language.tag ?: return@remember base
-        val configuration = Configuration(base.resources.configuration).apply {
-            setLocales(LocaleList(Locale.forLanguageTag(tag)))
-        }
-        base.createConfigurationContext(configuration)
-    }
+    return remember(base, language) { AppLocale.wrap(base) }
 }

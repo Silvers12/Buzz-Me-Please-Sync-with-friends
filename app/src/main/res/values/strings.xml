@@ -91,8 +91,8 @@
     <string name="banner_yours">Your turn!</string>
     <string name="banner_has_hand">%1$s has the floor</string>
     <string name="banner_reaction">Reaction %1$s</string>
-    <string name="banner_precision"> (± %1$d ms)</string>
-    <string name="banner_ahead"> · ahead of %1$s by %2$s</string>
+    <string name="banner_precision">" (± %1$d ms)"</string>
+    <string name="banner_ahead">" · ahead of %1$s by %2$s"</string>
     <string name="banner_photo_finish">Photo finish: reviewing…</string>
     <string name="banner_wrong_next">Wrong answer · next player</string>
     <string name="banner_wrong">Wrong answer</string>

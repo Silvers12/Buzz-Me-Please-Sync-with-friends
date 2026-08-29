@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.osala.BuzzMePlease.R
 import com.osala.BuzzMePlease.core.AppLanguage
+import com.osala.BuzzMePlease.core.AppLocale
 import com.osala.BuzzMePlease.core.ClipPlayer
 import com.osala.BuzzMePlease.core.Codes
 import com.osala.BuzzMePlease.core.Prefs
@@ -32,14 +33,17 @@ sealed interface Route {
 class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun text(resId: Int, vararg args: Any): String =
-        if (args.isEmpty()) getApplication<Application>().getString(resId)
-        else getApplication<Application>().getString(resId, *args)
+        with(AppLocale.wrap(getApplication())) {
+            if (args.isEmpty()) getString(resId) else getString(resId, *args)
+        }
 
     private val prefs = Prefs(application)
     val soundFx = SoundFx(application)
 
-    /** Sonothèque de l'animateur : la bibliothèque disponible et le lecteur. */
-    val soundLibrary: List<SoundClip> = SoundLibrary.clips(application)
+    /** Sonothèque de l'animateur : la bibliothèque disponible et le lecteur. Les libellés des
+     * sons suivent la langue choisie, la liste se refait donc quand elle change. */
+    private val _soundLibrary = MutableStateFlow(SoundLibrary.clips(AppLocale.wrap(application)))
+    val soundLibrary = _soundLibrary.asStateFlow()
     val clipPlayer = ClipPlayer(application)
 
     private val _settings = MutableStateFlow(
@@ -74,6 +78,12 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             prefs.ensurePlayerId()
             prefs.settings.collect { loaded ->
+                // La langue d'abord : le réseau et la sonothèque la lisent ici, faute de
+                // contexte Compose.
+                if (AppLocale.current != loaded.language) {
+                    AppLocale.current = loaded.language
+                    _soundLibrary.value = SoundLibrary.clips(AppLocale.wrap(getApplication()))
+                }
                 _settings.value = loaded
                 soundFx.enabled = loaded.sound
                 if (_route.value == Route.Loading) {

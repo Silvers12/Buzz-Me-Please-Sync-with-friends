@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import com.osala.BuzzMePlease.R
 import com.osala.BuzzMePlease.core.AppClock
+import com.osala.BuzzMePlease.core.AppLocale
 import com.osala.BuzzMePlease.game.BuzzOutcome
 import com.osala.BuzzMePlease.game.GameEngine
 import com.osala.BuzzMePlease.game.LinkPhase
@@ -116,9 +117,11 @@ class LanRoomSession(
         if (startAsHost) becomeHost(null) else becomeGuest(hostAddress)
     }
 
-    /** Les messages affichés ici le sont sur cet appareil : ils suivent sa langue. */
+    /** Les messages affichés ici le sont sur cet appareil : ils suivent la langue choisie. */
     private fun text(resId: Int, vararg args: Any): String =
-        if (args.isEmpty()) appContext.getString(resId) else appContext.getString(resId, *args)
+        with(AppLocale.wrap(appContext)) {
+            if (args.isEmpty()) getString(resId) else getString(resId, *args)
+        }
 
     override val isHost: Boolean get() = engine != null
 

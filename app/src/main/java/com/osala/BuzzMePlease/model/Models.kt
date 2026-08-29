@@ -1,6 +1,7 @@
 package com.osala.BuzzMePlease.model
 
 import kotlinx.serialization.Serializable
+import com.osala.BuzzMePlease.core.AppLocale
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
@@ -103,15 +104,19 @@ data class Buzz(
             return String.format(Locale.ROOT, "%02d:%02d:%02d.%03d", h, m, s, ms)
         }
 
+        /**
+         * « 0,326 s » en français, « 0.326 s » en anglais : le séparateur décimal suit la
+         * langue de l'application, pas celle du téléphone.
+         */
         fun formatReaction(millis: Long): String = when {
-            millis < 0 -> "0,000 s"
-            millis < 10_000 -> String.format(Locale.ROOT, "%d,%03d s", millis / 1000, millis % 1000)
-            else -> String.format(Locale.ROOT, "%d s", TimeUnit.MILLISECONDS.toSeconds(millis))
+            millis < 0 -> String.format(AppLocale.locale, "%.3f s", 0.0)
+            millis < 10_000 -> String.format(AppLocale.locale, "%.3f s", millis / 1000.0)
+            else -> String.format(AppLocale.locale, "%d s", TimeUnit.MILLISECONDS.toSeconds(millis))
         }
 
         /** « +0,014 s » : écart avec le meilleur temps. */
         fun formatGap(millis: Long): String =
-            String.format(Locale.ROOT, "+%d,%03d s", millis / 1000, millis % 1000)
+            String.format(AppLocale.locale, "%+.3f s", millis / 1000.0)
     }
 }
 

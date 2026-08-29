@@ -3,6 +3,7 @@ package com.osala.BuzzMePlease.net.lan
 import android.content.Context
 import android.util.Log
 import com.osala.BuzzMePlease.R
+import com.osala.BuzzMePlease.core.AppLocale
 import com.osala.BuzzMePlease.net.GAME_PORT
 import com.osala.BuzzMePlease.net.Hello
 import com.osala.BuzzMePlease.net.NetMessage
@@ -47,7 +48,7 @@ class LanServer(
         acceptJob = scope.launch(Dispatchers.IO) {
             val socket = bind(port)
             if (socket == null) {
-                callbacks.onError(context.getString(R.string.link_port_busy, port))
+                callbacks.onError(AppLocale.wrap(context).getString(R.string.link_port_busy, port))
                 return@launch
             }
             serverSocket = socket

@@ -40,11 +40,11 @@
     <string name="settings_language_en">English</string>
     <string name="settings_comfort_label">Confort de jeu</string>
     <string name="settings_sound_title">Sons et vibrations</string>
-    <string name="settings_sound_subtitle">Bips du décompte, top de départ, retour au buzz.</string>
+    <string name="settings_sound_subtitle">Bips du décompte, go de départ, retour au buzz.</string>
     <string name="settings_screen_title">Garder l\'écran allumé</string>
     <string name="settings_screen_subtitle">Indispensable pendant une partie : un écran qui s\'éteint, c\'est un buzz manqué et une reconnexion à attendre.</string>
     <string name="settings_howto_label">Comment ça marche</string>
-    <string name="settings_howto_body">Le mode d\'emploi complet : créer un salon, lancer le top, éliminer, compter les points, passer l\'animation.</string>
+    <string name="settings_howto_body">Le mode d\'emploi complet : créer un salon, lancer le go, éliminer, compter les points, passer l\'animation.</string>
     <string name="settings_open_tutorial">Ouvrir le tutoriel</string>
     <string name="settings_footer">Buzz Me Please · buzzer de quiz synchronisé</string>
 
@@ -57,7 +57,7 @@
     <string name="room_badge_race">Course</string>
     <string name="room_round">Manche %1$d</string>
     <string name="room_latency">%1$d ms · ± %2$d ms</string>
-    <string name="room_go">Top !</string>
+    <string name="room_go">Go !</string>
     <string name="room_restart">Relancer</string>
     <string name="room_reset">Réinitialiser les buzzers</string>
     <string name="room_rules">Règles de la partie</string>
@@ -83,14 +83,14 @@
     <string name="buzzer_recorded">Enregistré</string>
     <string name="buzzer_your_turn">À vous de répondre</string>
     <string name="buzzer_can_return">L\'animateur peut vous réactiver</string>
-    <string name="buzzer_waiting">En attente du top</string>
+    <string name="buzzer_waiting">En attente du go</string>
 
     <!-- Bandeau de résultat -->
     <string name="banner_yours">À vous !</string>
     <string name="banner_has_hand">%1$s a la main</string>
     <string name="banner_reaction">Réaction %1$s</string>
-    <string name="banner_precision"> (± %1$d ms)</string>
-    <string name="banner_ahead"> · devance %1$s de %2$s</string>
+    <string name="banner_precision">" (± %1$d ms)"</string>
+    <string name="banner_ahead">" · devance %1$s de %2$s"</string>
     <string name="banner_photo_finish">Photo-finish : arbitrage en cours…</string>
     <string name="banner_wrong_next">Mauvaise réponse · au suivant</string>
     <string name="banner_wrong">Mauvaise réponse</string>
@@ -115,7 +115,7 @@
     <string name="dialog_transfer">Passer l\'animation</string>
     <string name="dialog_kick">Exclure du salon</string>
     <string name="dialog_transfer_title">Passer l\'animation ?</string>
-    <string name="dialog_transfer_body">%1$s deviendra l\'animateur du salon : c\'est cette personne qui lancera les tops, comptera les points et réglera la partie. Vous redeviendrez un joueur ordinaire, et il faudra qu\'elle vous la rende pour reprendre la main.</string>
+    <string name="dialog_transfer_body">%1$s deviendra l\'animateur du salon : c\'est cette personne qui lancera les go, comptera les points et réglera la partie. Vous redeviendrez un joueur ordinaire, et il faudra qu\'elle vous la rende pour reprendre la main.</string>
 
     <!-- Règles de la partie -->
     <string name="rules_title">Règles de la partie</string>
@@ -126,7 +126,7 @@
     <string name="rules_hide_scores_title">Scores masqués</string>
     <string name="rules_hide_scores_subtitle">Sur le téléphone des joueurs, chacun ne voit plus que son propre score. Vous gardez le tableau complet.</string>
     <string name="rules_sound_title">Sons et vibrations</string>
-    <string name="rules_sound_subtitle">Bips du décompte, top de départ et retour au buzz.</string>
+    <string name="rules_sound_subtitle">Bips du décompte, go de départ et retour au buzz.</string>
     <string name="rules_reset_scores">Remettre les scores à zéro</string>
 
     <!-- Sonothèque -->
@@ -208,8 +208,8 @@
     <string name="tutorial_1_body">Sur l\'accueil, saisissez le pseudo qui s\'affichera sur le plateau — il reste modifiable à tout moment. La partie se joue en Wi-Fi local : tous les téléphones sur le même réseau, sans Internet, et la mesure au plus juste.</string>
     <string name="tutorial_2_title">Créer le salon ou le rejoindre</string>
     <string name="tutorial_2_body">L\'animateur appuie sur « Créer un salon » : un code de 5 lettres apparaît en haut de l\'écran. Les autres appuient sur « Rejoindre » et saisissent ce code. En Wi-Fi local, le salon apparaît tout seul dans la liste des salons détectés : un appui suffit, sans rien taper.</string>
-    <string name="tutorial_3_title">Lancer le top</string>
-    <string name="tutorial_3_body">L\'animateur appuie sur « TOP ! ». Un décompte 3 · 2 · 1 se déclenche sur tous les téléphones en même temps, puis chaque buzzer passe au vert à la milliseconde près. Chez les joueurs, le reste de l\'écran s\'efface le temps de la manche : il ne reste que le buzzer, en grand, au milieu. L\'animateur garde son pupitre entier — c\'est son tableau de bord — et participe comme les autres.</string>
+    <string name="tutorial_3_title">Lancer le go</string>
+    <string name="tutorial_3_body">L\'animateur appuie sur « GO ! ». Un décompte 3 · 2 · 1 se déclenche sur tous les téléphones en même temps, puis chaque buzzer passe au vert à la milliseconde près. Chez les joueurs, le reste de l\'écran s\'efface le temps de la manche : il ne reste que le buzzer, en grand, au milieu. L\'animateur garde son pupitre entier — c\'est son tableau de bord — et participe comme les autres.</string>
     <string name="tutorial_4_title">Buzzer</string>
     <string name="tutorial_4_body">Le premier qui appuie voit son buzzer virer au rouge, tous les autres se verrouillent aussitôt. L\'heure exacte du buzz est envoyée — heure, minute, seconde et milliseconde — et l\'animateur voit le classement, l\'écart avec le meilleur temps et la marge d\'incertitude de la mesure. Une fois le classement arrêté, un seul buzzer reste vert : celui qui a la parole.</string>
     <string name="tutorial_5_title">Enchaîner les manches</string>
@@ -219,7 +219,7 @@
     <string name="tutorial_7_title">Passer l\'animation</string>
     <string name="tutorial_7_body">Depuis ce même pupitre, « Passer l\'animation » confie le rôle d\'animateur à un autre joueur. Personne ne quitte le salon : scores, statuts et manche en cours suivent, et l\'ancien animateur redevient un joueur ordinaire.</string>
     <string name="tutorial_8_title">Adapter les règles</string>
-    <string name="tutorial_8_body">Le bouton à curseurs, à droite du top, ouvre les règles de la partie. Le mode duel peut être désactivé au profit du mode course, où tout le monde buzze et où l\'on obtient un classement complet — pratique pour un tie-break ou un jeu de rapidité. « Scores masqués » garde le suspense : chaque joueur ne voit plus que le sien, vous gardez le tableau complet. Le décompte et les sons se coupent au même endroit.</string>
+    <string name="tutorial_8_body">Le bouton à curseurs, à droite du go, ouvre les règles de la partie. Le mode duel peut être désactivé au profit du mode course, où tout le monde buzze et où l\'on obtient un classement complet — pratique pour un tie-break ou un jeu de rapidité. « Scores masqués » garde le suspense : chaque joueur ne voit plus que le sien, vous gardez le tableau complet. Le décompte et les sons se coupent au même endroit.</string>
     <string name="tutorial_9_title">Préparer ses bruitages</string>
     <string name="tutorial_9_body">Le bouton « Sons », au-dessus du plateau, ouvre la sonothèque de l\'animateur : neuf touches à remplir avant la partie parmi les bruitages de l\'application. Un appui joue le son, un appui long change la touche ou la libère. Votre sélection est conservée d\'une partie à l\'autre, et le panneau se rétracte sur le plateau.</string>
     <string name="tutorial_tips_title">Pour que le buzz reste juste</string>
