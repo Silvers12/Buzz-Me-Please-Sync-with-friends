@@ -6,14 +6,18 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -43,6 +47,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import fr.buzzme.core.Features
 import fr.buzzme.core.Transport
 import fr.buzzme.ui.components.PrimaryAction
 import fr.buzzme.ui.components.SectionLabel
@@ -140,22 +145,50 @@ fun HomeScreen(
             StagePanel(modifier = Modifier.fillMaxWidth()) {
                 SectionLabel("Connexion entre joueurs")
                 Spacer(Modifier.height(12.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                if (Features.ONLINE_ROOMS) {
+                    // height(IntrinsicSize.Min) + fillMaxHeight : les deux cartes gardent la même
+                    // hauteur même quand un sous-titre passe sur deux lignes.
+                    Row(
+                        modifier = Modifier.height(IntrinsicSize.Min),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    ) {
+                        TransportChoice(
+                            title = "Wi-Fi local",
+                            subtitle = "Sans Internet · le plus précis",
+                            selected = transport == Transport.LOCAL,
+                            onClick = { onTransportChange(Transport.LOCAL) },
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight(),
+                            icon = { tint -> Icon(Icons.Filled.Wifi, null, tint = tint) },
+                        )
+                        TransportChoice(
+                            title = "En ligne",
+                            subtitle = "Firebase · à distance",
+                            selected = transport == Transport.ONLINE,
+                            onClick = { onTransportChange(Transport.ONLINE) },
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight(),
+                            icon = { tint -> Icon(Icons.Filled.CloudQueue, null, tint = tint) },
+                        )
+                    }
+                } else {
                     TransportChoice(
                         title = "Wi-Fi local",
                         subtitle = "Sans Internet · le plus précis",
-                        selected = transport == Transport.LOCAL,
-                        onClick = { onTransportChange(Transport.LOCAL) },
-                        modifier = Modifier.weight(1f),
+                        selected = true,
+                        onClick = null,
+                        modifier = Modifier.fillMaxWidth(),
                         icon = { tint -> Icon(Icons.Filled.Wifi, null, tint = tint) },
+                        wide = true,
                     )
-                    TransportChoice(
-                        title = "En ligne",
-                        subtitle = "Firebase · à distance",
-                        selected = transport == Transport.ONLINE,
-                        onClick = { onTransportChange(Transport.ONLINE) },
-                        modifier = Modifier.weight(1f),
-                        icon = { tint -> Icon(Icons.Filled.CloudQueue, null, tint = tint) },
+                    Spacer(Modifier.height(10.dp))
+                    Text(
+                        "Tous les téléphones doivent être sur le même réseau Wi-Fi. " +
+                            "Le salon à distance arrivera dans une prochaine version.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Stage.TextMuted,
                     )
                 }
             }
@@ -199,29 +232,29 @@ private fun TransportChoice(
     title: String,
     subtitle: String,
     selected: Boolean,
-    onClick: () -> Unit,
+    onClick: (() -> Unit)?,
     icon: @Composable (Color) -> Unit,
     modifier: Modifier = Modifier,
+    /** Carte seule occupant toute la largeur : icône et texte côte à côte plutôt qu'empilés. */
+    wide: Boolean = false,
 ) {
     val accent = if (selected) Stage.Violet else Stage.Line
     val tint = if (selected) Stage.VioletSoft else Stage.TextMuted
     val shape = RoundedCornerShape(16.dp)
-    Column(
-        modifier = modifier
-            .background(
-                if (selected) {
-                    Brush.verticalGradient(listOf(Stage.Violet.copy(alpha = 0.20f), Stage.Night))
-                } else {
-                    Brush.verticalGradient(listOf(Stage.Night, Stage.Night))
-                },
-                shape,
-            )
-            .border(1.dp, accent.copy(alpha = if (selected) 0.8f else 0.5f), shape)
-            .clickable { onClick() }
-            .padding(14.dp),
-    ) {
-        Box(modifier = Modifier.size(24.dp)) { icon(tint) }
-        Spacer(Modifier.height(8.dp))
+    val frame = modifier
+        .background(
+            if (selected) {
+                Brush.verticalGradient(listOf(Stage.Violet.copy(alpha = 0.20f), Stage.Night))
+            } else {
+                Brush.verticalGradient(listOf(Stage.Night, Stage.Night))
+            },
+            shape,
+        )
+        .border(1.dp, accent.copy(alpha = if (selected) 0.8f else 0.5f), shape)
+        .then(if (onClick != null) Modifier.clickable { onClick() } else Modifier)
+        .padding(14.dp)
+
+    val labels: @Composable ColumnScope.() -> Unit = {
         Text(
             text = title,
             style = MaterialTheme.typography.titleMedium,
@@ -232,6 +265,20 @@ private fun TransportChoice(
             style = MaterialTheme.typography.bodyMedium,
             color = Stage.TextMuted,
         )
+    }
+
+    if (wide) {
+        Row(modifier = frame, verticalAlignment = Alignment.CenterVertically) {
+            Box(modifier = Modifier.size(24.dp)) { icon(tint) }
+            Spacer(Modifier.width(14.dp))
+            Column(content = labels)
+        }
+    } else {
+        Column(modifier = frame) {
+            Box(modifier = Modifier.size(24.dp)) { icon(tint) }
+            Spacer(Modifier.height(8.dp))
+            labels()
+        }
     }
 }
 

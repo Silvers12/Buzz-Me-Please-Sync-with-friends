@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import fr.buzzme.core.Features
 import fr.buzzme.ui.components.PrimaryAction
 import fr.buzzme.ui.components.SectionLabel
 import fr.buzzme.ui.components.StageBackground
@@ -45,11 +46,15 @@ private data class TutorialStep(
 private val steps = listOf(
     TutorialStep(
         number = "1",
-        title = "Choisir son pseudo et son mode",
+        title = "Choisir son pseudo",
         body = "Sur l'accueil, saisissez le pseudo qui s'affichera sur le plateau — il reste " +
-            "modifiable à tout moment. Gardez « Wi-Fi local » tant que tout le monde est sur " +
-            "le même réseau : c'est le mode le plus précis et il fonctionne sans Internet. " +
-            "« En ligne » sert de repli pour jouer à distance et demande un projet Firebase.",
+            "modifiable à tout moment. La partie se joue en Wi-Fi local : tous les téléphones " +
+            "sur le même réseau, sans Internet, et la mesure au plus juste." +
+            if (Features.ONLINE_ROOMS) {
+                " « En ligne » sert de repli pour jouer à distance et demande un projet Firebase."
+            } else {
+                " Le salon à distance arrivera dans une prochaine version."
+            },
         accent = Stage.Violet,
     ),
     TutorialStep(
@@ -81,9 +86,9 @@ private val steps = listOf(
     TutorialStep(
         number = "5",
         title = "Enchaîner les manches",
-        body = "« Relancer » ouvre immédiatement une nouvelle manche, « Reset » éteint les " +
-            "buzzers et efface les résultats sans toucher aux scores. Rien n'oblige à attendre " +
-            "la fin d'une manche pour relancer.",
+        body = "« Relancer » ouvre immédiatement une nouvelle manche. À droite, la flèche " +
+            "circulaire éteint les buzzers et efface les résultats sans toucher aux scores. " +
+            "Rien n'oblige à attendre la fin d'une manche pour relancer.",
         accent = Stage.Cyan,
     ),
     TutorialStep(
@@ -105,10 +110,10 @@ private val steps = listOf(
     TutorialStep(
         number = "8",
         title = "Adapter les règles",
-        body = "Le bouton « Options » ouvre les règles de la partie. Le mode duel peut être " +
-            "désactivé au profit du mode course, où tout le monde buzze et où l'on obtient un " +
-            "classement complet — pratique pour un tie-break ou un jeu de rapidité. Le décompte " +
-            "et les sons se coupent au même endroit.",
+        body = "Le bouton à curseurs, à droite du top, ouvre les règles de la partie. Le mode " +
+            "duel peut être désactivé au profit du mode course, où tout le monde buzze et où " +
+            "l'on obtient un classement complet — pratique pour un tie-break ou un jeu de " +
+            "rapidité. Le décompte et les sons se coupent au même endroit.",
         accent = Stage.VioletSoft,
     ),
 )

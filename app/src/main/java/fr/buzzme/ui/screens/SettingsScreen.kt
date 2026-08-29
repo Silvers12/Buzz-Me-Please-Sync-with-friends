@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import fr.buzzme.core.Features
 import fr.buzzme.net.online.FirebaseConfig
 import fr.buzzme.ui.components.GhostAction
 import fr.buzzme.ui.components.PrimaryAction
@@ -53,9 +54,6 @@ fun SettingsScreen(
     onTutorial: () -> Unit,
     onBack: () -> Unit,
 ) {
-    var draft by remember { mutableStateOf(firebase) }
-    var saved by remember { mutableStateOf(false) }
-
     StageBackground {
         Column(
             modifier = Modifier
@@ -119,62 +117,9 @@ fun SettingsScreen(
                 )
             }
 
-            Spacer(Modifier.height(16.dp))
-
-            StagePanel(modifier = Modifier.fillMaxWidth()) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    SectionLabel("Mode en ligne (Firebase)", modifier = Modifier.weight(1f))
-                    StageBadge(
-                        text = if (draft.isComplete) "Configuré" else "À remplir",
-                        color = if (draft.isComplete) Stage.Green else Stage.Amber,
-                    )
-                }
-                Spacer(Modifier.height(8.dp))
-                Text(
-                    "Le mode Wi-Fi local ne demande aucune configuration. Ces quatre valeurs ne " +
-                        "servent qu'au repli en ligne : elles proviennent de votre propre projet " +
-                        "Firebase (voir docs/FIREBASE.md). Tous les joueurs doivent saisir les mêmes.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Stage.TextMuted,
-                )
-                Spacer(Modifier.height(14.dp))
-
-                ConfigField(
-                    label = "ID du projet",
-                    value = draft.projectId,
-                    placeholder = "buzzme-quiz",
-                ) { draft = draft.copy(projectId = it); saved = false }
-
-                ConfigField(
-                    label = "ID de l'application",
-                    value = draft.applicationId,
-                    placeholder = "1:1234567890:android:abcdef",
-                ) { draft = draft.copy(applicationId = it); saved = false }
-
-                ConfigField(
-                    label = "Clé API",
-                    value = draft.apiKey,
-                    placeholder = "AIza…",
-                ) { draft = draft.copy(apiKey = it); saved = false }
-
-                ConfigField(
-                    label = "URL de la base",
-                    value = draft.databaseUrl,
-                    placeholder = "https://…firebasedatabase.app",
-                    keyboardType = KeyboardType.Uri,
-                ) { draft = draft.copy(databaseUrl = it.trim()); saved = false }
-
-                Spacer(Modifier.height(6.dp))
-                PrimaryAction(
-                    text = if (saved) "Enregistré" else "Enregistrer",
-                    icon = Icons.Filled.Save,
-                    enabled = draft.isComplete && !saved,
-                    onClick = {
-                        onFirebase(draft)
-                        saved = true
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                )
+            if (Features.ONLINE_ROOMS) {
+                Spacer(Modifier.height(16.dp))
+                FirebasePanel(firebase = firebase, onFirebase = onFirebase)
             }
 
             Spacer(Modifier.height(24.dp))
@@ -187,6 +132,70 @@ fun SettingsScreen(
 
             Spacer(Modifier.height(40.dp))
         }
+    }
+}
+
+/** Configuration du projet Firebase, réservée au salon en ligne. */
+@Composable
+private fun FirebasePanel(firebase: FirebaseConfig, onFirebase: (FirebaseConfig) -> Unit) {
+    var draft by remember { mutableStateOf(firebase) }
+    var saved by remember { mutableStateOf(false) }
+
+    StagePanel(modifier = Modifier.fillMaxWidth()) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            SectionLabel("Mode en ligne (Firebase)", modifier = Modifier.weight(1f))
+            Spacer(Modifier.width(10.dp))
+            StageBadge(
+                text = if (draft.isComplete) "Configuré" else "À remplir",
+                color = if (draft.isComplete) Stage.Green else Stage.Amber,
+            )
+        }
+        Spacer(Modifier.height(8.dp))
+        Text(
+            "Le mode Wi-Fi local ne demande aucune configuration. Ces quatre valeurs ne " +
+                "servent qu'au repli en ligne : elles proviennent de votre propre projet " +
+                "Firebase (voir docs/FIREBASE.md). Tous les joueurs doivent saisir les mêmes.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = Stage.TextMuted,
+        )
+        Spacer(Modifier.height(14.dp))
+
+        ConfigField(
+            label = "ID du projet",
+            value = draft.projectId,
+            placeholder = "buzzme-quiz",
+        ) { draft = draft.copy(projectId = it); saved = false }
+
+        ConfigField(
+            label = "ID de l'application",
+            value = draft.applicationId,
+            placeholder = "1:1234567890:android:abcdef",
+        ) { draft = draft.copy(applicationId = it); saved = false }
+
+        ConfigField(
+            label = "Clé API",
+            value = draft.apiKey,
+            placeholder = "AIza…",
+        ) { draft = draft.copy(apiKey = it); saved = false }
+
+        ConfigField(
+            label = "URL de la base",
+            value = draft.databaseUrl,
+            placeholder = "https://…firebasedatabase.app",
+            keyboardType = KeyboardType.Uri,
+        ) { draft = draft.copy(databaseUrl = it.trim()); saved = false }
+
+        Spacer(Modifier.height(6.dp))
+        PrimaryAction(
+            text = if (saved) "Enregistré" else "Enregistrer",
+            icon = Icons.Filled.Save,
+            enabled = draft.isComplete && !saved,
+            onClick = {
+                onFirebase(draft)
+                saved = true
+            },
+            modifier = Modifier.fillMaxWidth(),
+        )
     }
 }
 

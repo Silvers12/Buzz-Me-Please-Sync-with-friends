@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import fr.buzzme.core.Codes
+import fr.buzzme.core.Features
 import fr.buzzme.core.Prefs
 import fr.buzzme.core.Settings
 import fr.buzzme.core.SoundFx
@@ -61,7 +62,10 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             prefs.ensurePlayerId()
             prefs.settings.collect { loaded ->
-                _settings.value = loaded
+                // Le salon en ligne est en sommeil : un réglage enregistré avant sa fermeture ne
+                // doit pas laisser l'application sur un transport injouable.
+                _settings.value =
+                    if (Features.ONLINE_ROOMS) loaded else loaded.copy(transport = Transport.LOCAL)
                 soundFx.enabled = loaded.sound
                 if (_route.value == Route.Loading) {
                     // Première ouverture : on explique le jeu avant de laisser créer un salon.
@@ -108,6 +112,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun setTransport(transport: Transport) {
+        if (!Features.ONLINE_ROOMS && transport != Transport.LOCAL) return
         viewModelScope.launch { prefs.setTransport(transport) }
     }
 

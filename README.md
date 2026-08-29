@@ -4,8 +4,13 @@ Buzzer de quiz pour Android, synchronisé entre amis. L'animateur crée un salon
 rejoignent avec un code à 5 lettres, et tout le monde joue sur son téléphone comme sur un
 plateau de jeu télévisé.
 
-Le mode principal fonctionne **en Wi-Fi local, sans Internet et sans serveur**. Le mode en ligne
-(Firebase) n'est qu'un repli pour jouer à distance.
+Le jeu fonctionne **en Wi-Fi local, sans Internet et sans serveur**.
+
+> **Salon en ligne : désactivé pour le moment.** Le repli Firebase reste dans le dépôt mais n'est
+> proposé nulle part dans l'application, le temps de l'éprouver. Pour le rouvrir — choix du
+> transport sur l'accueil, panneau de configuration des réglages, tutoriel — repasser
+> `Features.ONLINE_ROOMS` à `true` dans
+> [`app/src/main/java/fr/buzzme/core/Features.kt`](app/src/main/java/fr/buzzme/core/Features.kt).
 
 ## Ce que ça fait
 
@@ -68,15 +73,15 @@ La **passation d'animation** bascule le serveur d'un téléphone à l'autre : l'
 l'état complet et l'adresse du nouvel animateur, tout le monde s'y reconnecte, et l'ancien
 animateur redevient un joueur ordinaire.
 
-### En ligne (repli)
+### En ligne (repli, désactivé)
 
 Firebase Realtime Database, base de temps commune fournie par `.info/serverTimeOffset`. Le
 verrouillage suit directement la publication du premier buzz, sans attendre une écriture de
 l'hôte, ce qui économise un aller-retour au moment le plus critique.
 
 Aucun `google-services.json` n'est embarqué : les identifiants se saisissent dans l'application
-(*Réglages → Mode en ligne*). Le dépôt ne contient donc aucune clé, et chacun branche son propre
-projet. Voir **[docs/FIREBASE.md](docs/FIREBASE.md)** et les règles de sécurité fournies dans
+(*Réglages → Mode en ligne*, visible une fois `Features.ONLINE_ROOMS` réactivé). Le dépôt ne
+contient donc aucune clé, et chacun branche son propre projet. Voir **[docs/FIREBASE.md](docs/FIREBASE.md)** et les règles de sécurité fournies dans
 [`firebase/database.rules.json`](firebase/database.rules.json).
 
 ## Compiler
