@@ -15,9 +15,11 @@ import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -33,8 +35,11 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.material3.Text
 import fr.buzzme.model.BuzzerVisual
@@ -153,7 +158,7 @@ fun BigBuzzer(
         }
     }
 
-    Box(
+    BoxWithConstraints(
         modifier = modifier
             .aspectRatio(1f)
             .pointerInput(Unit) {
@@ -167,6 +172,9 @@ fun BigBuzzer(
             },
         contentAlignment = Alignment.Center,
     ) {
+        val diameter = minOf(maxWidth, maxHeight)
+        val density = LocalDensity.current
+
         Canvas(Modifier.fillMaxSize()) {
             val radius = size.minDimension / 2f
             val c = center
@@ -241,25 +249,46 @@ fun BigBuzzer(
         }
 
         Column(
+            // Le texte reste à l'intérieur du dôme (0,70 du rayon) : un pseudo long ou une police
+            // système agrandie doivent se replier, pas déborder sur le socle.
+            modifier = Modifier.fillMaxWidth(0.64f),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
+            // L'inscription est gravée sur le dôme : elle se mesure au diamètre du buzzer, pas
+            // à l'échelle de police du système, sans quoi elle déborderait du bouton sur un petit
+            // écran ou avec une police agrandie. Le décompte occupe tout le dôme, les libellés
+            // longs (« TROP TARD », un chrono) rapetissent d'un cran.
+            val titleSize = with(density) {
+                when {
+                    title.length <= 2 -> diameter * 0.24f
+                    title.length <= 9 -> diameter * 0.11f
+                    else -> diameter * 0.09f
+                }.toSp()
+            }
+            val subtitleSize = with(density) {
+                (diameter * if (subtitle.length > 14) 0.038f else 0.046f).coerceAtLeast(8.dp).toSp()
+            }
             Text(
                 text = title,
                 color = skin.text,
                 fontWeight = FontWeight.Black,
-                fontSize = if (title.length <= 2) 64.sp else 30.sp,
+                fontSize = titleSize,
                 letterSpacing = 1.sp,
                 textAlign = TextAlign.Center,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
             )
             if (subtitle.isNotBlank()) {
                 Text(
                     text = subtitle.uppercase(),
                     color = skin.text.copy(alpha = 0.75f),
                     fontWeight = FontWeight.Bold,
-                    fontSize = 12.sp,
-                    letterSpacing = 1.5.sp,
+                    fontSize = subtitleSize,
+                    letterSpacing = 1.sp,
                     textAlign = TextAlign.Center,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
         }

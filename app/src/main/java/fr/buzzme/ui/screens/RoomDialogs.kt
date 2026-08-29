@@ -10,7 +10,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.CheckCircle
@@ -27,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import fr.buzzme.model.GameMode
 import fr.buzzme.model.Player
@@ -64,7 +67,9 @@ fun PlayerActionsDialog(
             }
         },
         text = {
-            Column {
+            // Un petit écran (ou une police système agrandie) ne doit pas rogner le bas du
+            // pupitre : le contenu défile plutôt que de déborder.
+            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 SectionLabel("Score")
                 Spacer(Modifier.height(8.dp))
                 Row(
@@ -77,6 +82,8 @@ fun PlayerActionsDialog(
                         style = MaterialTheme.typography.displayMedium,
                         color = Stage.GoldSoft,
                         fontWeight = FontWeight.Black,
+                        textAlign = TextAlign.Center,
+                        maxLines = 1,
                         modifier = Modifier.weight(1f),
                     )
                     ScoreButton("+1", Stage.Green) { onPoints(1) }
@@ -154,7 +161,9 @@ fun RoomOptionsDialog(
             Text("Règles de la partie", style = MaterialTheme.typography.headlineMedium, color = Stage.TextPrimary)
         },
         text = {
-            Column {
+            // Un petit écran (ou une police système agrandie) ne doit pas rogner le bas du
+            // pupitre : le contenu défile plutôt que de déborder.
+            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 OptionSwitch(
                     title = "Mode duel",
                     subtitle = "Le premier qui buzze verrouille tous les autres. " +
@@ -185,7 +194,7 @@ fun RoomOptionsDialog(
                 if (amHost) {
                     Spacer(Modifier.height(20.dp))
                     GhostAction(
-                        text = "Remettre tous les scores à zéro",
+                        text = "Remettre les scores à zéro",
                         onClick = onResetScores,
                         accent = Stage.Red,
                         modifier = Modifier.fillMaxWidth(),

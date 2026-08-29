@@ -109,7 +109,16 @@ fun JoinScreen(
                     value = code,
                     onValueChange = { code = Codes.normalize(it) },
                     singleLine = true,
-                    placeholder = { Text("ABCDE", letterSpacing = 8.sp) },
+                    placeholder = {
+                        // Même alignement que la saisie, sinon le code semble sauter au premier
+                        // caractère tapé.
+                        Text(
+                            text = "ABCDE",
+                            letterSpacing = 8.sp,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                    },
                     keyboardOptions = KeyboardOptions(
                         capitalization = KeyboardCapitalization.Characters,
                         imeAction = ImeAction.Go,

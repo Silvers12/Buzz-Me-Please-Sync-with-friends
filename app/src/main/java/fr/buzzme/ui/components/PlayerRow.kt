@@ -7,6 +7,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -51,6 +53,7 @@ private fun accentFor(visual: BuzzerVisual): Color = when (visual) {
  * Une ligne de plateau : voyant du buzzer, pseudo, heure exacte du buzz et écart avec le meilleur.
  * C'est la vue de l'animateur — elle doit se lire d'un coup d'œil pendant la partie.
  */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun PlayerRow(
     player: Player,
@@ -144,24 +147,30 @@ fun PlayerRow(
                     color = Stage.TextMuted,
                 )
 
-                buzz != null -> Row(verticalAlignment = Alignment.CenterVertically) {
+                // FlowRow et non Row : quand la place manque (police système agrandie, écran
+                // étroit), l'écart passe à la ligne entier au lieu d'être coupé en plein milieu.
+                buzz != null -> FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(2.dp),
+                ) {
                     Text(
                         text = buzz.wallClockText(),
                         style = MonoDigits,
                         color = if (isWinner) Stage.GoldSoft else Stage.TextSecondary,
+                        maxLines = 1,
                     )
-                    Spacer(Modifier.width(8.dp))
                     Text(
                         text = Buzz.formatReaction(buzz.reactionMillis),
                         style = MaterialTheme.typography.bodyMedium,
                         color = Stage.TextSecondary,
+                        maxLines = 1,
                     )
                     if (gapMillis != null) {
-                        Spacer(Modifier.width(8.dp))
                         Text(
                             text = Buzz.formatGap(gapMillis),
                             style = MonoDigits,
                             color = Stage.Red.copy(alpha = 0.85f),
+                            maxLines = 1,
                         )
                     }
                 }

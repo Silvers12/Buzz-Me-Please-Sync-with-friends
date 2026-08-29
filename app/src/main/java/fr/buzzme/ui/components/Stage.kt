@@ -14,6 +14,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
@@ -21,6 +22,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -42,6 +44,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -131,44 +135,63 @@ fun SectionLabel(text: String, modifier: Modifier = Modifier, color: Color = Sta
         text = text.uppercase(),
         style = MaterialTheme.typography.labelMedium,
         color = color,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
         modifier = modifier,
     )
 }
 
-/** Le code du salon, affiché comme un afficheur de plateau : une case par lettre, cerclée d'or. */
+/**
+ * Le code du salon, affiché comme un afficheur de plateau : une case par lettre, cerclée d'or.
+ *
+ * Les cases sont taillées à partir de la largeur réellement disponible, jamais d'une valeur
+ * fixe : sur un écran étroit, une largeur imposée déborderait de la rangée, et c'est alors la
+ * dernière case qui se ferait écraser — d'où des cases inégales et un badge collé au code.
+ */
 @Composable
 fun CodeDisplay(
     code: String,
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
 ) {
-    Row(
+    val gap = 6.dp
+    BoxWithConstraints(
         modifier = if (onClick != null) modifier.clickable { onClick() } else modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
     ) {
-        code.forEach { letter ->
-            Box(
-                modifier = Modifier
-                    .width(44.dp)
-                    .height(56.dp)
-                    .background(
-                        Brush.verticalGradient(listOf(Stage.PanelHigh, Stage.Night)),
-                        RoundedCornerShape(12.dp),
+        val count = code.length.coerceAtLeast(1)
+        val total = if (constraints.hasBoundedWidth) maxWidth else CODE_CELL_MAX * count
+        val cell = ((total - gap * (count - 1)) / count).coerceIn(CODE_CELL_MIN, CODE_CELL_MAX)
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(gap),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            code.forEach { letter ->
+                Box(
+                    modifier = Modifier
+                        .width(cell)
+                        .height(cell * 1.27f)
+                        .background(
+                            Brush.verticalGradient(listOf(Stage.PanelHigh, Stage.Night)),
+                            RoundedCornerShape(12.dp),
+                        )
+                        .border(1.dp, Stage.Gold.copy(alpha = 0.55f), RoundedCornerShape(12.dp)),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = letter.toString(),
+                        color = Stage.GoldSoft,
+                        fontWeight = FontWeight.Black,
+                        fontSize = (cell.value * 0.62f).sp,
+                        maxLines = 1,
                     )
-                    .border(1.dp, Stage.Gold.copy(alpha = 0.55f), RoundedCornerShape(12.dp)),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = letter.toString(),
-                    color = Stage.GoldSoft,
-                    fontWeight = FontWeight.Black,
-                    fontSize = 28.sp,
-                )
+                }
             }
         }
     }
 }
+
+private val CODE_CELL_MIN = 24.dp
+private val CODE_CELL_MAX = 44.dp
 
 @Composable
 fun PrimaryAction(
@@ -191,9 +214,11 @@ fun PrimaryAction(
             contentColor = Color.White,
             disabledContentColor = Stage.TextMuted,
         ),
-        contentPadding = PaddingValues(horizontal = 22.dp, vertical = 16.dp),
+        contentPadding = PaddingValues(horizontal = 18.dp, vertical = 14.dp),
         modifier = modifier
-            .height(58.dp)
+            // heightIn plutôt que height : un libellé long passe à la ligne au lieu de déborder
+            // du cadre, et le fond suit puisqu'il est peint sur la taille mesurée.
+            .heightIn(min = 58.dp)
             .background(
                 brush = if (enabled) {
                     Brush.horizontalGradient(colors)
@@ -207,7 +232,13 @@ fun PrimaryAction(
             Icon(icon, contentDescription = null, modifier = Modifier.size(20.dp))
             Spacer(Modifier.width(10.dp))
         }
-        Text(text.uppercase(), style = MaterialTheme.typography.labelLarge)
+        Text(
+            text = text.uppercase(),
+            style = MaterialTheme.typography.labelLarge,
+            textAlign = TextAlign.Center,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+        )
     }
 }
 
@@ -229,14 +260,20 @@ fun GhostAction(
             contentColor = accent,
             disabledContentColor = Stage.TextMuted,
         ),
-        contentPadding = PaddingValues(horizontal = 18.dp, vertical = 14.dp),
-        modifier = modifier.height(52.dp),
+        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 12.dp),
+        modifier = modifier.heightIn(min = 52.dp),
     ) {
         if (icon != null) {
             Icon(icon, contentDescription = null, modifier = Modifier.size(18.dp))
             Spacer(Modifier.width(8.dp))
         }
-        Text(text.uppercase(), style = MaterialTheme.typography.labelLarge)
+        Text(
+            text = text.uppercase(),
+            style = MaterialTheme.typography.labelLarge,
+            textAlign = TextAlign.Center,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+        )
     }
 }
 
@@ -282,6 +319,8 @@ fun StageBadge(text: String, color: Color, modifier: Modifier = Modifier) {
         text = text.uppercase(),
         style = MaterialTheme.typography.labelMedium,
         color = color,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
         modifier = modifier
             .background(color.copy(alpha = 0.14f), RoundedCornerShape(8.dp))
             .border(1.dp, color.copy(alpha = 0.35f), RoundedCornerShape(8.dp))

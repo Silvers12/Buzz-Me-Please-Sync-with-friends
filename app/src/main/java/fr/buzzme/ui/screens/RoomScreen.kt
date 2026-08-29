@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bolt
@@ -44,8 +45,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -107,6 +110,12 @@ fun RoomScreen(
 
     PlayFeedback(state = state, visual = myVisual, remaining = remaining, soundFx = soundFx)
 
+    // Le buzzer est taillé sur la hauteur de l'écran, pas sur ce qui reste une fois le bandeau
+    // de résultat affiché : sur un petit téléphone il garde une taille jouable, sur un grand il
+    // ne flotte pas au milieu du vide.
+    val buzzerHeight = (LocalConfiguration.current.screenHeightDp.dp * 0.32f)
+        .coerceIn(150.dp, 300.dp)
+
     StageBackground {
         Column(
             modifier = Modifier
@@ -129,7 +138,7 @@ fun RoomScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(230.dp),
+                    .height(buzzerHeight),
                 contentAlignment = Alignment.Center,
             ) {
                 // fillMaxHeight + aspectRatio(1f) côté buzzer : le dôme reste rond quelle que
@@ -164,17 +173,28 @@ fun RoomScreen(
                     if (amHost) "Plateau · appuyez sur un joueur" else "Plateau",
                     modifier = Modifier.weight(1f),
                 )
+                Spacer(Modifier.width(8.dp))
                 Text(
                     "${state.players.count { it.connected }}/${state.players.size} en ligne",
                     style = MaterialTheme.typography.labelMedium,
                     color = Stage.TextMuted,
+                    maxLines = 1,
                 )
             }
 
             Spacer(Modifier.height(8.dp))
 
             val ordered = remember(state) { orderPlayers(state) }
+            // Les buzz réordonnent le plateau : sans cela, la liste suivrait le joueur qui était
+            // en tête et afficherait une ligne coupée au lieu du classement de la manche.
+            val boardState = rememberLazyListState()
+            LaunchedEffect(state.round, state.winnerId) {
+                if (boardState.firstVisibleItemIndex != 0 || boardState.firstVisibleItemScrollOffset != 0) {
+                    boardState.animateScrollToItem(0)
+                }
+            }
             LazyColumn(
+                state = boardState,
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),
@@ -293,11 +313,14 @@ private fun RoomHeader(
                 )
             }
             Spacer(Modifier.width(6.dp))
+            // Le code prend la place qui reste une fois les badges mesurés : c'est lui qui se
+            // resserre sur un écran étroit, jamais le badge « Animateur » qui viendrait le coller.
             Column(modifier = Modifier.weight(1f)) {
                 SectionLabel("Code du salon")
                 Spacer(Modifier.height(4.dp))
                 CodeDisplay(code = state.code)
             }
+            Spacer(Modifier.width(12.dp))
             Column(horizontalAlignment = Alignment.End) {
                 StageBadge(
                     text = if (amHost) "Animateur" else "Joueur",
@@ -413,12 +436,16 @@ private fun ResultBanner(state: RoomState, myId: String) {
                     style = MaterialTheme.typography.titleLarge,
                     color = Stage.GoldSoft,
                     fontWeight = FontWeight.Black,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f),
                 )
+                Spacer(Modifier.width(10.dp))
                 Text(
                     text = buzz.wallClockText(),
                     style = MonoDigits,
                     color = Stage.GoldSoft,
+                    maxLines = 1,
                 )
             }
             Spacer(Modifier.height(4.dp))
