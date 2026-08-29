@@ -217,12 +217,11 @@ data class RoomState(
 /**
  * Couleur logique d'un buzzer, indépendante du thème.
  *
- * Quatre couleurs, quatre significations. **Vert**, la main : avant le buzz c'est ARMED
- * (« appuyez »), après l'arbitrage SPEAKING (« à vous de répondre ») — et un seul joueur à la
- * fois une fois la manche prise. **Rouge**, la mauvaise réponse : l'animateur vient de retirer
- * la parole. **Gris**, le buzzer désactivé. **Bleu**, tout le reste, à commencer par le cas le
- * plus courant : quelqu'un d'autre a la main. L'ambre du décompte reste à part, trois secondes
- * de feu orange avant le go.
+ * Cinq couleurs, cinq significations. **Blanc**, la parole : un seul joueur à la fois, une fois
+ * la manche tranchée. **Vert**, les buzzers ouverts, quand chacun peut encore appuyer.
+ * **Rouge**, la mauvaise réponse : l'animateur vient de la prononcer. **Gris**, le buzzer
+ * désactivé. **Bleu**, tout le reste, à commencer par le cas le plus courant : quelqu'un
+ * d'autre a la main. L'ambre du décompte reste à part, trois secondes de feu orange avant le go.
  */
 enum class BuzzerVisual { OFF, COUNTDOWN, ARMED, BUZZED, SPEAKING, WRONG, LOST, ELIMINATED }
 

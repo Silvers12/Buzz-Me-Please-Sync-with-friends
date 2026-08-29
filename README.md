@@ -16,10 +16,10 @@ sort du réseau de la maison.
   et plateau glissent hors champ, le buzzer occupe le centre. L'animateur garde son pupitre.
 - **Le buzz.** Le premier qui appuie verrouille tous les autres. Son heure exacte — heure,
   minute, seconde, milliseconde — remonte à l'animateur.
-- **Quatre couleurs, quatre sens.** Vert, la main. Rouge, la mauvaise réponse. Gris, le buzzer
-  désactivé. Bleu, tout le reste — à commencer par le cas le plus courant : c'est un autre qui
-  répond.
-- **Le verdict.** Une fois le classement arrêté, un seul buzzer reste vert et l'animateur
+- **Cinq couleurs, cinq sens.** Blanc, la parole. Vert, les buzzers ouverts. Rouge, la mauvaise
+  réponse. Gris, le buzzer désactivé. Bleu, tout le reste — à commencer par le cas le plus
+  courant : c'est un autre qui répond.
+- **Le verdict.** Une fois le classement arrêté, un seul buzzer reste blanc et l'animateur
   tranche : *vrai* met le point et éteint les buzzers jusqu'au go suivant, *faux* passe le
   buzzer au rouge et fait entendre la sanction des deux côtés, *suivant* descend la main au buzz
   d'après — et ainsi de suite jusqu'au dernier de la manche.

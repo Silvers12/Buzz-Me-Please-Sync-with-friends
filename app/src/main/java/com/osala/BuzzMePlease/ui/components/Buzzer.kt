@@ -83,15 +83,15 @@ private fun skinFor(visual: BuzzerVisual): BuzzerSkin = when (visual) {
         text = Color(0xFF3A2000),
     )
 
-    // Le vert de la parole : plus profond que celui du buzzer armé, pour qu'un coup d'œil
-    // distingue « appuyez » de « c'est à vous de répondre ».
+    // La parole : le blanc, seule couleur qui ne serve à rien d'autre. Sur un fond de nuit, un
+    // dôme blanc ne se confond avec aucun autre état et se voit à l'autre bout de la table.
     BuzzerVisual.SPEAKING -> BuzzerSkin(
-        highlight = Color(0xFFB6FFD8),
-        body = Color(0xFF1CC96C),
-        shadow = Color(0xFF07572D),
-        ring = Color(0xFF5CFFB0),
-        glow = Stage.Green,
-        text = Color(0xFF03270F),
+        highlight = Color(0xFFFFFFFF),
+        body = Color(0xFFF1F3FF),
+        shadow = Color(0xFF8E93AE),
+        ring = Color(0xFFFFFFFF),
+        glow = Color(0xFFE4E9FF),
+        text = Color(0xFF10101C),
     )
 
     // Mauvaise réponse : l'animateur retire la parole. Le seul rouge du jeu, il ne doit

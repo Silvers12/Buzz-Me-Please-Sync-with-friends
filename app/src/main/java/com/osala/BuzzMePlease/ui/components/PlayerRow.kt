@@ -42,11 +42,11 @@ import com.osala.BuzzMePlease.model.Player
 import com.osala.BuzzMePlease.ui.theme.MonoDigits
 import com.osala.BuzzMePlease.ui.theme.Stage
 
-// Le voyant de la ligne reprend exactement les couleurs du gros bouton : vert la main, rouge
-// la mauvaise réponse, gris le buzzer désactivé, bleu tout le reste.
+// Le voyant de la ligne reprend exactement les couleurs du gros bouton : blanc la parole, vert
+// les buzzers ouverts, rouge la mauvaise réponse, gris le buzzer désactivé, bleu tout le reste.
 private fun accentFor(visual: BuzzerVisual): Color = when (visual) {
     BuzzerVisual.ARMED -> Stage.Green
-    BuzzerVisual.SPEAKING -> Stage.Green
+    BuzzerVisual.SPEAKING -> Color(0xFFF1F3FF)
     BuzzerVisual.BUZZED -> Stage.Blue
     BuzzerVisual.COUNTDOWN -> Stage.Amber
     BuzzerVisual.WRONG -> Stage.Red
