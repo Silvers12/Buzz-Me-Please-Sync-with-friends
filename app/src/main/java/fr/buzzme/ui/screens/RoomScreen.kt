@@ -26,8 +26,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Bolt
-import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.Icon
@@ -168,14 +168,25 @@ fun RoomScreen(
 
             Spacer(Modifier.height(8.dp))
 
+            // Le plateau tel qu'il s'affiche ici : c'est aussi lui que compte le « x/y en ligne ».
+            val ordered = remember(state, amHost) {
+                orderPlayers(state, keepEliminated = amHost, myId = session.myId)
+            }
+
             Row(verticalAlignment = Alignment.CenterVertically) {
                 SectionLabel(
-                    if (amHost) "Plateau · appuyez sur un joueur" else "Plateau",
+                    when {
+                        // Rappel utile des deux côtés : l'animateur sait ce qu'il a coupé, le
+                        // joueur comprend pourquoi les pastilles des autres sont barrées.
+                        state.options.hideScores -> "Plateau · scores masqués"
+                        amHost -> "Plateau · appuyez sur un joueur"
+                        else -> "Plateau"
+                    },
                     modifier = Modifier.weight(1f),
                 )
                 Spacer(Modifier.width(8.dp))
                 Text(
-                    "${state.players.count { it.connected }}/${state.players.size} en ligne",
+                    "${ordered.count { it.connected }}/${ordered.size} en ligne",
                     style = MaterialTheme.typography.labelMedium,
                     color = Stage.TextMuted,
                     maxLines = 1,
@@ -184,7 +195,6 @@ fun RoomScreen(
 
             Spacer(Modifier.height(8.dp))
 
-            val ordered = remember(state) { orderPlayers(state) }
             // Les buzz réordonnent le plateau : sans cela, la liste suivrait le joueur qui était
             // en tête et afficherait une ligne coupée au lieu du classement de la manche.
             val boardState = rememberLazyListState()
@@ -217,6 +227,11 @@ fun RoomScreen(
                         isMe = session.myId == player.id,
                         showControls = amHost,
                         onClick = { selectedPlayer = player.id },
+                        // Scores masqués : chaque joueur garde le sien sous les yeux, et
+                        // l'animateur continue de voir le tableau entier.
+                        showScore = amHost ||
+                            !state.options.hideScores ||
+                            player.id == session.myId,
                     )
                 }
             }
@@ -260,12 +275,19 @@ fun RoomScreen(
     }
 }
 
-/** Trie le plateau : les buzz dans l'ordre chronologique d'abord, le reste par ordre d'arrivée. */
-private fun orderPlayers(state: RoomState): List<Player> {
+/**
+ * Trie le plateau : les buzz dans l'ordre chronologique d'abord, le reste par ordre d'arrivée.
+ *
+ * Un joueur éliminé ne peut plus buzzer : sur les téléphones des joueurs, sa ligne disparaît du
+ * plateau plutôt que d'encombrer le tableau. L'animateur, lui, la garde — c'est de là qu'il le
+ * réactive ou lui remet des points. Chacun continue de se voir soi-même, éliminé ou non.
+ */
+private fun orderPlayers(state: RoomState, keepEliminated: Boolean, myId: String): List<Player> {
     val ranked = state.ranking.mapNotNull { state.player(it.playerId) }
     val rest = state.players.filter { player -> ranked.none { it.id == player.id } }
         .sortedWith(compareBy({ it.isEliminated }, { it.joinedAt }))
-    return ranked + rest
+    val board = ranked + rest
+    return if (keepEliminated) board else board.filter { !it.isEliminated || it.id == myId }
 }
 
 private fun buzzerTitle(
@@ -307,7 +329,7 @@ private fun RoomHeader(
         Row(verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = onLeave) {
                 Icon(
-                    Icons.Filled.Logout,
+                    Icons.AutoMirrored.Filled.Logout,
                     contentDescription = "Quitter le salon",
                     tint = Stage.TextSecondary,
                 )
