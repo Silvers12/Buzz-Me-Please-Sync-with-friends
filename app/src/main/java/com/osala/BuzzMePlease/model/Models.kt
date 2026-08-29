@@ -223,16 +223,20 @@ fun RoomState.visualFor(
     val p = player(playerId) ?: return BuzzerVisual.OFF
     if (p.isEliminated) return BuzzerVisual.ELIMINATED
     val buzzed = buzzOf(playerId) != null || localBuzzedRound == round
-    // Photo-finish : en duel, deux joueurs peuvent appuyer avant que le verrouillage ne les
-    // atteigne, et les deux voient d'abord leur buzzer pris. L'arbitrage clos, un seul garde la
-    // parole — son buzzer passe au vert — et les autres s'éteignent, y compris celui qui vient
-    // de répondre à côté et à qui l'animateur a retiré la main.
-    val settled = options.mode == GameMode.DUEL &&
-        roundState == RoundState.LOCKED &&
-        !provisional
+    // Quand la parole est tranchée. En duel, il faut attendre la fin de la fenêtre d'arbitrage :
+    // deux joueurs peuvent appuyer avant que le verrouillage ne les atteigne, et le classement
+    // bouge encore. En course, personne ne verrouille personne — le premier buzz donne déjà la
+    // main, les autres continuent de jouer pour leur place au classement.
+    val decided = when (options.mode) {
+        GameMode.DUEL -> roundState == RoundState.LOCKED && !provisional
+        GameMode.COURSE -> buzzes.isNotEmpty()
+    }
     return when {
-        settled && speakerId == playerId -> BuzzerVisual.SPEAKING
-        settled && buzzed -> BuzzerVisual.LOST
+        decided && speakerId == playerId -> BuzzerVisual.SPEAKING
+        // Mauvaise réponse : l'animateur a retiré la main, le buzzer s'éteint dans les deux modes.
+        playerId in passedIds -> BuzzerVisual.LOST
+        // Duel : celui qui s'est fait coiffer au poteau s'éteint aussi, la manche est prise.
+        decided && buzzed && options.mode == GameMode.DUEL -> BuzzerVisual.LOST
         buzzed -> BuzzerVisual.BUZZED
         effectiveRoundState(nowHostMillis) == RoundState.ARMED -> BuzzerVisual.ARMED
         roundState == RoundState.COUNTDOWN -> BuzzerVisual.COUNTDOWN

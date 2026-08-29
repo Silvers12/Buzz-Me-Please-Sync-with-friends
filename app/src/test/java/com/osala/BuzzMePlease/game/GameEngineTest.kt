@@ -156,6 +156,32 @@ class GameEngineTest {
     }
 
     @Test
+    fun `en course la parole se voit aussi et descend au suivant`() {
+        val race = GameEngine("ABCDE", "host", RoomOptions(mode = GameMode.COURSE))
+        race.join("a", "A", 0)
+        race.join("b", "B", 1)
+        race.join("c", "C", 2)
+        race.arm(armAtMillis = 500, withCountdown = false)
+
+        race.registerBuzz("a", 1, 620, 0)
+        race.registerBuzz("b", 1, 560, 0)
+
+        val taken = race.snapshot
+        assertEquals("b", taken.speakerId)
+        assertEquals(BuzzerVisual.SPEAKING, taken.visualFor("b", 900))
+        // Personne n'est verrouillé en course : celui qui a buzzé garde sa place au classement,
+        // et celui qui n'a pas encore appuyé peut toujours le faire.
+        assertEquals(BuzzerVisual.BUZZED, taken.visualFor("a", 900))
+        assertEquals(BuzzerVisual.ARMED, taken.visualFor("c", 900))
+
+        race.passSpeaker(1)
+        val next = race.snapshot
+        assertEquals("a", next.speakerId)
+        assertEquals(BuzzerVisual.LOST, next.visualFor("b", 900))
+        assertEquals(BuzzerVisual.SPEAKING, next.visualFor("a", 900))
+    }
+
+    @Test
     fun `relancer efface les resultats mais garde les scores`() {
         engine.arm(armAtMillis = armedAt, withCountdown = false)
         engine.registerBuzz("p1", 1, armedAt + 100, 0)

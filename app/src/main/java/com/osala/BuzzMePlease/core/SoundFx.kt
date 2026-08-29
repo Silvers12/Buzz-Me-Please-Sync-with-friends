@@ -2,17 +2,20 @@ package com.osala.BuzzMePlease.core
 
 import android.content.Context
 import android.media.AudioManager
+import android.media.MediaPlayer
 import android.media.ToneGenerator
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
+import com.osala.BuzzMePlease.R
 
 /**
  * Habillage sonore et haptique du plateau.
  *
- * Les sons sont générés par [ToneGenerator] : aucun fichier audio à embarquer, et surtout aucune
- * latence de décodage — un bip demandé part immédiatement, ce qui compte pour le « TOP ».
+ * Tout ce qui doit tomber à l'instant près — le décompte, le go, le buzz — passe par
+ * [ToneGenerator] : aucune latence de décodage, un bip demandé part immédiatement. Seule la
+ * mauvaise réponse joue un vrai clip, parce qu'elle arrive après coup et doit s'entendre.
  */
 class SoundFx(context: Context) {
 
@@ -27,6 +30,9 @@ class SoundFx(context: Context) {
         @Suppress("DEPRECATION")
         appContext.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
     }
+
+    /** Le clip « mauvaise réponse » en cours, gardé pour pouvoir le libérer. */
+    private var wrongClip: MediaPlayer? = null
 
     private val tones: ToneGenerator? =
         runCatching { ToneGenerator(AudioManager.STREAM_MUSIC, VOLUME) }.getOrNull()
@@ -46,20 +52,45 @@ class SoundFx(context: Context) {
     /** La parole vous revient : à vous de répondre. */
     fun yourTurn() = play(ToneGenerator.TONE_PROP_ACK, 300, vibrate = 45)
 
-    /** Mauvaise réponse : l'animateur passe la main au suivant. */
-    fun wrong() = play(ToneGenerator.TONE_SUP_ERROR, 450, vibrate = 120)
+    /**
+     * Mauvaise réponse : l'animateur passe la main au suivant. Celui qui perd la parole
+     * entend le vrai son du jeu, pas un bip — c'est une sanction, elle doit s'entendre. Le bip
+     * reste en secours si le décodage échoue.
+     */
+    fun wrong() {
+        if (!enabled) return
+        buzzVibration(120)
+        val started = runCatching {
+            wrongClip?.release()
+            wrongClip = MediaPlayer.create(appContext, R.raw.wrong)?.apply {
+                setOnCompletionListener { player ->
+                    if (wrongClip === player) wrongClip = null
+                    runCatching { player.release() }
+                }
+                start()
+            }
+            wrongClip != null
+        }.getOrDefault(false)
+        if (!started) runCatching { tones?.startTone(ToneGenerator.TONE_SUP_ERROR, 450) }
+    }
 
     private fun play(tone: Int, durationMillis: Int, vibrate: Long) {
         if (!enabled) return
         runCatching { tones?.startTone(tone, durationMillis) }
-        if (vibrate <= 0) return
+        buzzVibration(vibrate)
+    }
+
+    private fun buzzVibration(millis: Long) {
+        if (millis <= 0) return
         runCatching {
-            vibrator?.vibrate(VibrationEffect.createOneShot(vibrate, VibrationEffect.DEFAULT_AMPLITUDE))
+            vibrator?.vibrate(VibrationEffect.createOneShot(millis, VibrationEffect.DEFAULT_AMPLITUDE))
         }
     }
 
     fun release() {
         runCatching { tones?.release() }
+        runCatching { wrongClip?.release() }
+        wrongClip = null
     }
 
     private companion object {
