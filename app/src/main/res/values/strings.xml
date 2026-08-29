@@ -1,4 +1,255 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+    Langue par défaut : l'anglais. Un appareil réglé en français prend res/values-fr,
+    tous les autres retombent ici.
+-->
 <resources>
     <string name="app_name">Buzz Me Please</string>
+
+    <!-- Commun -->
+    <string name="action_back">Back</string>
+    <string name="action_close">Close</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- Accueil -->
+    <string name="home_tagline">The quiz buzzer, down to the millisecond</string>
+    <string name="home_nickname_label">Your nickname</string>
+    <string name="home_nickname_hint">E.g. Camille</string>
+    <string name="home_connection_label">Player connection</string>
+    <string name="home_wifi_title">Local Wi-Fi</string>
+    <string name="home_wifi_subtitle">No internet · the most accurate</string>
+    <string name="home_online_title">Online</string>
+    <string name="home_online_subtitle">Firebase · remote play</string>
+    <string name="home_wifi_only">Every phone must be on the same Wi-Fi network.</string>
+    <string name="home_create_room">Create a room</string>
+    <string name="home_join_room">Join with a code</string>
+    <string name="home_need_nickname">Pick a nickname first (2 characters minimum).</string>
+
+    <!-- Rejoindre -->
+    <string name="join_title">Join a room</string>
+    <string name="join_code_label">Room code</string>
+    <string name="join_code_hint">ABCDE</string>
+    <string name="join_action">Join</string>
+    <string name="join_discovered_label">Rooms found on Wi-Fi</string>
+    <string name="join_searching">Searching… Make sure the host has created the room and that every phone is on the same Wi-Fi network.</string>
+    <string name="join_room_host">At %1$s\'s</string>
+    <string name="join_room_action">JOIN</string>
+    <string name="join_online_label">Online mode</string>
+    <string name="join_online_body">The room lives on your Firebase project. Enter the code the host gave you.</string>
+
+    <!-- Réglages -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_language_label">Language</string>
+    <string name="settings_language_auto">System</string>
+    <string name="settings_language_fr">Français</string>
+    <string name="settings_language_en">English</string>
+    <string name="settings_comfort_label">Playing comfort</string>
+    <string name="settings_sound_title">Sound and vibration</string>
+    <string name="settings_sound_subtitle">Countdown beeps, go signal, buzz feedback.</string>
+    <string name="settings_screen_title">Keep the screen on</string>
+    <string name="settings_screen_subtitle">Essential during a game: a screen that goes dark means a missed buzz and a reconnection to wait for.</string>
+    <string name="settings_howto_label">How it works</string>
+    <string name="settings_howto_body">The full manual: create a room, call the go, knock players out, keep score, hand over hosting.</string>
+    <string name="settings_open_tutorial">Open the tutorial</string>
+    <string name="settings_firebase_label">Online mode (Firebase)</string>
+    <string name="settings_firebase_ready">Configured</string>
+    <string name="settings_firebase_missing">To fill in</string>
+    <string name="settings_firebase_body">Local Wi-Fi needs no setup. These four values are only for the online fallback: they come from your own Firebase project (see docs/FIREBASE.md). Every player must enter the same ones.</string>
+    <string name="settings_firebase_project">Project ID</string>
+    <string name="settings_firebase_app">Application ID</string>
+    <string name="settings_firebase_key">API key</string>
+    <string name="settings_firebase_url">Database URL</string>
+    <string name="settings_save">Save</string>
+    <string name="settings_saved">Saved</string>
+    <string name="settings_footer">Buzz Me Please · synchronised quiz buzzer</string>
+
+    <!-- Salon -->
+    <string name="room_code_label">Room code</string>
+    <string name="room_leave">Leave the room</string>
+    <string name="room_badge_host">Host</string>
+    <string name="room_badge_player">Player</string>
+    <string name="room_badge_duel">Duel</string>
+    <string name="room_badge_race">Race</string>
+    <string name="room_round">Round %1$d</string>
+    <string name="room_latency">%1$d ms · ± %2$d ms</string>
+    <string name="room_go">Go!</string>
+    <string name="room_restart">Restart</string>
+    <string name="room_reset">Reset the buzzers</string>
+    <string name="room_rules">Game rules</string>
+    <string name="room_board">Board</string>
+    <string name="room_board_host">Board · tap a player</string>
+    <string name="room_board_hidden">Board · scores hidden</string>
+    <string name="room_board_sounds">Soundboard · long press to change</string>
+    <string name="room_online_count">%1$d/%2$d online</string>
+    <string name="room_sounds_open">Sounds</string>
+    <string name="room_sounds_close">Board</string>
+    <string name="room_sounds_open_desc">Open the soundboard</string>
+    <string name="room_sounds_close_desc">Back to the board</string>
+
+    <!-- Buzzer -->
+    <string name="buzzer_buzz">BUZZ</string>
+    <string name="buzzer_taken">TAKEN</string>
+    <string name="buzzer_missed">MISSED</string>
+    <string name="buzzer_too_late">TOO LATE</string>
+    <string name="buzzer_out">OUT</string>
+    <string name="buzzer_ready">READY?</string>
+    <string name="buzzer_get_ready">Get ready</string>
+    <string name="buzzer_press">Press!</string>
+    <string name="buzzer_recorded">Recorded</string>
+    <string name="buzzer_your_turn">Your turn to answer</string>
+    <string name="buzzer_can_return">The host can bring you back</string>
+    <string name="buzzer_waiting">Waiting for the go</string>
+
+    <!-- Bandeau de résultat -->
+    <string name="banner_yours">Your turn!</string>
+    <string name="banner_has_hand">%1$s has the floor</string>
+    <string name="banner_reaction">Reaction %1$s</string>
+    <string name="banner_precision"> (± %1$d ms)</string>
+    <string name="banner_ahead"> · ahead of %1$s by %2$s</string>
+    <string name="banner_photo_finish">Photo finish: reviewing…</string>
+    <string name="banner_wrong_next">Wrong answer · next player</string>
+    <string name="banner_wrong">Wrong answer</string>
+    <string name="banner_nobody">Nobody got it · start another round</string>
+
+    <!-- Ligne de joueur -->
+    <string name="player_host_desc">Host</string>
+    <string name="player_you">YOU</string>
+    <string name="player_out">Out</string>
+    <string name="player_offline">Offline</string>
+    <string name="player_ready">Ready</string>
+    <string name="player_ready_ping">Ready · %1$d ms</string>
+    <string name="player_winner_desc">Round winner</string>
+    <string name="player_score_hidden">Score hidden by the host</string>
+
+    <!-- Pupitre du joueur -->
+    <string name="dialog_score">Score</string>
+    <string name="dialog_buzzer">Buzzer</string>
+    <string name="dialog_room">Room</string>
+    <string name="dialog_eliminate">Knock out (black buzzer)</string>
+    <string name="dialog_revive">Bring the buzzer back</string>
+    <string name="dialog_transfer">Hand over hosting</string>
+    <string name="dialog_kick">Remove from the room</string>
+    <string name="dialog_transfer_title">Hand over hosting?</string>
+    <string name="dialog_transfer_body">%1$s becomes the host: they will call the go, keep score and set the rules. You go back to being an ordinary player, and they will have to hand it back for you to take over again.</string>
+
+    <!-- Règles de la partie -->
+    <string name="rules_title">Game rules</string>
+    <string name="rules_duel_title">Duel mode</string>
+    <string name="rules_duel_subtitle">The first to buzz locks everyone else out. Turn it off and everyone buzzes, for a full ranking.</string>
+    <string name="rules_countdown_title">Countdown 3 · 2 · 1</string>
+    <string name="rules_countdown_subtitle">Every device arms at the same instant, to the millisecond.</string>
+    <string name="rules_hide_scores_title">Hidden scores</string>
+    <string name="rules_hide_scores_subtitle">On the players\' phones, everyone only sees their own score. You keep the full table.</string>
+    <string name="rules_sound_title">Sound and vibration</string>
+    <string name="rules_sound_subtitle">Countdown beeps, go signal and buzz feedback.</string>
+    <string name="rules_reset_scores">Reset all scores</string>
+
+    <!-- Sonothèque -->
+    <string name="sounds_title">Sound for this pad</string>
+    <string name="sounds_help">Tap ▶ to listen, tap the name to put it on the pad.</string>
+    <string name="sounds_clear">Clear</string>
+    <string name="sounds_pick_desc">Choose a sound for this pad</string>
+    <string name="sounds_preview_desc">Play %1$s</string>
+    <string name="sounds_empty_title">Empty sound library</string>
+    <string name="sounds_empty_body">Drop your audio files into app/src/main/res/raw (lowercase names, no accents: correct.mp3, wrong.mp3…), then declare them in SoundLibrary.</string>
+
+    <!-- Sons -->
+    <string name="sound_correct">Correct answer</string>
+    <string name="sound_wrong">Wrong answer</string>
+    <string name="sound_tadaa">Ta-daa</string>
+    <string name="sound_wow">Wow</string>
+    <string name="sound_cash_register">Cash register</string>
+    <string name="sound_fireworks">Fireworks</string>
+    <string name="sound_drum_joke">Rimshot</string>
+    <string name="sound_boom">Explosion</string>
+    <string name="sound_gunshot">Gunshot</string>
+    <string name="sound_glass_breaking">Breaking glass</string>
+    <string name="sound_whoosh">Whoosh</string>
+    <string name="sound_pop">Pop</string>
+    <string name="sound_doorbell">Doorbell</string>
+    <string name="sound_horn">Foghorn</string>
+    <string name="sound_car_honk">Car horn</string>
+    <string name="sound_police_siren">Police siren</string>
+    <string name="sound_car_engine">Engine</string>
+    <string name="sound_clock">Clock</string>
+    <string name="sound_slow_clock_ticking">Slow ticking</string>
+    <string name="sound_heartbeat">Heartbeat</string>
+    <string name="sound_winter_wind">Winter wind</string>
+    <string name="sound_keyboard_typing">Typing</string>
+    <string name="sound_violin">Sad violin</string>
+    <string name="sound_witch_laugh">Witch laugh</string>
+    <string name="sound_evil_laugh">Evil laugh</string>
+    <string name="sound_monster_growl">Monster growl</string>
+    <string name="sound_pathetic_screaming">Pathetic scream</string>
+    <string name="sound_i_see_you">I see you</string>
+    <string name="sound_stop_it">Stop it</string>
+    <string name="sound_shut_up">Shut up</string>
+    <string name="sound_baby_crying">Crying baby</string>
+    <string name="sound_meow">Meow</string>
+    <string name="sound_goat">Goat</string>
+    <string name="sound_frog">Frog</string>
+    <string name="sound_rooster_crowing">Rooster</string>
+    <string name="sound_wet_fart">Fart</string>
+
+    <!-- Liaison réseau -->
+    <string name="link_hosting">You are hosting the room</string>
+    <string name="link_searching">Looking for room %1$s…</string>
+    <string name="link_searching_wifi">Looking for room %1$s on Wi-Fi…</string>
+    <string name="link_not_found">Room %1$s not found. Check that everyone is on the same Wi-Fi.</string>
+    <string name="link_connecting">Connecting to the host…</string>
+    <string name="link_retrying">Trying again…</string>
+    <string name="link_lost">Connection lost, reconnecting…</string>
+    <string name="link_connected">Connected</string>
+    <string name="link_taking_over">You are taking over as host…</string>
+    <string name="link_new_host">New host, reconnecting…</string>
+    <string name="link_closed">Room closed</string>
+    <string name="link_firebase">Connecting to Firebase…</string>
+    <string name="link_online_connected">Connected (online)</string>
+    <string name="link_network_lost">Network lost…</string>
+    <string name="firebase_write_denied">Firebase refused the write: %1</string>
+    <string name="firebase_read_denied">Firebase refused the read: %1</string>
+    <string name="firebase_join_failed">Could not join: %1</string>
+    <string name="link_port_busy">Could not open port %1$d</string>
+
+    <!-- Fins de session -->
+    <string name="end_host_closed">The host closed the room.</string>
+    <string name="end_kicked">The host removed you from the room.</string>
+    <string name="end_version">The other phone runs a different version of the app.</string>
+    <string name="end_left">Player left</string>
+
+    <!-- Messages -->
+    <string name="notice_code_length">The code must be %1$d characters long.</string>
+    <string name="notice_firebase_missing">Set up your Firebase project in the settings first.</string>
+    <string name="notice_firebase_error">Firebase unavailable: %1$s</string>
+    <string name="default_player_name">Player</string>
+
+    <!-- Tutoriel -->
+    <string name="tutorial_title">How it works</string>
+    <string name="tutorial_intro">Nine steps, from creating the room to the host\'s soundboard.</string>
+    <string name="tutorial_start">Let\'s go</string>
+    <string name="tutorial_1_title">Choose your nickname</string>
+    <string name="tutorial_1_body">On the home screen, enter the nickname that will show on the board — you can change it at any time. The game runs on local Wi-Fi: every phone on the same network, no internet, and the most accurate timing.</string>
+    <string name="tutorial_1_online_ready"> “Online” is the fallback for playing remotely and needs a Firebase project.</string>
+    <string name="tutorial_2_title">Create or join the room</string>
+    <string name="tutorial_2_body">The host taps “Create a room”: a five-letter code appears at the top of the screen. The others tap “Join” and enter that code. On local Wi-Fi the room shows up on its own in the list of rooms found: one tap, nothing to type.</string>
+    <string name="tutorial_3_title">Call the go</string>
+    <string name="tutorial_3_body">The host taps “Go!”. A 3 · 2 · 1 countdown fires on every phone at once, then each buzzer turns green to the millisecond. On the players\' phones the rest of the screen clears for the round: only the buzzer remains, large, in the middle. The host keeps the full desk — it is their dashboard — and plays along.</string>
+    <string name="tutorial_4_title">Buzzing</string>
+    <string name="tutorial_4_body">The first to press turns red, everyone else locks out instantly. The exact time of the buzz is sent — hour, minute, second and millisecond — and the host sees the ranking, the gap to the best time and the measurement uncertainty. Once the ranking settles, a single buzzer stays green: the one with the floor.</string>
+    <string name="tutorial_5_title">Running the rounds</string>
+    <string name="tutorial_5_body">Wrong answer? “Wrong answer · next player”, under the banner, switches off the buzzer of whoever had the floor — they hear an error signal — and lights up the runner-up\'s, who hears that the floor is theirs. “Restart” opens a new round, the circular arrow clears everything without touching the scores.</string>
+    <string name="tutorial_6_title">Knock out, revive, keep score</string>
+    <string name="tutorial_6_body">The host taps a player\'s row to open their desk: black buzzer (knocked out) or brought back in one gesture, points in +1, +3 or −1, removal from the room. A knocked-out player disappears from the other players\' boards — they are not playing any more — but stays on the host\'s, who can call them back at any time.</string>
+    <string name="tutorial_7_title">Hand over hosting</string>
+    <string name="tutorial_7_body">From that same desk, “Hand over hosting” gives the host role to another player. Nobody leaves the room: scores, statuses and the current round follow, and the former host becomes an ordinary player.</string>
+    <string name="tutorial_8_title">Bend the rules</string>
+    <string name="tutorial_8_body">The sliders button, to the right of the go, opens the game rules. Duel mode can be turned off in favour of race mode, where everyone buzzes and you get a full ranking — handy for a tie-break or a speed round. “Hidden scores” keeps the suspense: each player only sees their own, you keep the full table. The countdown and the sounds switch off in the same place.</string>
+    <string name="tutorial_9_title">Prepare your sound effects</string>
+    <string name="tutorial_9_body">The “Sounds” button, above the board, opens the host\'s soundboard: nine pads to fill before the game from the sounds shipped with the app. A tap plays the sound, a long press changes the pad or clears it. Your selection is kept from one game to the next, and the panel folds back onto the board.</string>
+    <string name="tutorial_tips_title">To keep the buzz honest</string>
+    <string name="tutorial_tip_1">Everyone on the same Wi-Fi in local mode — nobody on mobile data.</string>
+    <string name="tutorial_tip_2">Turn on “Keep the screen on” in the settings before you start.</string>
+    <string name="tutorial_tip_3">The gap shown accounts for network latency: what is compared is the moment of the press, not the order in which messages arrive.</string>
+    <string name="tutorial_tip_4">Below the uncertainty shown (± a few ms locally), two reflexes are tied: the host decides.</string>
 </resources>

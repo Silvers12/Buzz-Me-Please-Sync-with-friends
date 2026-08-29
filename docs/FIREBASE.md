@@ -22,7 +22,7 @@ sans recompiler, et le dépôt ne contient aucune clé.
    L'application ouvre une session anonyme au démarrage ; c'est ce qui rend les règles ci-dessous
    applicables sans demander de compte aux joueurs.
 4. Dans **Paramètres du projet → Général**, ajouter une application **Android**.
-   Le nom de package n'a pas besoin de correspondre : renseignez `fr.buzzme`.
+   Le nom de package n'a pas besoin de correspondre : renseignez `com.osala.BuzzMePlease`.
 
 ## 2. Relever les quatre valeurs
 

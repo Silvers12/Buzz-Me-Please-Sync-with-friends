@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace = "fr.buzzme"
+    namespace = "com.osala.BuzzMePlease"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "fr.buzzme"
+        applicationId = "com.osala.BuzzMePlease"
         minSdk = 26
         targetSdk = 35
         versionCode = 1

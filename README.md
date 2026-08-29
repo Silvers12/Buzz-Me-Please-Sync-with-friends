@@ -10,7 +10,7 @@ Le jeu fonctionne **en Wi-Fi local, sans Internet et sans serveur**.
 > proposé nulle part dans l'application, le temps de l'éprouver. Pour le rouvrir — choix du
 > transport sur l'accueil, panneau de configuration des réglages, tutoriel — repasser
 > `Features.ONLINE_ROOMS` à `true` dans
-> [`app/src/main/java/fr/buzzme/core/Features.kt`](app/src/main/java/fr/buzzme/core/Features.kt).
+> [`app/src/main/java/com/osala/BuzzMePlease/core/Features.kt`](app/src/main/java/com/osala/BuzzMePlease/core/Features.kt).
 
 ## Ce que ça fait
 
@@ -41,6 +41,8 @@ Le jeu fonctionne **en Wi-Fi local, sans Internet et sans serveur**.
 - **Pseudos modifiables** à tout moment.
 - **Deux modes de jeu.** *Duel* (le premier verrouille tout le monde) ou *Course* (tout le monde
   buzze, classement complet) — utile pour un tie-break ou une épreuve de rapidité.
+- **Français et anglais.** L'application suit la langue du téléphone — français si le système
+  l'est, anglais sinon — et le choix se force dans les réglages, sans redémarrage.
 - **Tutoriel intégré**, ouvert automatiquement au premier lancement.
 
 ## La partie délicate : départager deux réflexes
@@ -139,7 +141,7 @@ toute publication.
 ## Organisation du code
 
 ```
-app/src/main/java/fr/buzzme/
+app/src/main/java/com/osala/BuzzMePlease/
 ├── core/            horloges, code de salon, réglages persistants, sons et vibrations
 ├── model/           Player, RoomState, Buzz, options — sérialisables, sans dépendance Android
 ├── game/            GameEngine (moteur faisant autorité) et contrat RoomSession
