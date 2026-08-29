@@ -58,10 +58,10 @@ interface RoomSession {
     fun arm()
     fun reset()
 
-    /**
-     * Mauvaise réponse de celui qui a la parole : la main descend au buzz suivant, et son
-     * buzzer s'éteint au profit de celui du joueur suivant.
-     */
+    /** Mauvaise réponse : buzzer rouge et son de sanction, sans que la main ne bouge. */
+    fun markWrong()
+
+    /** Au suivant : la main descend au buzz d'après, et le buzzer précédent s'éteint. */
     fun passSpeaker()
 
     fun setStatus(playerId: String, status: PlayerStatus)

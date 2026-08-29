@@ -115,7 +115,7 @@ class GameEngineTest {
     }
 
     @Test
-    fun `un joueur elimine a un buzzer noir et ne peut plus buzzer`() {
+    fun `un joueur elimine a un buzzer gris et ne peut plus buzzer`() {
         engine.setStatus("p3", PlayerStatus.ELIMINATED)
         engine.arm(armAtMillis = armedAt, withCountdown = false)
 
@@ -230,7 +230,7 @@ class GameEngineTest {
     }
 
     @Test
-    fun `une mauvaise reponse passe la main au buzz suivant`() {
+    fun `au suivant la main descend au buzz d apres`() {
         armWithCountdown()
         engine.markArmed(1)
         engine.registerBuzz("p1", 1, armedAt + 200, 2)
@@ -256,6 +256,33 @@ class GameEngineTest {
         val exhausted = engine.snapshot
         assertNull(exhausted.speakerId)
         assertEquals(BuzzerVisual.LOST, exhausted.visualFor("p3", armedAt + 900))
+    }
+
+    /**
+     * « Faux » sanctionne sans déplacer la main : l'animateur garde le contrôle du moment où
+     * la partie repart, et le buzzer rouge dit à qui la faute est imputée.
+     */
+    @Test
+    fun `faux passe le buzzer au rouge sans donner la main au suivant`() {
+        armWithCountdown()
+        engine.markArmed(1)
+        engine.registerBuzz("p1", 1, armedAt + 200, 2)
+        engine.registerBuzz("p2", 1, armedAt + 260, 2)
+        engine.closeAdjudication(1)
+
+        engine.markWrong(1)
+        val wrong = engine.snapshot
+        assertEquals("p1", wrong.wrongId)
+        assertEquals("p1", wrong.speakerId)
+        assertEquals(BuzzerVisual.WRONG, wrong.visualFor("p1", armedAt + 900))
+        assertEquals(BuzzerVisual.LOST, wrong.visualFor("p2", armedAt + 900))
+
+        engine.passSpeaker(1)
+        val next = engine.snapshot
+        assertNull(next.wrongId)
+        assertEquals("p2", next.speakerId)
+        assertEquals(BuzzerVisual.LOST, next.visualFor("p1", armedAt + 900))
+        assertEquals(BuzzerVisual.SPEAKING, next.visualFor("p2", armedAt + 900))
     }
 
     @Test

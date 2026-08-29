@@ -64,13 +64,14 @@ private fun skinFor(visual: BuzzerVisual): BuzzerSkin = when (visual) {
         text = Color(0xFF05310F),
     )
 
+    // Le buzz est parti, le verdict se joue : bleu franc, ni promesse ni sanction.
     BuzzerVisual.BUZZED -> BuzzerSkin(
-        highlight = Color(0xFFFF9AAC),
-        body = Stage.Red,
-        shadow = Stage.RedDeep,
-        ring = Color(0xFFFF5E78),
-        glow = Stage.Red,
-        text = Color(0xFF3B0009),
+        highlight = Color(0xFFA8D4FF),
+        body = Stage.Blue,
+        shadow = Stage.BlueDeep,
+        ring = Color(0xFF6BB3FF),
+        glow = Stage.Blue,
+        text = Color(0xFF031F42),
     )
 
     BuzzerVisual.COUNTDOWN -> BuzzerSkin(
@@ -93,31 +94,45 @@ private fun skinFor(visual: BuzzerVisual): BuzzerSkin = when (visual) {
         text = Color(0xFF03270F),
     )
 
+    // Mauvaise réponse : l'animateur retire la parole. Le seul rouge du jeu, il ne doit
+    // signifier que cela.
+    BuzzerVisual.WRONG -> BuzzerSkin(
+        highlight = Color(0xFFFF9AAC),
+        body = Stage.Red,
+        shadow = Stage.RedDeep,
+        ring = Color(0xFFFF5E78),
+        glow = Stage.Red,
+        text = Color(0xFF3B0009),
+    )
+
+    // La manche est prise par quelqu'un d'autre : bleu éteint, on regarde sans jouer.
     BuzzerVisual.LOST -> BuzzerSkin(
-        highlight = Color(0xFF4A4A6E),
-        body = Color(0xFF34344F),
-        shadow = Color(0xFF1A1A2B),
-        ring = Color(0xFF454568),
-        glow = Color(0xFF2A2A44),
-        text = Stage.TextMuted,
+        highlight = Color(0xFF3F5F88),
+        body = Color(0xFF27405E),
+        shadow = Color(0xFF0E1B2A),
+        ring = Color(0xFF375A83),
+        glow = Color(0xFF1B3350),
+        text = Color(0xFF9FB6D2),
     )
 
+    // Buzzer désactivé : gris, sans la moindre teinte, il ne participe plus.
     BuzzerVisual.ELIMINATED -> BuzzerSkin(
-        highlight = Color(0xFF262636),
-        body = Color(0xFF14141C),
-        shadow = Color(0xFF07070B),
-        ring = Color(0xFF31313F),
-        glow = Color(0xFF101018),
-        text = Color(0xFF6A6A80),
+        highlight = Color(0xFF52525C),
+        body = Color(0xFF3A3A42),
+        shadow = Color(0xFF17171B),
+        ring = Color(0xFF4A4A54),
+        glow = Color(0xFF26262C),
+        text = Color(0xFF9A9AA6),
     )
 
+    // Au repos, entre deux manches.
     BuzzerVisual.OFF -> BuzzerSkin(
-        highlight = Color(0xFF5A5A85),
-        body = Color(0xFF3E3E60),
-        shadow = Color(0xFF1D1D30),
-        ring = Color(0xFF56567F),
-        glow = Color(0xFF3A3A5C),
-        text = Color(0xFFCFCEE8),
+        highlight = Color(0xFF4E74A6),
+        body = Color(0xFF2F4C74),
+        shadow = Color(0xFF122135),
+        ring = Color(0xFF456C9E),
+        glow = Color(0xFF23405F),
+        text = Color(0xFFD3E4FA),
     )
 }
 

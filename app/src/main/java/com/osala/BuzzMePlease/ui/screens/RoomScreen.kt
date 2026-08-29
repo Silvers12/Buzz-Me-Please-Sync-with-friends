@@ -131,7 +131,14 @@ fun RoomScreen(
     val myVisual = state.visualFor(session.myId, nowHost, localBuzzRound)
     val remaining = state.countdownRemaining(nowHost)
 
-    PlayFeedback(state = state, visual = myVisual, remaining = remaining, soundFx = soundFx)
+    PlayFeedback(
+        state = state,
+        visual = myVisual,
+        remaining = remaining,
+        myId = session.myId,
+        amHost = amHost,
+        soundFx = soundFx,
+    )
 
     // Le buzzer est taillé sur la hauteur de l'écran, pas sur ce qui reste une fois le bandeau
     // de résultat affiché : sur un petit téléphone il garde une taille jouable, sur un grand il
@@ -249,7 +256,14 @@ fun RoomScreen(
                         state = state,
                         myId = session.myId,
                         amHost = amHost,
-                        onWrongAnswer = session::passSpeaker,
+                        // Bonne réponse : le point est mis et les buzzers s'éteignent jusqu'au
+                        // prochain go — la manche est jouée, il n'y a plus rien à arbitrer.
+                        onRightAnswer = {
+                            state.speakerId?.let { session.addPoints(it, 1) }
+                            session.reset()
+                        },
+                        onWrongAnswer = session::markWrong,
+                        onNextPlayer = session::passSpeaker,
                     )
 
                     Spacer(Modifier.height(8.dp))
@@ -442,9 +456,8 @@ private fun buzzerTitle(
     BuzzerVisual.SPEAKING,
     -> state.buzzOf(myId)?.let { Buzz.formatReaction(it.reactionMillis) }
         ?: stringResource(R.string.buzzer_taken)
-    BuzzerVisual.LOST -> stringResource(
-        if (myId in state.passedIds) R.string.buzzer_missed else R.string.buzzer_too_late,
-    )
+    BuzzerVisual.WRONG -> stringResource(R.string.buzzer_missed)
+    BuzzerVisual.LOST -> stringResource(R.string.buzzer_too_late)
     BuzzerVisual.ELIMINATED -> stringResource(R.string.buzzer_out)
     BuzzerVisual.OFF -> stringResource(R.string.buzzer_ready)
 }
@@ -457,7 +470,9 @@ private fun buzzerSubtitle(visual: BuzzerVisual, state: RoomState, myId: String)
         BuzzerVisual.BUZZED -> stringResource(R.string.buzzer_recorded)
         BuzzerVisual.SPEAKING -> stringResource(R.string.buzzer_your_turn)
         // Écarté par l'animateur, ou devancé : dans les deux cas on nomme qui a la parole.
-        BuzzerVisual.LOST -> state.speakerId?.let { state.player(it)?.name.orEmpty() } ?: ""
+        BuzzerVisual.WRONG,
+        BuzzerVisual.LOST,
+        -> state.speakerId?.let { state.player(it)?.name.orEmpty() } ?: ""
         BuzzerVisual.ELIMINATED -> stringResource(R.string.buzzer_can_return)
         BuzzerVisual.OFF -> stringResource(R.string.buzzer_waiting)
     }
@@ -615,7 +630,9 @@ private fun ResultBanner(
     state: RoomState,
     myId: String,
     amHost: Boolean,
+    onRightAnswer: () -> Unit,
     onWrongAnswer: () -> Unit,
+    onNextPlayer: () -> Unit,
 ) {
     // Le bandeau suit celui qui a la parole, pas le premier chronomètre : après une mauvaise
     // réponse, c'est le suivant du classement qui s'affiche.
@@ -709,15 +726,28 @@ private fun ResultBanner(
                 )
             } else if (amHost) {
                 Spacer(Modifier.height(10.dp))
-                GhostAction(
-                    text = stringResource(
-                        if (next != null) R.string.banner_wrong_next else R.string.banner_wrong,
-                    ),
-                    icon = Icons.Filled.Close,
-                    onClick = onWrongAnswer,
-                    accent = Stage.Red,
-                    modifier = Modifier.fillMaxWidth(),
-                )
+                // Le verdict de l'animateur, en deux gestes : le point est mis et la manche se
+                // clôt, ou la main descend au suivant.
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    GhostAction(
+                        text = stringResource(R.string.banner_right),
+                        onClick = onRightAnswer,
+                        accent = Stage.Green,
+                        modifier = Modifier.weight(1f),
+                    )
+                    GhostAction(
+                        text = stringResource(R.string.banner_wrong),
+                        onClick = onWrongAnswer,
+                        accent = Stage.Red,
+                        modifier = Modifier.weight(1f),
+                    )
+                    GhostAction(
+                        text = stringResource(R.string.banner_next),
+                        onClick = onNextPlayer,
+                        accent = Stage.VioletSoft,
+                        modifier = Modifier.weight(1.2f),
+                    )
+                }
             }
         }
     }
@@ -754,6 +784,8 @@ private fun PlayFeedback(
     state: RoomState,
     visual: BuzzerVisual,
     remaining: Long?,
+    myId: String,
+    amHost: Boolean,
     soundFx: SoundFx,
 ) {
     var lastTick by remember { mutableIntStateOf(-1) }
@@ -773,20 +805,24 @@ private fun PlayFeedback(
         }
     }
 
-    // L'état précédent départage deux passages au gris qui ne racontent pas la même chose :
-    // s'être fait coiffer au poteau, ou s'être trompé et perdre la parole.
-    var previous by remember { mutableStateOf(visual) }
+    // Chaque couleur a son son : le vert de la main, le rouge de la mauvaise réponse, le bleu
+    // de la manche perdue.
     LaunchedEffect(visual, state.round) {
-        val before = previous
-        previous = visual
         if (!roomSound) return@LaunchedEffect
-        when {
-            visual == BuzzerVisual.ARMED -> soundFx.go()
-            visual == BuzzerVisual.BUZZED -> soundFx.buzz()
-            visual == BuzzerVisual.SPEAKING -> soundFx.yourTurn()
-            visual == BuzzerVisual.LOST && before == BuzzerVisual.SPEAKING -> soundFx.wrong()
-            visual == BuzzerVisual.LOST -> soundFx.locked()
+        when (visual) {
+            BuzzerVisual.ARMED -> soundFx.go()
+            BuzzerVisual.BUZZED -> soundFx.buzz()
+            BuzzerVisual.SPEAKING -> soundFx.yourTurn()
+            BuzzerVisual.LOST -> soundFx.locked()
             else -> Unit
         }
+    }
+
+    // La sanction s'entend des deux côtés : chez celui qui s'est trompé, et chez l'animateur
+    // qui vient de la prononcer.
+    LaunchedEffect(state.wrongId, state.round) {
+        val wrong = state.wrongId ?: return@LaunchedEffect
+        if (!roomSound) return@LaunchedEffect
+        if (wrong == myId || amHost) soundFx.wrong()
     }
 }

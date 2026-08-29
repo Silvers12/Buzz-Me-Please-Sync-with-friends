@@ -11,7 +11,7 @@ enum class PlayerStatus {
     /** Peut buzzer quand l'hôte lance le top. */
     ACTIVE,
 
-    /** Éliminé : buzzer noir, aucun buzz accepté tant que l'hôte ne le réactive pas. */
+    /** Éliminé : buzzer gris, aucun buzz accepté tant que l'hôte ne le réactive pas. */
     ELIMINATED,
 }
 
@@ -140,10 +140,16 @@ data class RoomState(
     /** true tant que la fenêtre d'arbitrage photo-finish n'est pas close. */
     val provisional: Boolean = false,
     /**
-     * Joueurs à qui l'animateur a retiré la parole après une mauvaise réponse. La main descend
-     * alors au buzz suivant, dans l'ordre du classement.
+     * Joueurs à qui l'animateur a passé la main, dans l'ordre du classement : ils ont eu la
+     * parole et l'ont rendue.
      */
     val passedIds: List<String> = emptyList(),
+    /**
+     * Celui que l'animateur vient de déclarer dans l'erreur. Son buzzer passe au rouge et la
+     * sanction se fait entendre, mais la main ne bouge pas tant qu'il n'a pas appuyé sur
+     * « suivant » : à lui de décider quand la partie repart.
+     */
+    val wrongId: String? = null,
     val options: RoomOptions = RoomOptions(),
 ) {
     fun player(id: String): Player? = players.firstOrNull { it.id == id }
@@ -211,10 +217,14 @@ data class RoomState(
 /**
  * Couleur logique d'un buzzer, indépendante du thème.
  *
- * Le vert vaut permission : avant le buzz c'est ARMED (« appuyez »), après l'arbitrage c'est
- * SPEAKING (« à vous de répondre »). Un seul joueur à la fois est vert une fois la manche prise.
+ * Quatre couleurs, quatre significations. **Vert**, la main : avant le buzz c'est ARMED
+ * (« appuyez »), après l'arbitrage SPEAKING (« à vous de répondre ») — et un seul joueur à la
+ * fois une fois la manche prise. **Rouge**, la mauvaise réponse : l'animateur vient de retirer
+ * la parole. **Gris**, le buzzer désactivé. **Bleu**, tout le reste, à commencer par le cas le
+ * plus courant : quelqu'un d'autre a la main. L'ambre du décompte reste à part, trois secondes
+ * de feu orange avant le go.
  */
-enum class BuzzerVisual { OFF, COUNTDOWN, ARMED, BUZZED, SPEAKING, LOST, ELIMINATED }
+enum class BuzzerVisual { OFF, COUNTDOWN, ARMED, BUZZED, SPEAKING, WRONG, LOST, ELIMINATED }
 
 fun RoomState.visualFor(
     playerId: String,
@@ -233,8 +243,11 @@ fun RoomState.visualFor(
         GameMode.COURSE -> buzzes.isNotEmpty()
     }
     return when {
+        // Le rouge passe avant le vert : celui qui vient de se tromper a encore la main, mais
+        // ce n'est plus ce qu'il faut lui montrer.
+        playerId == wrongId -> BuzzerVisual.WRONG
         decided && speakerId == playerId -> BuzzerVisual.SPEAKING
-        // Mauvaise réponse : l'animateur a retiré la main, le buzzer s'éteint dans les deux modes.
+        // Il a eu la parole et l'a rendue : la manche continue sans lui.
         playerId in passedIds -> BuzzerVisual.LOST
         // Duel : celui qui s'est fait coiffer au poteau s'éteint aussi, la manche est prise.
         decided && buzzed && options.mode == GameMode.DUEL -> BuzzerVisual.LOST

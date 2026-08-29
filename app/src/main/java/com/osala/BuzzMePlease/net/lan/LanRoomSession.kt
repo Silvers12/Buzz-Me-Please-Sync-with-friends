@@ -477,6 +477,11 @@ class LanRoomSession(
         host.reset()
     }
 
+    override fun markWrong() {
+        val host = engine ?: return
+        host.markWrong(host.snapshot.round)
+    }
+
     override fun passSpeaker() {
         val host = engine ?: return
         host.passSpeaker(host.snapshot.round)

@@ -68,6 +68,7 @@ class GameEngine(code: String, hostId: String, options: RoomOptions = RoomOption
             next = next.copy(
                 buzzes = next.buzzes.filterNot { it.playerId == id },
                 passedIds = next.passedIds.filterNot { it == id },
+                wrongId = next.wrongId?.takeIf { it != id },
             )
             if (next.winnerId == id) next = next.recomputeWinner()
         }
@@ -80,6 +81,7 @@ class GameEngine(code: String, hostId: String, options: RoomOptions = RoomOption
             players = current.players.filterNot { it.id == id },
             buzzes = current.buzzes.filterNot { it.playerId == id },
             passedIds = current.passedIds.filterNot { it == id },
+            wrongId = current.wrongId?.takeIf { it != id },
         ).let { if (it.winnerId == id) it.recomputeWinner() else it }
     }
 
@@ -116,6 +118,7 @@ class GameEngine(code: String, hostId: String, options: RoomOptions = RoomOption
             winnerId = null,
             provisional = false,
             passedIds = emptyList(),
+            wrongId = null,
         )
     }
 
@@ -137,6 +140,7 @@ class GameEngine(code: String, hostId: String, options: RoomOptions = RoomOption
             winnerId = null,
             provisional = false,
             passedIds = emptyList(),
+            wrongId = null,
         )
     }
 
@@ -207,7 +211,18 @@ class GameEngine(code: String, hostId: String, options: RoomOptions = RoomOption
     fun passSpeaker(round: Int) = mutate { current ->
         if (current.round != round || current.provisional) return@mutate current
         val speaker = current.speakerId ?: return@mutate current
-        current.copy(passedIds = current.passedIds + speaker)
+        current.copy(passedIds = current.passedIds + speaker, wrongId = null)
+    }
+
+    /**
+     * Mauvaise réponse : le buzzer de celui qui a la parole passe au rouge et la sanction se
+     * fait entendre, chez lui comme chez l'animateur. La main ne bouge pas pour autant — c'est
+     * « suivant » qui la déplace, quand l'animateur le décide.
+     */
+    fun markWrong(round: Int) = mutate { current ->
+        if (current.round != round || current.provisional) return@mutate current
+        val speaker = current.speakerId ?: return@mutate current
+        if (current.wrongId == speaker) current else current.copy(wrongId = speaker)
     }
 
     // ------------------------------------------------------------------ utils

@@ -31,6 +31,10 @@ object Stage {
     val VioletSoft = Color(0xFFB9A6FF)
     val Cyan = Color(0xFF35E2FF)
 
+    /** Le bleu des états neutres du buzzer : ni la parole, ni une erreur, ni une élimination. */
+    val Blue = Color(0xFF2E8BFF)
+    val BlueDeep = Color(0xFF0A3C82)
+
     val Green = Color(0xFF24E07A)
     val GreenDeep = Color(0xFF0B7A40)
     val Red = Color(0xFFFF2E4E)

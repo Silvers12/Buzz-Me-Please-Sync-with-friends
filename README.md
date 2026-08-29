@@ -14,14 +14,18 @@ sort du réseau de la maison.
 - **Le top.** Un décompte 3 · 2 · 1 se déclenche au même instant sur tous les téléphones, puis
   les buzzers passent au vert. Chez les joueurs, l'écran se vide le temps de la manche — en-tête
   et plateau glissent hors champ, le buzzer occupe le centre. L'animateur garde son pupitre.
-- **Le buzz.** Le premier qui appuie passe au rouge et verrouille tous les autres. Son heure
-  exacte — heure, minute, seconde, milliseconde — remonte à l'animateur.
-- **La parole.** Une fois le classement arrêté, un seul buzzer reste vert : celui qui répond. Sur
-  une mauvaise réponse, l'animateur passe la main au suivant — signal d'erreur pour l'un, signal
-  de prise de parole pour l'autre — et ainsi de suite jusqu'au dernier buzz de la manche.
+- **Le buzz.** Le premier qui appuie verrouille tous les autres. Son heure exacte — heure,
+  minute, seconde, milliseconde — remonte à l'animateur.
+- **Quatre couleurs, quatre sens.** Vert, la main. Rouge, la mauvaise réponse. Gris, le buzzer
+  désactivé. Bleu, tout le reste — à commencer par le cas le plus courant : c'est un autre qui
+  répond.
+- **Le verdict.** Une fois le classement arrêté, un seul buzzer reste vert et l'animateur
+  tranche : *vrai* met le point et éteint les buzzers jusqu'au go suivant, *faux* passe le
+  buzzer au rouge et fait entendre la sanction des deux côtés, *suivant* descend la main au buzz
+  d'après — et ainsi de suite jusqu'au dernier de la manche.
 - **Le plateau de l'animateur.** Pseudos, état de chaque buzzer, heure du buzz, temps de
   réaction, écart avec le meilleur, marge d'incertitude, qualité de la liaison.
-- **Élimination.** Buzzer noir en un appui, réactivation quand l'animateur le décide.
+- **Élimination.** Buzzer gris en un appui, réactivation quand l'animateur le décide.
 - **Scores.** +1, +3, −1 par joueur, remise à zéro globale. L'animateur peut les masquer sur les
   téléphones des joueurs : chacun ne voit plus que le sien, le tableau complet reste au pupitre.
 - **Sonothèque.** Neuf touches sur le téléphone de l'animateur, prises dans la bibliothèque de
