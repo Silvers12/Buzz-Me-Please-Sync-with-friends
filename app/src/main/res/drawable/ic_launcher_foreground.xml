@@ -1,28 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="108dp"
-    android:height="108dp"
-    android:viewportWidth="108"
-    android:viewportHeight="108">
-
-    <!-- Base of the buzzer -->
-    <path
-        android:fillColor="#2A2A3D"
-        android:pathData="M26,64 h56 a9,9 0 0 1 9,9 v3 a9,9 0 0 1 -9,9 h-56 a9,9 0 0 1 -9,-9 v-3 a9,9 0 0 1 9,-9 z" />
-
-    <!-- Glow ring -->
-    <path
-        android:fillColor="#337C5CFF"
-        android:pathData="M54,44 m-30,0 a30,30 0 1,0 60,0 a30,30 0 1,0 -60,0" />
-
-    <!-- Dome -->
-    <path
-        android:fillColor="#FF3B57"
-        android:pathData="M54,44 m-24,0 a24,24 0 1,0 48,0 a24,24 0 1,0 -48,0" />
-
-    <!-- Specular highlight -->
-    <path
-        android:fillColor="#59FFFFFF"
-        android:pathData="M45,35 m-8,-4 a9,6 0 1,0 18,0 a9,6 0 1,0 -18,0" />
-
-</vector>
+<!--
+    Avant-plan de l'icône adaptative. Le lanceur découpe le canevas de 108 dp à sa guise
+    (cercle, carré arrondi, goutte…) : seuls les 72 dp centraux sont garantis visibles. Le
+    buzzer est donc posé dans cette zone sûre : 14 dp de marge suffisent, le dessin gardant déjà
+    du vide autour de ses arcs.
+-->
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:drawable="@mipmap/ic_launcher_disc"
+    android:inset="14dp" />
