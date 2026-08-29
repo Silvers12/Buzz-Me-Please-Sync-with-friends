@@ -1,6 +1,8 @@
 package com.osala.BuzzMePlease.net.lan
 
+import android.content.Context
 import android.util.Log
+import com.osala.BuzzMePlease.R
 import com.osala.BuzzMePlease.net.GAME_PORT
 import com.osala.BuzzMePlease.net.Hello
 import com.osala.BuzzMePlease.net.NetMessage
@@ -21,6 +23,7 @@ import java.util.concurrent.CopyOnWriteArrayList
  * de désaccord sur « qui a buzzé en premier ».
  */
 class LanServer(
+    private val context: Context,
     private val scope: CoroutineScope,
     private val callbacks: Callbacks,
 ) {
@@ -44,7 +47,7 @@ class LanServer(
         acceptJob = scope.launch(Dispatchers.IO) {
             val socket = bind(port)
             if (socket == null) {
-                callbacks.onError("Impossible d'ouvrir le port $port")
+                callbacks.onError(context.getString(R.string.link_port_busy, port))
                 return@launch
             }
             serverSocket = socket

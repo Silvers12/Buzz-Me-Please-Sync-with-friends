@@ -47,7 +47,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.osala.BuzzMePlease.R
 import com.osala.BuzzMePlease.core.Codes
-import com.osala.BuzzMePlease.core.Transport
 import com.osala.BuzzMePlease.net.lan.DiscoveredRoom
 import com.osala.BuzzMePlease.net.lan.NsdBrowser
 import com.osala.BuzzMePlease.ui.components.PrimaryAction
@@ -55,26 +54,20 @@ import com.osala.BuzzMePlease.ui.components.SectionLabel
 import com.osala.BuzzMePlease.ui.components.StageBackground
 import com.osala.BuzzMePlease.ui.components.StagePanel
 import com.osala.BuzzMePlease.ui.theme.Stage
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.scan
 
 @Composable
 fun JoinScreen(
-    transport: Transport,
     onBack: () -> Unit,
     onJoin: (code: String, address: String?) -> Unit,
 ) {
     var code by remember { mutableStateOf("") }
     val context = LocalContext.current
 
-    // En Wi-Fi local, les salons ouverts s'annoncent en mDNS : inutile de taper le code.
-    val rooms: List<DiscoveredRoom> by remember(transport) {
-        if (transport == Transport.LOCAL) {
-            NsdBrowser.discover(context).scan(emptyList<DiscoveredRoom>()) { acc, room ->
-                if (acc.any { it.code == room.code }) acc else acc + room
-            }
-        } else {
-            flowOf(emptyList<DiscoveredRoom>())
+    // Les salons ouverts s'annoncent en mDNS : inutile de taper le code.
+    val rooms: List<DiscoveredRoom> by remember {
+        NsdBrowser.discover(context).scan(emptyList<DiscoveredRoom>()) { acc, room ->
+            if (acc.any { it.code == room.code }) acc else acc + room
         }
     }.collectAsStateWithLifecycle(initialValue = emptyList())
 
@@ -153,42 +146,36 @@ fun JoinScreen(
 
             Spacer(Modifier.height(20.dp))
 
-            if (transport == Transport.LOCAL) {
-                StagePanel(modifier = Modifier.fillMaxWidth()) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        SectionLabel(stringResource(R.string.join_discovered_label), modifier = Modifier.weight(1f))
-                        if (rooms.isEmpty()) {
-                            CircularProgressIndicator(
-                                strokeWidth = 2.dp,
-                                color = Stage.Violet,
-                                modifier = Modifier.size(16.dp),
-                            )
-                        }
-                    }
-                    Spacer(Modifier.height(12.dp))
+            StagePanel(modifier = Modifier.fillMaxWidth()) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    SectionLabel(
+                        stringResource(R.string.join_discovered_label),
+                        modifier = Modifier.weight(1f),
+                    )
                     if (rooms.isEmpty()) {
-                        Text(
-                            stringResource(R.string.join_searching),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Stage.TextMuted,
+                        CircularProgressIndicator(
+                            strokeWidth = 2.dp,
+                            color = Stage.Violet,
+                            modifier = Modifier.size(16.dp),
                         )
-                    } else {
-                        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                            rooms.forEach { room ->
-                                DiscoveredRoomRow(room = room, onClick = { onJoin(room.code, room.address) })
-                            }
-                        }
                     }
                 }
-            } else {
-                StagePanel(modifier = Modifier.fillMaxWidth()) {
-                    SectionLabel(stringResource(R.string.join_online_label))
-                    Spacer(Modifier.height(8.dp))
+                Spacer(Modifier.height(12.dp))
+                if (rooms.isEmpty()) {
                     Text(
-                        stringResource(R.string.join_online_body),
+                        stringResource(R.string.join_searching),
                         style = MaterialTheme.typography.bodyMedium,
                         color = Stage.TextMuted,
                     )
+                } else {
+                    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                        rooms.forEach { room ->
+                            DiscoveredRoomRow(
+                                room = room,
+                                onClick = { onJoin(room.code, room.address) },
+                            )
+                        }
+                    }
                 }
             }
 

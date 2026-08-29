@@ -17,8 +17,6 @@
     <string name="home_connection_label">Connexion entre joueurs</string>
     <string name="home_wifi_title">Wi-Fi local</string>
     <string name="home_wifi_subtitle">Sans Internet · le plus précis</string>
-    <string name="home_online_title">En ligne</string>
-    <string name="home_online_subtitle">Firebase · à distance</string>
     <string name="home_wifi_only">Tous les téléphones doivent être sur le même réseau Wi-Fi.</string>
     <string name="home_create_room">Créer un salon</string>
     <string name="home_join_room">Rejoindre avec un code</string>
@@ -33,8 +31,6 @@
     <string name="join_searching">Recherche en cours… Assurez-vous que l\'hôte a créé le salon et que tous les téléphones sont sur le même réseau Wi-Fi.</string>
     <string name="join_room_host">Chez %1$s</string>
     <string name="join_room_action">REJOINDRE</string>
-    <string name="join_online_label">Mode en ligne</string>
-    <string name="join_online_body">Le salon est hébergé sur votre projet Firebase. Saisissez le code que l\'animateur vous a communiqué.</string>
 
     <!-- Réglages -->
     <string name="settings_title">Réglages</string>
@@ -50,16 +46,6 @@
     <string name="settings_howto_label">Comment ça marche</string>
     <string name="settings_howto_body">Le mode d\'emploi complet : créer un salon, lancer le top, éliminer, compter les points, passer l\'animation.</string>
     <string name="settings_open_tutorial">Ouvrir le tutoriel</string>
-    <string name="settings_firebase_label">Mode en ligne (Firebase)</string>
-    <string name="settings_firebase_ready">Configuré</string>
-    <string name="settings_firebase_missing">À remplir</string>
-    <string name="settings_firebase_body">Le mode Wi-Fi local ne demande aucune configuration. Ces quatre valeurs ne servent qu\'au repli en ligne : elles proviennent de votre propre projet Firebase (voir docs/FIREBASE.md). Tous les joueurs doivent saisir les mêmes.</string>
-    <string name="settings_firebase_project">ID du projet</string>
-    <string name="settings_firebase_app">ID de l\'application</string>
-    <string name="settings_firebase_key">Clé API</string>
-    <string name="settings_firebase_url">URL de la base</string>
-    <string name="settings_save">Enregistrer</string>
-    <string name="settings_saved">Enregistré</string>
     <string name="settings_footer">Buzz Me Please · buzzer de quiz synchronisé</string>
 
     <!-- Salon -->
@@ -202,12 +188,6 @@
     <string name="link_taking_over">Vous prenez l\'animation…</string>
     <string name="link_new_host">Nouvel hôte, reconnexion…</string>
     <string name="link_closed">Salon fermé</string>
-    <string name="link_firebase">Connexion à Firebase…</string>
-    <string name="link_online_connected">Connecté (en ligne)</string>
-    <string name="link_network_lost">Réseau perdu…</string>
-    <string name="firebase_write_denied">Écriture refusée par Firebase : %1</string>
-    <string name="firebase_read_denied">Lecture refusée par Firebase : %1</string>
-    <string name="firebase_join_failed">Impossible de rejoindre : %1</string>
     <string name="link_port_busy">Impossible d\'ouvrir le port %1$d</string>
 
     <!-- Fins de session -->
@@ -218,8 +198,6 @@
 
     <!-- Messages -->
     <string name="notice_code_length">Le code doit comporter %1$d caractères.</string>
-    <string name="notice_firebase_missing">Renseignez d\'abord votre projet Firebase dans les réglages.</string>
-    <string name="notice_firebase_error">Firebase indisponible : %1$s</string>
     <string name="default_player_name">Joueur</string>
 
     <!-- Tutoriel -->
@@ -228,7 +206,6 @@
     <string name="tutorial_start">C\'est parti</string>
     <string name="tutorial_1_title">Choisir son pseudo</string>
     <string name="tutorial_1_body">Sur l\'accueil, saisissez le pseudo qui s\'affichera sur le plateau — il reste modifiable à tout moment. La partie se joue en Wi-Fi local : tous les téléphones sur le même réseau, sans Internet, et la mesure au plus juste.</string>
-    <string name="tutorial_1_online_ready"> « En ligne » sert de repli pour jouer à distance et demande un projet Firebase.</string>
     <string name="tutorial_2_title">Créer le salon ou le rejoindre</string>
     <string name="tutorial_2_body">L\'animateur appuie sur « Créer un salon » : un code de 5 lettres apparaît en haut de l\'écran. Les autres appuient sur « Rejoindre » et saisissent ce code. En Wi-Fi local, le salon apparaît tout seul dans la liste des salons détectés : un appui suffit, sans rien taper.</string>
     <string name="tutorial_3_title">Lancer le top</string>

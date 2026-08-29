@@ -19,8 +19,6 @@
     <string name="home_connection_label">Player connection</string>
     <string name="home_wifi_title">Local Wi-Fi</string>
     <string name="home_wifi_subtitle">No internet · the most accurate</string>
-    <string name="home_online_title">Online</string>
-    <string name="home_online_subtitle">Firebase · remote play</string>
     <string name="home_wifi_only">Every phone must be on the same Wi-Fi network.</string>
     <string name="home_create_room">Create a room</string>
     <string name="home_join_room">Join with a code</string>
@@ -35,8 +33,6 @@
     <string name="join_searching">Searching… Make sure the host has created the room and that every phone is on the same Wi-Fi network.</string>
     <string name="join_room_host">At %1$s\'s</string>
     <string name="join_room_action">JOIN</string>
-    <string name="join_online_label">Online mode</string>
-    <string name="join_online_body">The room lives on your Firebase project. Enter the code the host gave you.</string>
 
     <!-- Réglages -->
     <string name="settings_title">Settings</string>
@@ -52,16 +48,6 @@
     <string name="settings_howto_label">How it works</string>
     <string name="settings_howto_body">The full manual: create a room, call the go, knock players out, keep score, hand over hosting.</string>
     <string name="settings_open_tutorial">Open the tutorial</string>
-    <string name="settings_firebase_label">Online mode (Firebase)</string>
-    <string name="settings_firebase_ready">Configured</string>
-    <string name="settings_firebase_missing">To fill in</string>
-    <string name="settings_firebase_body">Local Wi-Fi needs no setup. These four values are only for the online fallback: they come from your own Firebase project (see docs/FIREBASE.md). Every player must enter the same ones.</string>
-    <string name="settings_firebase_project">Project ID</string>
-    <string name="settings_firebase_app">Application ID</string>
-    <string name="settings_firebase_key">API key</string>
-    <string name="settings_firebase_url">Database URL</string>
-    <string name="settings_save">Save</string>
-    <string name="settings_saved">Saved</string>
     <string name="settings_footer">Buzz Me Please · synchronised quiz buzzer</string>
 
     <!-- Salon -->
@@ -204,12 +190,6 @@
     <string name="link_taking_over">You are taking over as host…</string>
     <string name="link_new_host">New host, reconnecting…</string>
     <string name="link_closed">Room closed</string>
-    <string name="link_firebase">Connecting to Firebase…</string>
-    <string name="link_online_connected">Connected (online)</string>
-    <string name="link_network_lost">Network lost…</string>
-    <string name="firebase_write_denied">Firebase refused the write: %1</string>
-    <string name="firebase_read_denied">Firebase refused the read: %1</string>
-    <string name="firebase_join_failed">Could not join: %1</string>
     <string name="link_port_busy">Could not open port %1$d</string>
 
     <!-- Fins de session -->
@@ -220,8 +200,6 @@
 
     <!-- Messages -->
     <string name="notice_code_length">The code must be %1$d characters long.</string>
-    <string name="notice_firebase_missing">Set up your Firebase project in the settings first.</string>
-    <string name="notice_firebase_error">Firebase unavailable: %1$s</string>
     <string name="default_player_name">Player</string>
 
     <!-- Tutoriel -->
@@ -230,7 +208,6 @@
     <string name="tutorial_start">Let\'s go</string>
     <string name="tutorial_1_title">Choose your nickname</string>
     <string name="tutorial_1_body">On the home screen, enter the nickname that will show on the board — you can change it at any time. The game runs on local Wi-Fi: every phone on the same network, no internet, and the most accurate timing.</string>
-    <string name="tutorial_1_online_ready"> “Online” is the fallback for playing remotely and needs a Firebase project.</string>
     <string name="tutorial_2_title">Create or join the room</string>
     <string name="tutorial_2_body">The host taps “Create a room”: a five-letter code appears at the top of the screen. The others tap “Join” and enter that code. On local Wi-Fi the room shows up on its own in the list of rooms found: one tap, nothing to type.</string>
     <string name="tutorial_3_title">Call the go</string>

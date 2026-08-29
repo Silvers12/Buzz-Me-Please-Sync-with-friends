@@ -140,7 +140,7 @@ class LanRoomSession(
             }
         }
 
-        val lan = LanServer(scope, hostCallbacks())
+        val lan = LanServer(appContext, scope, hostCallbacks())
         server = lan
         lan.start()
         advertiser.register(code, myName)

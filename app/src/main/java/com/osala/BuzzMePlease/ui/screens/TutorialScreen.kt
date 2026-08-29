@@ -32,7 +32,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.osala.BuzzMePlease.R
-import com.osala.BuzzMePlease.core.Features
 import com.osala.BuzzMePlease.ui.components.PrimaryAction
 import com.osala.BuzzMePlease.ui.components.SectionLabel
 import com.osala.BuzzMePlease.ui.components.StageBackground

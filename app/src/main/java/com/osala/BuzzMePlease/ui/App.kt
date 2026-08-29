@@ -73,16 +73,13 @@ fun BuzzMeApp(viewModel: AppViewModel = viewModel()) {
 
                 Route.Home -> HomeScreen(
                     name = settings.name,
-                    transport = settings.transport,
                     onNameChange = viewModel::setName,
-                    onTransportChange = viewModel::setTransport,
                     onCreate = viewModel::createRoom,
                     onJoin = viewModel::goJoin,
                     onSettings = viewModel::goSettings,
                 )
 
                 Route.Join -> JoinScreen(
-                    transport = settings.transport,
                     onBack = viewModel::goHome,
                     onJoin = { code, address -> viewModel.joinRoom(code, address) },
                 )
@@ -106,14 +103,12 @@ fun BuzzMeApp(viewModel: AppViewModel = viewModel()) {
                 }
 
                 Route.Settings -> SettingsScreen(
-                    firebase = settings.firebase,
                     sound = settings.sound,
                     keepScreenOn = settings.keepScreenOn,
                     language = settings.language,
                     onLanguage = viewModel::setLanguage,
                     onSound = viewModel::setSound,
                     onKeepScreenOn = viewModel::setKeepScreenOn,
-                    onFirebase = viewModel::setFirebase,
                     onTutorial = viewModel::goTutorial,
                     onBack = viewModel::goHome,
                 )

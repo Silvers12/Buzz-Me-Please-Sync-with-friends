@@ -2,15 +2,10 @@ package com.osala.BuzzMePlease.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -25,7 +20,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Login
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.CloudQueue
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material3.Icon
@@ -44,13 +38,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.osala.BuzzMePlease.R
-import com.osala.BuzzMePlease.core.Features
-import com.osala.BuzzMePlease.core.Transport
 import com.osala.BuzzMePlease.ui.components.PrimaryAction
 import com.osala.BuzzMePlease.ui.components.SectionLabel
 import com.osala.BuzzMePlease.ui.components.StageBackground
@@ -60,9 +51,7 @@ import com.osala.BuzzMePlease.ui.theme.Stage
 @Composable
 fun HomeScreen(
     name: String,
-    transport: Transport,
     onNameChange: (String) -> Unit,
-    onTransportChange: (Transport) -> Unit,
     onCreate: () -> Unit,
     onJoin: () -> Unit,
     onSettings: () -> Unit,
@@ -150,51 +139,17 @@ fun HomeScreen(
             StagePanel(modifier = Modifier.fillMaxWidth()) {
                 SectionLabel(stringResource(R.string.home_connection_label))
                 Spacer(Modifier.height(12.dp))
-                if (Features.ONLINE_ROOMS) {
-                    // height(IntrinsicSize.Min) + fillMaxHeight : les deux cartes gardent la même
-                    // hauteur même quand un sous-titre passe sur deux lignes.
-                    Row(
-                        modifier = Modifier.height(IntrinsicSize.Min),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    ) {
-                        TransportChoice(
-                            title = stringResource(R.string.home_wifi_title),
-                            subtitle = stringResource(R.string.home_wifi_subtitle),
-                            selected = transport == Transport.LOCAL,
-                            onClick = { onTransportChange(Transport.LOCAL) },
-                            modifier = Modifier
-                                .weight(1f)
-                                .fillMaxHeight(),
-                            icon = { tint -> Icon(Icons.Filled.Wifi, null, tint = tint) },
-                        )
-                        TransportChoice(
-                            title = stringResource(R.string.home_online_title),
-                            subtitle = stringResource(R.string.home_online_subtitle),
-                            selected = transport == Transport.ONLINE,
-                            onClick = { onTransportChange(Transport.ONLINE) },
-                            modifier = Modifier
-                                .weight(1f)
-                                .fillMaxHeight(),
-                            icon = { tint -> Icon(Icons.Filled.CloudQueue, null, tint = tint) },
-                        )
-                    }
-                } else {
-                    TransportChoice(
-                        title = stringResource(R.string.home_wifi_title),
-                        subtitle = stringResource(R.string.home_wifi_subtitle),
-                        selected = true,
-                        onClick = null,
-                        modifier = Modifier.fillMaxWidth(),
-                        icon = { tint -> Icon(Icons.Filled.Wifi, null, tint = tint) },
-                        wide = true,
-                    )
-                    Spacer(Modifier.height(10.dp))
-                    Text(
-                        stringResource(R.string.home_wifi_only),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Stage.TextMuted,
-                    )
-                }
+                WifiCard(
+                    title = stringResource(R.string.home_wifi_title),
+                    subtitle = stringResource(R.string.home_wifi_subtitle),
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                Spacer(Modifier.height(10.dp))
+                Text(
+                    stringResource(R.string.home_wifi_only),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Stage.TextMuted,
+                )
             }
 
             Spacer(Modifier.height(28.dp))
@@ -204,7 +159,7 @@ fun HomeScreen(
                 icon = Icons.Filled.Add,
                 enabled = ready,
                 onClick = onCreate,
-                colors = listOf(Stage.Gold, Color(0xFFE0A21B)),
+                colors = listOf(Stage.Gold, Stage.GoldDeep),
                 modifier = Modifier.fillMaxWidth(),
             )
             Spacer(Modifier.height(12.dp))
@@ -231,68 +186,38 @@ fun HomeScreen(
     }
 }
 
+/** Rappel de la manière dont les téléphones se parlent : le Wi-Fi local, et rien d'autre. */
 @Composable
-private fun TransportChoice(
-    title: String,
-    subtitle: String,
-    selected: Boolean,
-    onClick: (() -> Unit)?,
-    icon: @Composable (Color) -> Unit,
-    modifier: Modifier = Modifier,
-    /** Carte seule occupant toute la largeur : icône et texte côte à côte plutôt qu'empilés. */
-    wide: Boolean = false,
-) {
-    val accent = if (selected) Stage.Violet else Stage.Line
-    val tint = if (selected) Stage.VioletSoft else Stage.TextMuted
+private fun WifiCard(title: String, subtitle: String, modifier: Modifier = Modifier) {
     val shape = RoundedCornerShape(16.dp)
-    val frame = modifier
-        .background(
-            if (selected) {
-                Brush.verticalGradient(listOf(Stage.Violet.copy(alpha = 0.20f), Stage.Night))
-            } else {
-                Brush.verticalGradient(listOf(Stage.Night, Stage.Night))
-            },
-            shape,
+    Row(
+        modifier = modifier
+            .background(
+                Brush.verticalGradient(listOf(Stage.Violet.copy(alpha = 0.20f), Stage.Night)),
+                shape,
+            )
+            .border(1.dp, Stage.Violet.copy(alpha = 0.8f), shape)
+            .padding(14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            Icons.Filled.Wifi,
+            contentDescription = null,
+            tint = Stage.VioletSoft,
+            modifier = Modifier.size(24.dp),
         )
-        .border(1.dp, accent.copy(alpha = if (selected) 0.8f else 0.5f), shape)
-        .then(if (onClick != null) Modifier.clickable { onClick() } else Modifier)
-        .padding(14.dp)
-
-    val labels: @Composable ColumnScope.() -> Unit = {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleMedium,
-            color = if (selected) Stage.TextPrimary else Stage.TextSecondary,
-        )
-        Text(
-            text = subtitle,
-            style = MaterialTheme.typography.bodyMedium,
-            color = Stage.TextMuted,
-        )
-    }
-
-    if (wide) {
-        Row(modifier = frame, verticalAlignment = Alignment.CenterVertically) {
-            Box(modifier = Modifier.size(24.dp)) { icon(tint) }
-            Spacer(Modifier.width(14.dp))
-            Column(content = labels)
-        }
-    } else {
-        Column(modifier = frame) {
-            Box(modifier = Modifier.size(24.dp)) { icon(tint) }
-            Spacer(Modifier.height(8.dp))
-            labels()
+        Spacer(Modifier.width(14.dp))
+        Column {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                color = Stage.TextPrimary,
+            )
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Stage.TextMuted,
+            )
         }
     }
-}
-
-/** Petit rappel visuel utilisé sur plusieurs écrans. */
-@Composable
-fun HintLine(text: String, modifier: Modifier = Modifier) {
-    Text(
-        text = text,
-        style = MaterialTheme.typography.bodyMedium,
-        color = Stage.TextMuted,
-        modifier = modifier,
-    )
 }

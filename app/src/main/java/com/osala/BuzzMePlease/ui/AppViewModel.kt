@@ -7,18 +7,14 @@ import com.osala.BuzzMePlease.R
 import com.osala.BuzzMePlease.core.AppLanguage
 import com.osala.BuzzMePlease.core.ClipPlayer
 import com.osala.BuzzMePlease.core.Codes
-import com.osala.BuzzMePlease.core.Features
 import com.osala.BuzzMePlease.core.Prefs
 import com.osala.BuzzMePlease.core.Settings
 import com.osala.BuzzMePlease.core.SoundClip
 import com.osala.BuzzMePlease.core.SoundFx
 import com.osala.BuzzMePlease.core.SoundLibrary
-import com.osala.BuzzMePlease.core.Transport
 import com.osala.BuzzMePlease.game.RoomSession
 import com.osala.BuzzMePlease.model.RoomOptions
 import com.osala.BuzzMePlease.net.lan.LanRoomSession
-import com.osala.BuzzMePlease.net.online.FirebaseConfig
-import com.osala.BuzzMePlease.net.online.FirebaseRoomSession
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -50,8 +46,6 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         Settings(
             playerId = "",
             name = "",
-            transport = Transport.LOCAL,
-            firebase = FirebaseConfig(),
             sound = true,
             keepScreenOn = true,
             tutorialSeen = true,
@@ -80,10 +74,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             prefs.ensurePlayerId()
             prefs.settings.collect { loaded ->
-                // Le salon en ligne est en sommeil : un réglage enregistré avant sa fermeture ne
-                // doit pas laisser l'application sur un transport injouable.
-                _settings.value =
-                    if (Features.ONLINE_ROOMS) loaded else loaded.copy(transport = Transport.LOCAL)
+                _settings.value = loaded
                 soundFx.enabled = loaded.sound
                 if (_route.value == Route.Loading) {
                     // Première ouverture : on explique le jeu avant de laisser créer un salon.
@@ -133,11 +124,6 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         _session.value?.rename(clean)
     }
 
-    fun setTransport(transport: Transport) {
-        if (!Features.ONLINE_ROOMS && transport != Transport.LOCAL) return
-        viewModelScope.launch { prefs.setTransport(transport) }
-    }
-
     fun setSound(enabled: Boolean) {
         soundFx.enabled = enabled
         viewModelScope.launch { prefs.setSound(enabled) }
@@ -165,10 +151,6 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch { prefs.setKeepScreenOn(enabled) }
     }
 
-    fun setFirebase(config: FirebaseConfig) {
-        viewModelScope.launch { prefs.setFirebase(config) }
-    }
-
     // ------------------------------------------------------------------ salon
 
     fun createRoom() = startSession(Codes.newRoomCode(), asHost = true, hostAddress = null)
@@ -187,42 +169,15 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         val name = current.name.trim().ifBlank { text(R.string.default_player_name) }
         closeSession()
 
-        val options = RoomOptions(sound = current.sound)
-        val created: RoomSession = when (current.transport) {
-            Transport.LOCAL -> LanRoomSession(
-                context = getApplication(),
-                myId = current.playerId,
-                initialName = name,
-                code = code,
-                startAsHost = asHost,
-                hostAddress = hostAddress,
-                initialOptions = options,
-            )
-
-            Transport.ONLINE -> {
-                if (!current.firebase.isComplete) {
-                    _notice.value = text(R.string.notice_firebase_missing)
-                    _route.value = Route.Settings
-                    return
-                }
-                val online = runCatching {
-                    FirebaseRoomSession(
-                        context = getApplication(),
-                        config = current.firebase,
-                        myId = current.playerId,
-                        initialName = name,
-                        code = code,
-                        startAsHost = asHost,
-                        initialOptions = options,
-                    )
-                }.getOrElse { error ->
-                    _notice.value = text(R.string.notice_firebase_error, error.message.orEmpty())
-                    _route.value = Route.Settings
-                    return
-                }
-                online
-            }
-        }
+        val created: RoomSession = LanRoomSession(
+            context = getApplication(),
+            myId = current.playerId,
+            initialName = name,
+            code = code,
+            startAsHost = asHost,
+            hostAddress = hostAddress,
+            initialOptions = RoomOptions(sound = current.sound),
+        )
 
         _session.value = created
         _route.value = Route.Room

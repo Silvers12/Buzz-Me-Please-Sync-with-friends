@@ -25,6 +25,7 @@ object Stage {
     val Line = Color(0xFF2C2C4E)
 
     val Gold = Color(0xFFF5C542)
+    val GoldDeep = Color(0xFFE0A21B)
     val GoldSoft = Color(0xFFFFE7A3)
     val Violet = Color(0xFF7C5CFF)
     val VioletSoft = Color(0xFFB9A6FF)

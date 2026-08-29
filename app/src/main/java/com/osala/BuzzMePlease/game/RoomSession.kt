@@ -22,7 +22,7 @@ data class LinkStatus(
 data class SessionEnded(val message: String, val kicked: Boolean = false)
 
 /**
- * Vue unifiée d'un salon, quelle que soit la couche de transport (Wi-Fi local ou Firebase).
+ * Vue d'un salon, indépendamment de la couche de transport qui le porte.
  * Les commandes réservées à l'hôte sont ignorées silencieusement si on ne l'est pas.
  */
 interface RoomSession {
@@ -40,9 +40,8 @@ interface RoomSession {
     val isHost: Boolean get() = state.value.hostId == myId
 
     /**
-     * Heure courante exprimée sur l'horloge de référence du salon (celle de l'hôte en local,
-     * celle du serveur Firebase en ligne). C'est la base commune qui permet à chaque appareil
-     * de déclencher son décompte au même instant.
+     * Heure courante exprimée sur l'horloge de référence du salon, celle de l'hôte. C'est la
+     * base commune qui permet à chaque appareil de déclencher son décompte au même instant.
      */
     fun nowHostMillis(): Long
 

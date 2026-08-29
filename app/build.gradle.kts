@@ -75,12 +75,6 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.datastore.preferences)
 
-    // Online fallback. Configured at runtime from the in-app settings screen, so no
-    // google-services.json / google-services plugin is required to build the project.
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.database)
-    implementation(libs.firebase.auth)
-
     debugImplementation(libs.androidx.compose.ui.tooling)
 
     testImplementation(libs.junit)

@@ -42,8 +42,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.osala.BuzzMePlease.R
 import com.osala.BuzzMePlease.core.AppLanguage
-import com.osala.BuzzMePlease.core.Features
-import com.osala.BuzzMePlease.net.online.FirebaseConfig
 import com.osala.BuzzMePlease.ui.components.GhostAction
 import com.osala.BuzzMePlease.ui.components.PrimaryAction
 import com.osala.BuzzMePlease.ui.components.SectionLabel
@@ -54,14 +52,12 @@ import com.osala.BuzzMePlease.ui.theme.Stage
 
 @Composable
 fun SettingsScreen(
-    firebase: FirebaseConfig,
     sound: Boolean,
     keepScreenOn: Boolean,
     language: AppLanguage,
     onLanguage: (AppLanguage) -> Unit,
     onSound: (Boolean) -> Unit,
     onKeepScreenOn: (Boolean) -> Unit,
-    onFirebase: (FirebaseConfig) -> Unit,
     onTutorial: () -> Unit,
     onBack: () -> Unit,
 ) {
@@ -153,11 +149,6 @@ fun SettingsScreen(
                 )
             }
 
-            if (Features.ONLINE_ROOMS) {
-                Spacer(Modifier.height(16.dp))
-                FirebasePanel(firebase = firebase, onFirebase = onFirebase)
-            }
-
             Spacer(Modifier.height(24.dp))
 
             Text(
@@ -171,102 +162,6 @@ fun SettingsScreen(
     }
 }
 
-/** Configuration du projet Firebase, réservée au salon en ligne. */
-@Composable
-private fun FirebasePanel(firebase: FirebaseConfig, onFirebase: (FirebaseConfig) -> Unit) {
-    var draft by remember { mutableStateOf(firebase) }
-    var saved by remember { mutableStateOf(false) }
-
-    StagePanel(modifier = Modifier.fillMaxWidth()) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            SectionLabel(stringResource(R.string.settings_firebase_label), modifier = Modifier.weight(1f))
-            Spacer(Modifier.width(10.dp))
-            StageBadge(
-                text = stringResource(
-                    if (draft.isComplete) R.string.settings_firebase_ready else R.string.settings_firebase_missing,
-                ),
-                color = if (draft.isComplete) Stage.Green else Stage.Amber,
-            )
-        }
-        Spacer(Modifier.height(8.dp))
-        Text(
-            stringResource(R.string.settings_firebase_body),
-            style = MaterialTheme.typography.bodyMedium,
-            color = Stage.TextMuted,
-        )
-        Spacer(Modifier.height(14.dp))
-
-        ConfigField(
-            label = stringResource(R.string.settings_firebase_project),
-            value = draft.projectId,
-            placeholder = "buzzme-quiz",
-        ) { draft = draft.copy(projectId = it); saved = false }
-
-        ConfigField(
-            label = stringResource(R.string.settings_firebase_app),
-            value = draft.applicationId,
-            placeholder = "1:1234567890:android:abcdef",
-        ) { draft = draft.copy(applicationId = it); saved = false }
-
-        ConfigField(
-            label = stringResource(R.string.settings_firebase_key),
-            value = draft.apiKey,
-            placeholder = "AIza…",
-        ) { draft = draft.copy(apiKey = it); saved = false }
-
-        ConfigField(
-            label = stringResource(R.string.settings_firebase_url),
-            value = draft.databaseUrl,
-            placeholder = "https://…firebasedatabase.app",
-            keyboardType = KeyboardType.Uri,
-        ) { draft = draft.copy(databaseUrl = it.trim()); saved = false }
-
-        Spacer(Modifier.height(6.dp))
-        PrimaryAction(
-            text = stringResource(if (saved) R.string.settings_saved else R.string.settings_save),
-            icon = Icons.Filled.Save,
-            enabled = draft.isComplete && !saved,
-            onClick = {
-                onFirebase(draft)
-                saved = true
-            },
-            modifier = Modifier.fillMaxWidth(),
-        )
-    }
-}
-
-@Composable
-private fun ConfigField(
-    label: String,
-    value: String,
-    placeholder: String,
-    keyboardType: KeyboardType = KeyboardType.Text,
-    onValueChange: (String) -> Unit,
-) {
-    Column(modifier = Modifier.padding(bottom = 12.dp)) {
-        Text(label, style = MaterialTheme.typography.labelMedium, color = Stage.TextSecondary)
-        Spacer(Modifier.height(6.dp))
-        OutlinedTextField(
-            value = value,
-            onValueChange = onValueChange,
-            singleLine = true,
-            placeholder = { Text(placeholder, color = Stage.TextMuted) },
-            keyboardOptions = KeyboardOptions(keyboardType = keyboardType, imeAction = ImeAction.Next),
-            shape = RoundedCornerShape(12.dp),
-            textStyle = MaterialTheme.typography.bodyLarge,
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Stage.Violet,
-                unfocusedBorderColor = Stage.Line,
-                focusedTextColor = Stage.TextPrimary,
-                unfocusedTextColor = Stage.TextPrimary,
-                cursorColor = Stage.Gold,
-                focusedContainerColor = Stage.Night,
-                unfocusedContainerColor = Stage.Night,
-            ),
-            modifier = Modifier.fillMaxWidth(),
-        )
-    }
-}
 
 /** Une des trois langues possibles : système, français, anglais. */
 @Composable

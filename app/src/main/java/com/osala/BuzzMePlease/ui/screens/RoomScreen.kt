@@ -647,15 +647,19 @@ private fun ResultBanner(
                 it.playerId != speaker.id && it.playerId !in state.passedIds
             }
             val detail = buildString {
-                append("Réaction ")
-                append(Buzz.formatReaction(buzz.reactionMillis))
-                if (buzz.precisionMillis > 0) append(" (± ${buzz.precisionMillis} ms)")
+                append(stringResource(R.string.banner_reaction, Buzz.formatReaction(buzz.reactionMillis)))
+                if (buzz.precisionMillis > 0) {
+                    append(stringResource(R.string.banner_precision, buzz.precisionMillis))
+                }
                 if (next != null) {
                     val gap = next.atHostMillis - buzz.atHostMillis
-                    append(" · devance ")
-                    append(state.player(next.playerId)?.name.orEmpty())
-                    append(" de ")
-                    append(Buzz.formatGap(gap))
+                    append(
+                        stringResource(
+                            R.string.banner_ahead,
+                            state.player(next.playerId)?.name.orEmpty(),
+                            Buzz.formatGap(gap),
+                        ),
+                    )
                 }
             }
             Text(
