@@ -10,7 +10,7 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.osala.BuzzMePlease"
+        applicationId = "com.osala.buzzmeplease"
         minSdk = 26
         targetSdk = 35
         versionCode = 1
