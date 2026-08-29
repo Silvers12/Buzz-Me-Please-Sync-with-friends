@@ -80,15 +80,18 @@ private val steps = listOf(
         body = "Le premier qui appuie voit son buzzer virer au rouge, tous les autres se " +
             "verrouillent aussitôt. L'heure exacte du buzz est envoyée — heure, minute, seconde " +
             "et milliseconde — et l'animateur voit le classement, l'écart avec le meilleur temps " +
-            "et la marge d'incertitude de la mesure.",
+            "et la marge d'incertitude de la mesure. Une fois le classement arrêté, un seul " +
+            "buzzer reste vert : celui qui a la parole.",
         accent = Stage.Red,
     ),
     TutorialStep(
         number = "5",
         title = "Enchaîner les manches",
-        body = "« Relancer » ouvre immédiatement une nouvelle manche. À droite, la flèche " +
-            "circulaire éteint les buzzers et efface les résultats sans toucher aux scores. " +
-            "Rien n'oblige à attendre la fin d'une manche pour relancer.",
+        body = "Mauvaise réponse ? « Mauvaise réponse · au suivant », sous le bandeau, éteint le " +
+            "buzzer du joueur qui avait la parole — il entend un signal d'erreur — et allume " +
+            "celui du deuxième du classement, qui entend à son tour qu'on lui donne la main. " +
+            "« Relancer » ouvre une nouvelle manche, la flèche circulaire éteint tout sans " +
+            "toucher aux scores.",
         accent = Stage.Cyan,
     ),
     TutorialStep(

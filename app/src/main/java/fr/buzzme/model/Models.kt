@@ -133,6 +133,11 @@ data class RoomState(
     val winnerId: String? = null,
     /** true tant que la fenêtre d'arbitrage photo-finish n'est pas close. */
     val provisional: Boolean = false,
+    /**
+     * Joueurs à qui l'animateur a retiré la parole après une mauvaise réponse. La main descend
+     * alors au buzz suivant, dans l'ordre du classement.
+     */
+    val passedIds: List<String> = emptyList(),
     val options: RoomOptions = RoomOptions(),
 ) {
     fun player(id: String): Player? = players.firstOrNull { it.id == id }
@@ -141,6 +146,12 @@ data class RoomState(
 
     /** Buzz triés du plus rapide au plus lent. */
     val ranking: List<Buzz> get() = buzzes.sortedBy { it.atHostMillis }
+
+    /**
+     * Qui a la parole : le meilleur buzz que l'animateur n'a pas encore écarté. Null quand
+     * personne n'a buzzé, ou quand tout le monde s'est trompé — la manche est alors à relancer.
+     */
+    val speakerId: String? get() = ranking.firstOrNull { it.playerId !in passedIds }?.playerId
 
     fun rankOf(id: String): Int {
         val index = ranking.indexOfFirst { it.playerId == id }
@@ -191,8 +202,13 @@ data class RoomState(
         get() = players.sortedWith(compareByDescending<Player> { it.score }.thenBy { it.name.lowercase(Locale.ROOT) })
 }
 
-/** Couleur logique d'un buzzer, indépendante du thème. */
-enum class BuzzerVisual { OFF, COUNTDOWN, ARMED, BUZZED, LOST, ELIMINATED }
+/**
+ * Couleur logique d'un buzzer, indépendante du thème.
+ *
+ * Le vert vaut permission : avant le buzz c'est ARMED (« appuyez »), après l'arbitrage c'est
+ * SPEAKING (« à vous de répondre »). Un seul joueur à la fois est vert une fois la manche prise.
+ */
+enum class BuzzerVisual { OFF, COUNTDOWN, ARMED, BUZZED, SPEAKING, LOST, ELIMINATED }
 
 fun RoomState.visualFor(
     playerId: String,
@@ -202,7 +218,16 @@ fun RoomState.visualFor(
     val p = player(playerId) ?: return BuzzerVisual.OFF
     if (p.isEliminated) return BuzzerVisual.ELIMINATED
     val buzzed = buzzOf(playerId) != null || localBuzzedRound == round
+    // Photo-finish : en duel, deux joueurs peuvent appuyer avant que le verrouillage ne les
+    // atteigne, et les deux voient d'abord leur buzzer pris. L'arbitrage clos, un seul garde la
+    // parole — son buzzer passe au vert — et les autres s'éteignent, y compris celui qui vient
+    // de répondre à côté et à qui l'animateur a retiré la main.
+    val settled = options.mode == GameMode.DUEL &&
+        roundState == RoundState.LOCKED &&
+        !provisional
     return when {
+        settled && speakerId == playerId -> BuzzerVisual.SPEAKING
+        settled && buzzed -> BuzzerVisual.LOST
         buzzed -> BuzzerVisual.BUZZED
         effectiveRoundState(nowHostMillis) == RoundState.ARMED -> BuzzerVisual.ARMED
         roundState == RoundState.COUNTDOWN -> BuzzerVisual.COUNTDOWN

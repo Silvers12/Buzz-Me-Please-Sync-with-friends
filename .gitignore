@@ -13,3 +13,6 @@ app/release/
 app/google-services.json
 *.jks
 *.keystore
+
+# Cache du compilateur Kotlin, régénéré à chaque build.
+.kotlin/

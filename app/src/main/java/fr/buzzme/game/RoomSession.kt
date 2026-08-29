@@ -58,6 +58,13 @@ interface RoomSession {
     // -------------------------------------------------------------- hôte
     fun arm()
     fun reset()
+
+    /**
+     * Mauvaise réponse de celui qui a la parole : la main descend au buzz suivant, et son
+     * buzzer s'éteint au profit de celui du joueur suivant.
+     */
+    fun passSpeaker()
+
     fun setStatus(playerId: String, status: PlayerStatus)
     fun kick(playerId: String)
     fun addPoints(playerId: String, delta: Int)

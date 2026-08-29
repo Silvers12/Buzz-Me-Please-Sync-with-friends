@@ -43,6 +43,12 @@ class SoundFx(context: Context) {
     /** Quelqu'un d'autre a coiffé tout le monde au poteau. */
     fun locked() = play(ToneGenerator.TONE_PROP_NACK, 200, vibrate = 20)
 
+    /** La parole vous revient : à vous de répondre. */
+    fun yourTurn() = play(ToneGenerator.TONE_PROP_ACK, 300, vibrate = 45)
+
+    /** Mauvaise réponse : l'animateur passe la main au suivant. */
+    fun wrong() = play(ToneGenerator.TONE_SUP_ERROR, 450, vibrate = 120)
+
     private fun play(tone: Int, durationMillis: Int, vibrate: Long) {
         if (!enabled) return
         runCatching { tones?.startTone(tone, durationMillis) }

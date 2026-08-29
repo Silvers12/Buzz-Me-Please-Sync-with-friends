@@ -65,7 +65,10 @@ class GameEngine(code: String, hostId: String, options: RoomOptions = RoomOption
         var next = current.copy(players = current.players.upsert(p.copy(status = status)))
         if (status == PlayerStatus.ELIMINATED) {
             // Un joueur éliminé ne peut pas rester détenteur du buzz en cours.
-            next = next.copy(buzzes = next.buzzes.filterNot { it.playerId == id })
+            next = next.copy(
+                buzzes = next.buzzes.filterNot { it.playerId == id },
+                passedIds = next.passedIds.filterNot { it == id },
+            )
             if (next.winnerId == id) next = next.recomputeWinner()
         }
         next
@@ -76,6 +79,7 @@ class GameEngine(code: String, hostId: String, options: RoomOptions = RoomOption
         current.copy(
             players = current.players.filterNot { it.id == id },
             buzzes = current.buzzes.filterNot { it.playerId == id },
+            passedIds = current.passedIds.filterNot { it == id },
         ).let { if (it.winnerId == id) it.recomputeWinner() else it }
     }
 
@@ -111,6 +115,7 @@ class GameEngine(code: String, hostId: String, options: RoomOptions = RoomOption
             buzzes = emptyList(),
             winnerId = null,
             provisional = false,
+            passedIds = emptyList(),
         )
     }
 
@@ -131,6 +136,7 @@ class GameEngine(code: String, hostId: String, options: RoomOptions = RoomOption
             buzzes = emptyList(),
             winnerId = null,
             provisional = false,
+            passedIds = emptyList(),
         )
     }
 
@@ -191,6 +197,17 @@ class GameEngine(code: String, hostId: String, options: RoomOptions = RoomOption
     fun closeAdjudication(round: Int) = mutate { current ->
         if (current.round != round || !current.provisional) current
         else current.copy(provisional = false).recomputeWinner()
+    }
+
+    /**
+     * Mauvaise réponse : l'animateur retire la parole à celui qui l'a, et la main descend au
+     * buzz suivant. Quand le dernier est écarté, plus personne n'a la main et la manche est à
+     * relancer. Sans effet tant que l'arbitrage n'est pas clos — le classement peut encore bouger.
+     */
+    fun passSpeaker(round: Int) = mutate { current ->
+        if (current.round != round || current.provisional) return@mutate current
+        val speaker = current.speakerId ?: return@mutate current
+        current.copy(passedIds = current.passedIds + speaker)
     }
 
     // ------------------------------------------------------------------ utils

@@ -28,6 +28,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Bolt
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.Icon
@@ -66,6 +67,7 @@ import fr.buzzme.model.RoundState
 import fr.buzzme.model.visualFor
 import fr.buzzme.ui.components.BigBuzzer
 import fr.buzzme.ui.components.CodeDisplay
+import fr.buzzme.ui.components.GhostAction
 import fr.buzzme.ui.components.IconAction
 import fr.buzzme.ui.components.PlayerRow
 import fr.buzzme.ui.components.PrimaryAction
@@ -164,7 +166,12 @@ fun RoomScreen(
                 Spacer(Modifier.height(12.dp))
             }
 
-            ResultBanner(state = state, myId = session.myId)
+            ResultBanner(
+                state = state,
+                myId = session.myId,
+                amHost = amHost,
+                onWrongAnswer = session::passSpeaker,
+            )
 
             Spacer(Modifier.height(8.dp))
 
@@ -298,8 +305,10 @@ private fun buzzerTitle(
 ): String = when (visual) {
     BuzzerVisual.COUNTDOWN -> remaining?.let { ((it / 1000) + 1).coerceAtMost(9L).toString() } ?: "!"
     BuzzerVisual.ARMED -> "BUZZ"
-    BuzzerVisual.BUZZED -> state.buzzOf(myId)?.let { Buzz.formatReaction(it.reactionMillis) } ?: "PRIS"
-    BuzzerVisual.LOST -> "TROP TARD"
+    BuzzerVisual.BUZZED,
+    BuzzerVisual.SPEAKING,
+    -> state.buzzOf(myId)?.let { Buzz.formatReaction(it.reactionMillis) } ?: "PRIS"
+    BuzzerVisual.LOST -> if (myId in state.passedIds) "RATÉ" else "TROP TARD"
     BuzzerVisual.ELIMINATED -> "ÉLIMINÉ"
     BuzzerVisual.OFF -> "PRÊT ?"
 }
@@ -307,8 +316,10 @@ private fun buzzerTitle(
 private fun buzzerSubtitle(visual: BuzzerVisual, state: RoomState, myId: String): String = when (visual) {
     BuzzerVisual.COUNTDOWN -> "Préparez-vous"
     BuzzerVisual.ARMED -> "Appuyez !"
-    BuzzerVisual.BUZZED -> if (state.winnerId == myId) "Vous avez la main" else "Enregistré"
-    BuzzerVisual.LOST -> state.winnerId?.let { state.player(it)?.name.orEmpty() } ?: ""
+    BuzzerVisual.BUZZED -> "Enregistré"
+    BuzzerVisual.SPEAKING -> "À vous de répondre"
+    // Écarté par l'animateur, ou devancé : dans les deux cas on nomme qui a la parole.
+    BuzzerVisual.LOST -> state.speakerId?.let { state.player(it)?.name.orEmpty() } ?: ""
     BuzzerVisual.ELIMINATED -> "L'animateur peut vous réactiver"
     BuzzerVisual.OFF -> "En attente du top"
 }
@@ -428,17 +439,33 @@ private fun HostControls(
 // ------------------------------------------------------------------- bandeau
 
 @Composable
-private fun ResultBanner(state: RoomState, myId: String) {
-    val winner = state.winnerId?.let { state.player(it) }
-    val buzz = state.winnerId?.let { state.buzzOf(it) }
-    val visible = winner != null && buzz != null
+private fun ResultBanner(
+    state: RoomState,
+    myId: String,
+    amHost: Boolean,
+    onWrongAnswer: () -> Unit,
+) {
+    // Le bandeau suit celui qui a la parole, pas le premier chronomètre : après une mauvaise
+    // réponse, c'est le suivant du classement qui s'affiche.
+    val speaker = state.speakerId?.let { state.player(it) }
+    val buzz = state.speakerId?.let { state.buzzOf(it) }
+    // Tout le monde s'est trompé : le bandeau le dit au lieu de disparaître sans un mot.
+    val exhausted = speaker == null && state.buzzes.isNotEmpty()
+
+    if (exhausted) {
+        EmptyHandBanner()
+        return
+    }
+
+    val visible = speaker != null && buzz != null
 
     AnimatedVisibility(
         visible = visible,
         enter = fadeIn() + scaleIn(initialScale = 0.92f),
         exit = fadeOut() + scaleOut(targetScale = 0.92f),
     ) {
-        if (winner == null || buzz == null) return@AnimatedVisibility
+        if (speaker == null || buzz == null) return@AnimatedVisibility
+        val winner = speaker
         val shape = RoundedCornerShape(18.dp)
         Column(
             modifier = Modifier
@@ -454,7 +481,7 @@ private fun ResultBanner(state: RoomState, myId: String) {
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = if (winner.id == myId) "À vous !" else "${winner.name} a buzzé",
+                    text = if (winner.id == myId) "À vous !" else "${winner.name} a la main",
                     style = MaterialTheme.typography.titleLarge,
                     color = Stage.GoldSoft,
                     fontWeight = FontWeight.Black,
@@ -471,15 +498,18 @@ private fun ResultBanner(state: RoomState, myId: String) {
                 )
             }
             Spacer(Modifier.height(4.dp))
-            val second = state.ranking.getOrNull(1)
+            // Le suivant dans la file : celui à qui la main reviendra en cas de mauvaise réponse.
+            val next = state.ranking.firstOrNull {
+                it.playerId != speaker.id && it.playerId !in state.passedIds
+            }
             val detail = buildString {
                 append("Réaction ")
                 append(Buzz.formatReaction(buzz.reactionMillis))
                 if (buzz.precisionMillis > 0) append(" (± ${buzz.precisionMillis} ms)")
-                if (second != null) {
-                    val gap = second.atHostMillis - buzz.atHostMillis
+                if (next != null) {
+                    val gap = next.atHostMillis - buzz.atHostMillis
                     append(" · devance ")
-                    append(state.player(second.playerId)?.name.orEmpty())
+                    append(state.player(next.playerId)?.name.orEmpty())
                     append(" de ")
                     append(Buzz.formatGap(gap))
                 }
@@ -497,8 +527,37 @@ private fun ResultBanner(state: RoomState, myId: String) {
                     color = Stage.Amber,
                     textAlign = TextAlign.Start,
                 )
+            } else if (amHost) {
+                Spacer(Modifier.height(10.dp))
+                GhostAction(
+                    text = if (next != null) "Mauvaise réponse · au suivant" else "Mauvaise réponse",
+                    icon = Icons.Filled.Close,
+                    onClick = onWrongAnswer,
+                    accent = Stage.Red,
+                    modifier = Modifier.fillMaxWidth(),
+                )
             }
         }
+    }
+}
+
+/** Plus personne en lice sur cette manche : il ne reste qu'à relancer. */
+@Composable
+private fun EmptyHandBanner() {
+    val shape = RoundedCornerShape(18.dp)
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Stage.Panel.copy(alpha = 0.6f), shape)
+            .border(1.dp, Stage.Line, shape)
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = "Personne n'a trouvé · relancez une manche",
+            style = MaterialTheme.typography.bodyLarge,
+            color = Stage.TextMuted,
+        )
     }
 }
 
@@ -532,12 +591,19 @@ private fun PlayFeedback(
         }
     }
 
+    // L'état précédent départage deux passages au gris qui ne racontent pas la même chose :
+    // s'être fait coiffer au poteau, ou s'être trompé et perdre la parole.
+    var previous by remember { mutableStateOf(visual) }
     LaunchedEffect(visual, state.round) {
+        val before = previous
+        previous = visual
         if (!roomSound) return@LaunchedEffect
-        when (visual) {
-            BuzzerVisual.ARMED -> soundFx.go()
-            BuzzerVisual.BUZZED -> soundFx.buzz()
-            BuzzerVisual.LOST -> soundFx.locked()
+        when {
+            visual == BuzzerVisual.ARMED -> soundFx.go()
+            visual == BuzzerVisual.BUZZED -> soundFx.buzz()
+            visual == BuzzerVisual.SPEAKING -> soundFx.yourTurn()
+            visual == BuzzerVisual.LOST && before == BuzzerVisual.SPEAKING -> soundFx.wrong()
+            visual == BuzzerVisual.LOST -> soundFx.locked()
             else -> Unit
         }
     }

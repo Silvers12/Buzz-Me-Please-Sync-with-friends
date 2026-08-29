@@ -444,6 +444,11 @@ class LanRoomSession(
         host.reset()
     }
 
+    override fun passSpeaker() {
+        val host = engine ?: return
+        host.passSpeaker(host.snapshot.round)
+    }
+
     override fun setStatus(playerId: String, status: PlayerStatus) {
         engine?.setStatus(playerId, status)
     }

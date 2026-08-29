@@ -283,6 +283,7 @@ class FirebaseRoomSession(
             buzzes = buzzes,
             winnerId = buzzes.firstOrNull()?.playerId,
             provisional = provisional,
+            passedIds = child("passed").children.mapNotNull { it.key },
             options = options,
         )
     }
@@ -372,6 +373,7 @@ class FirebaseRoomSession(
         countdownJob?.cancel()
         val armUpdate: Map<String, Any?> = mapOf(
             "buzzes" to null,
+            "passed" to null,
             "round" to roundMap(
                 index = round,
                 state = if (options.countdown) RoundState.COUNTDOWN else RoundState.ARMED,
@@ -395,22 +397,38 @@ class FirebaseRoomSession(
         _localBuzzRound.value = null
         val resetUpdate: Map<String, Any?> = mapOf(
             "buzzes" to null,
+            "passed" to null,
             "round" to roundMap(index = _state.value.round, state = RoundState.IDLE, armedAt = null),
         )
         roomRef.updateChildren(resetUpdate)
+    }
+
+    override fun passSpeaker() {
+        if (!isHost) return
+        val current = _state.value
+        if (current.provisional) return
+        val speaker = current.speakerId ?: return
+        roomRef.child("passed").child(speaker).setValue(true)
     }
 
     override fun setStatus(playerId: String, status: PlayerStatus) {
         if (!isHost) return
         val updates = mutableMapOf<String, Any?>("players/$playerId/status" to status.name)
         // Un joueur éliminé ne conserve pas la main sur le buzz en cours.
-        if (status == PlayerStatus.ELIMINATED) updates["buzzes/$playerId"] = null
+        if (status == PlayerStatus.ELIMINATED) {
+            updates["buzzes/$playerId"] = null
+            updates["passed/$playerId"] = null
+        }
         roomRef.updateChildren(updates.toMap())
     }
 
     override fun kick(playerId: String) {
         if (!isHost || playerId == myId) return
-        val removal: Map<String, Any?> = mapOf("players/$playerId" to null, "buzzes/$playerId" to null)
+        val removal: Map<String, Any?> = mapOf(
+            "players/$playerId" to null,
+            "buzzes/$playerId" to null,
+            "passed/$playerId" to null,
+        )
         roomRef.updateChildren(removal)
     }
 

@@ -1,4 +1,4 @@
-# Buzz Me
+# Buzz Me Please
 
 Buzzer de quiz pour Android, synchronisé entre amis. L'animateur crée un salon, les autres le
 rejoignent avec un code à 5 lettres, et tout le monde joue sur son téléphone comme sur un
@@ -20,6 +20,9 @@ Le jeu fonctionne **en Wi-Fi local, sans Internet et sans serveur**.
   les buzzers passent au vert.
 - **Le buzz.** Le premier qui appuie passe au rouge et verrouille tous les autres. Son heure
   exacte — heure, minute, seconde, milliseconde — remonte à l'animateur.
+- **La parole.** Une fois le classement arrêté, un seul buzzer reste vert : celui qui répond. Sur
+  une mauvaise réponse, l'animateur passe la main au suivant — signal d'erreur pour l'un, signal
+  de prise de parole pour l'autre — et ainsi de suite jusqu'au dernier buzz de la manche.
 - **Le plateau de l'animateur.** Pseudos, état de chaque buzzer, heure du buzz, temps de
   réaction, écart avec le meilleur, marge d'incertitude, qualité de la liaison.
 - **Élimination.** Buzzer noir en un appui, réactivation quand l'animateur le décide.
@@ -111,7 +114,7 @@ sans appareil ni émulateur :
 ### APK par intégration continue
 
 [`.github/workflows/build.yml`](.github/workflows/build.yml) compile l'APK de debug sur un runner
-GitHub et le publie en artefact (`buzz-me-debug`), avec le rapport de tests. Le workflow se
+GitHub et le publie en artefact (`buzz-me-please-debug`), avec le rapport de tests. Le workflow se
 déclenche à chaque push et peut aussi être lancé à la main depuis l'onglet *Actions*.
 
 Ce dépôt étant public, Actions y est gratuit et sans quota sur les runners standards. Sur un

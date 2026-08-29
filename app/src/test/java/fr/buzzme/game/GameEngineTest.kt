@@ -204,6 +204,60 @@ class GameEngineTest {
     }
 
     @Test
+    fun `une mauvaise reponse passe la main au buzz suivant`() {
+        armWithCountdown()
+        engine.markArmed(1)
+        engine.registerBuzz("p1", 1, armedAt + 200, 2)
+        engine.registerBuzz("p2", 1, armedAt + 260, 2)
+        engine.registerBuzz("p3", 1, armedAt + 320, 2)
+        engine.closeAdjudication(1)
+
+        val taken = engine.snapshot
+        assertEquals("p1", taken.speakerId)
+        assertEquals(BuzzerVisual.SPEAKING, taken.visualFor("p1", armedAt + 900))
+        assertEquals(BuzzerVisual.LOST, taken.visualFor("p2", armedAt + 900))
+
+        engine.passSpeaker(1)
+        val second = engine.snapshot
+        assertEquals("p2", second.speakerId)
+        assertEquals(BuzzerVisual.LOST, second.visualFor("p1", armedAt + 900))
+        assertEquals(BuzzerVisual.SPEAKING, second.visualFor("p2", armedAt + 900))
+        // Le vainqueur du buzz reste celui qui a été le plus rapide : seule la parole a bougé.
+        assertEquals("p1", second.winnerId)
+
+        engine.passSpeaker(1)
+        engine.passSpeaker(1)
+        val exhausted = engine.snapshot
+        assertNull(exhausted.speakerId)
+        assertEquals(BuzzerVisual.LOST, exhausted.visualFor("p3", armedAt + 900))
+    }
+
+    @Test
+    fun `la parole n est pas retiree tant que l arbitrage court`() {
+        armWithCountdown()
+        engine.markArmed(1)
+        engine.registerBuzz("p1", 1, armedAt + 200, 2)
+
+        engine.passSpeaker(1)
+        assertEquals("p1", engine.snapshot.speakerId)
+        assertTrue(engine.snapshot.passedIds.isEmpty())
+    }
+
+    @Test
+    fun `une nouvelle manche rend la parole a tout le monde`() {
+        armWithCountdown()
+        engine.markArmed(1)
+        engine.registerBuzz("p1", 1, armedAt + 200, 2)
+        engine.closeAdjudication(1)
+        engine.passSpeaker(1)
+        assertEquals(listOf("p1"), engine.snapshot.passedIds)
+
+        armWithCountdown()
+        assertTrue(engine.snapshot.passedIds.isEmpty())
+        assertNull(engine.snapshot.speakerId)
+    }
+
+    @Test
     fun `revenir apres une coupure conserve score et statut`() {
         engine.addPoints("p1", 4)
         engine.setStatus("p1", PlayerStatus.ELIMINATED)

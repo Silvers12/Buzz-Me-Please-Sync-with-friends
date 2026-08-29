@@ -82,6 +82,17 @@ private fun skinFor(visual: BuzzerVisual): BuzzerSkin = when (visual) {
         text = Color(0xFF3A2000),
     )
 
+    // Le vert de la parole : plus profond que celui du buzzer armé, pour qu'un coup d'œil
+    // distingue « appuyez » de « c'est à vous de répondre ».
+    BuzzerVisual.SPEAKING -> BuzzerSkin(
+        highlight = Color(0xFFB6FFD8),
+        body = Color(0xFF1CC96C),
+        shadow = Color(0xFF07572D),
+        ring = Color(0xFF5CFFB0),
+        glow = Stage.Green,
+        text = Color(0xFF03270F),
+    )
+
     BuzzerVisual.LOST -> BuzzerSkin(
         highlight = Color(0xFF4A4A6E),
         body = Color(0xFF34344F),
@@ -144,8 +155,9 @@ fun BigBuzzer(
         animationSpec = infiniteRepeatable(tween(1100, easing = LinearEasing), RepeatMode.Reverse),
         label = "breathing",
     )
-    // Seul un buzzer armé respire : le halo attire l'œil pile quand il faut appuyer.
-    val haloBoost = if (visual == BuzzerVisual.ARMED) 0.55f + breathing * 0.45f else 0.35f
+    // Le halo respire quand le buzzer attend un geste : armé, ou en attente de la réponse.
+    val alive = visual == BuzzerVisual.ARMED || visual == BuzzerVisual.SPEAKING
+    val haloBoost = if (alive) 0.55f + breathing * 0.45f else 0.35f
 
     // Onde de choc au moment du buzz.
     val shockwave = remember { Animatable(0f) }
