@@ -12,6 +12,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,6 +35,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Groups
+import androidx.compose.material.icons.filled.LibraryMusic
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.Icon
@@ -59,6 +62,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import fr.buzzme.core.AppClock
+import fr.buzzme.core.SoundClip
 import fr.buzzme.core.SoundFx
 import fr.buzzme.game.LinkPhase
 import fr.buzzme.game.RoomSession
@@ -77,6 +81,8 @@ import fr.buzzme.ui.components.IconAction
 import fr.buzzme.ui.components.PlayerRow
 import fr.buzzme.ui.components.PrimaryAction
 import fr.buzzme.ui.components.SectionLabel
+import fr.buzzme.ui.components.SoundBoard
+import fr.buzzme.ui.components.SoundPickerDialog
 import fr.buzzme.ui.components.StageBackground
 import fr.buzzme.ui.components.StageBadge
 import fr.buzzme.ui.components.StatusDot
@@ -89,6 +95,11 @@ fun RoomScreen(
     session: RoomSession,
     soundFx: SoundFx,
     onLeave: () -> Unit,
+    soundLibrary: List<SoundClip> = emptyList(),
+    soundboard: List<String> = emptyList(),
+    playingClipId: String? = null,
+    onPlayClip: (SoundClip) -> Unit = {},
+    onPickClip: (index: Int, clipId: String?) -> Unit = { _, _ -> },
 ) {
     val state by session.state.collectAsStateWithLifecycle()
     val link by session.link.collectAsStateWithLifecycle()
@@ -97,6 +108,9 @@ fun RoomScreen(
     val amHost = state.hostId == session.myId
     var showOptions by remember { mutableStateOf(false) }
     var selectedPlayer by remember { mutableStateOf<String?>(null) }
+    // Sonothèque : elle occupe la place du plateau, et seul l'animateur y a droit.
+    var showSounds by remember { mutableStateOf(false) }
+    var editedSlot by remember { mutableStateOf<Int?>(null) }
 
     // Horloge locale calée sur celle de l'hôte. Elle ne s'anime que pendant le décompte :
     // le reste du temps, rien ne bouge et l'écran reste au repos.
@@ -227,6 +241,7 @@ fun RoomScreen(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         SectionLabel(
                             when {
+                                showSounds -> "Sonothèque · appui long pour changer"
                                 // Rappel utile des deux côtés : l'animateur sait ce qu'il a coupé, le
                                 // joueur comprend pourquoi les pastilles des autres sont barrées.
                                 state.options.hideScores -> "Plateau · scores masqués"
@@ -236,15 +251,34 @@ fun RoomScreen(
                             modifier = Modifier.weight(1f),
                         )
                         Spacer(Modifier.width(8.dp))
-                        Text(
-                            "${ordered.count { it.connected }}/${ordered.size} en ligne",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = Stage.TextMuted,
-                            maxLines = 1,
-                        )
+                        if (amHost) {
+                            // Le panneau se rétracte sur le plateau : deux vues, une seule place.
+                            SoundBoardToggle(open = showSounds) { showSounds = !showSounds }
+                        } else {
+                            Text(
+                                "${ordered.count { it.connected }}/${ordered.size} en ligne",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = Stage.TextMuted,
+                                maxLines = 1,
+                            )
+                        }
                     }
 
                     Spacer(Modifier.height(8.dp))
+
+                    if (showSounds && amHost) {
+                        SoundBoard(
+                            slots = soundboard.map { id ->
+                                soundLibrary.firstOrNull { it.id == id }
+                            },
+                            library = soundLibrary,
+                            playingId = playingClipId,
+                            onPlay = onPlayClip,
+                            onEdit = { index -> editedSlot = index },
+                            modifier = Modifier.weight(1f),
+                        )
+                        return@Column
+                    }
 
                     // Les buzz réordonnent le plateau : sans cela, la liste suivrait le joueur qui était
                     // en tête et afficherait une ligne coupée au lieu du classement de la manche.
@@ -314,6 +348,20 @@ fun RoomScreen(
                 session.kick(target.id)
                 selectedPlayer = null
             },
+        )
+    }
+
+    val slot = editedSlot
+    if (amHost && slot != null) {
+        SoundPickerDialog(
+            library = soundLibrary,
+            current = soundboard.getOrNull(slot)?.let { id -> soundLibrary.firstOrNull { it.id == id } },
+            onPick = { clip ->
+                onPickClip(slot, clip?.id)
+                editedSlot = null
+            },
+            onPreview = onPlayClip,
+            onDismiss = { editedSlot = null },
         )
     }
 
@@ -443,6 +491,35 @@ private fun RoomHeader(
                 )
             }
         }
+    }
+}
+
+/** Bascule entre le plateau et la sonothèque : les deux se partagent la même place. */
+@Composable
+private fun SoundBoardToggle(open: Boolean, onToggle: () -> Unit) {
+    val accent = if (open) Stage.Gold else Stage.VioletSoft
+    val shape = RoundedCornerShape(12.dp)
+    Row(
+        modifier = Modifier
+            .background(accent.copy(alpha = 0.12f), shape)
+            .border(1.dp, accent.copy(alpha = 0.4f), shape)
+            .clickable(onClick = onToggle)
+            .padding(horizontal = 10.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            if (open) Icons.Filled.Groups else Icons.Filled.LibraryMusic,
+            contentDescription = if (open) "Revenir au plateau" else "Ouvrir la sonothèque",
+            tint = accent,
+            modifier = Modifier.size(18.dp),
+        )
+        Spacer(Modifier.width(6.dp))
+        Text(
+            text = if (open) "Plateau" else "Sons",
+            style = MaterialTheme.typography.labelMedium,
+            color = accent,
+            maxLines = 1,
+        )
     }
 }
 

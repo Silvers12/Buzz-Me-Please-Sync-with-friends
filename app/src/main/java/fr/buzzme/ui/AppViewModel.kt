@@ -3,11 +3,14 @@ package fr.buzzme.ui
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import fr.buzzme.core.ClipPlayer
 import fr.buzzme.core.Codes
 import fr.buzzme.core.Features
 import fr.buzzme.core.Prefs
 import fr.buzzme.core.Settings
+import fr.buzzme.core.SoundClip
 import fr.buzzme.core.SoundFx
+import fr.buzzme.core.SoundLibrary
 import fr.buzzme.core.Transport
 import fr.buzzme.game.RoomSession
 import fr.buzzme.model.RoomOptions
@@ -33,6 +36,10 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     private val prefs = Prefs(application)
     val soundFx = SoundFx(application)
 
+    /** Sonothèque de l'animateur : la bibliothèque disponible et le lecteur. */
+    val soundLibrary: List<SoundClip> = SoundLibrary.clips(application)
+    val clipPlayer = ClipPlayer(application)
+
     private val _settings = MutableStateFlow(
         Settings(
             playerId = "",
@@ -42,6 +49,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             sound = true,
             keepScreenOn = true,
             tutorialSeen = true,
+            soundboard = List(SoundLibrary.SLOTS) { "" },
         ),
     )
     val settings = _settings.asStateFlow()
@@ -129,6 +137,18 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         val current = _session.value ?: return
         if (current.isHost) current.setOptions(current.state.value.options.copy(sound = enabled))
     }
+
+    /** Pose un son sur une touche de la sonothèque, ou libère la touche avec `null`. */
+    fun setSoundSlot(index: Int, clipId: String?) {
+        val current = _settings.value.soundboard
+        if (index !in current.indices) return
+        val next = current.toMutableList().also { it[index] = clipId.orEmpty() }
+        viewModelScope.launch { prefs.setSoundboard(next) }
+    }
+
+    fun playClip(clip: SoundClip) = clipPlayer.play(clip)
+
+    fun stopClip() = clipPlayer.stop()
 
     fun setKeepScreenOn(enabled: Boolean) {
         viewModelScope.launch { prefs.setKeepScreenOn(enabled) }
@@ -222,6 +242,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     override fun onCleared() {
         closeSession()
+        clipPlayer.release()
         soundFx.release()
         super.onCleared()
     }

@@ -22,6 +22,11 @@ data class Settings(
     val keepScreenOn: Boolean,
     /** Le tutoriel s'ouvre tout seul au premier lancement, et une seule fois. */
     val tutorialSeen: Boolean,
+    /**
+     * Sonothèque de l'animateur : un identifiant de son par touche, chaîne vide pour une touche
+     * libre. Toujours [SoundLibrary.SLOTS] entrées, pour que la grille garde sa forme.
+     */
+    val soundboard: List<String>,
 )
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "buzzme")
@@ -47,6 +52,7 @@ class Prefs(context: Context) {
             sound = prefs[KEY_SOUND] ?: true,
             keepScreenOn = prefs[KEY_KEEP_SCREEN_ON] ?: true,
             tutorialSeen = prefs[KEY_TUTORIAL_SEEN] ?: false,
+            soundboard = decodeSoundboard(prefs[KEY_SOUNDBOARD]),
         )
     }
 
@@ -74,6 +80,11 @@ class Prefs(context: Context) {
 
     suspend fun setTutorialSeen() = store.edit { it[KEY_TUTORIAL_SEEN] = true }
 
+    /** Mémorise la sonothèque telle qu'elle est posée : elle sera rechargée au salon suivant. */
+    suspend fun setSoundboard(slots: List<String>) = store.edit {
+        it[KEY_SOUNDBOARD] = slots.take(SoundLibrary.SLOTS).joinToString(SEPARATOR)
+    }
+
     suspend fun setFirebase(config: FirebaseConfig) = store.edit {
         it[KEY_FB_PROJECT] = config.projectId
         it[KEY_FB_APP] = config.applicationId
@@ -81,7 +92,15 @@ class Prefs(context: Context) {
         it[KEY_FB_URL] = config.databaseUrl
     }
 
+    /** Toujours neuf entrées en sortie, quel que soit ce qui a été enregistré auparavant. */
+    private fun decodeSoundboard(raw: String?): List<String> {
+        val saved = raw?.split(SEPARATOR).orEmpty()
+        return List(SoundLibrary.SLOTS) { index -> saved.getOrNull(index).orEmpty() }
+    }
+
     private companion object {
+        const val SEPARATOR = "|"
+        val KEY_SOUNDBOARD = stringPreferencesKey("soundboard")
         val KEY_PLAYER_ID = stringPreferencesKey("player_id")
         val KEY_NAME = stringPreferencesKey("name")
         val KEY_TRANSPORT = stringPreferencesKey("transport")

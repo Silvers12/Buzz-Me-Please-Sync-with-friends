@@ -32,6 +32,7 @@ fun BuzzMeApp(viewModel: AppViewModel = viewModel()) {
     val settings by viewModel.settings.collectAsStateWithLifecycle()
     val session by viewModel.session.collectAsStateWithLifecycle()
     val notice by viewModel.notice.collectAsStateWithLifecycle()
+    val playingClip by viewModel.clipPlayer.playing.collectAsStateWithLifecycle()
 
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -78,6 +79,11 @@ fun BuzzMeApp(viewModel: AppViewModel = viewModel()) {
                             session = current,
                             soundFx = viewModel.soundFx,
                             onLeave = viewModel::leaveRoom,
+                            soundLibrary = viewModel.soundLibrary,
+                            soundboard = settings.soundboard,
+                            playingClipId = playingClip,
+                            onPlayClip = viewModel::playClip,
+                            onPickClip = viewModel::setSoundSlot,
                         )
                     }
                 }

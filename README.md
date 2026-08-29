@@ -29,6 +29,12 @@ Le jeu fonctionne **en Wi-Fi local, sans Internet et sans serveur**.
 - **Élimination.** Buzzer noir en un appui, réactivation quand l'animateur le décide.
 - **Scores.** +1, +3, −1 par joueur, remise à zéro globale. L'animateur peut les masquer sur les
   téléphones des joueurs : chacun ne voit plus que le sien, le tableau complet reste au pupitre.
+- **Sonothèque.** Neuf touches sur le téléphone de l'animateur, prises dans la bibliothèque de
+  sons de l'application et préparées avant la partie : bonne réponse, mauvaise réponse, klaxon,
+  tic-tac… Le panneau se rétracte sur le plateau, la sélection est conservée d'une partie à
+  l'autre. Pour ajouter un son : déposer le fichier dans
+  [`app/src/main/res/raw`](app/src/main/res/raw) (nom en minuscules, sans accent ni tiret :
+  `correct.mp3`) puis ajouter une ligne dans `core/SoundLibrary.kt`.
 - **Relance / reset.** Nouvelle manche immédiate, même si un buzzer est déjà pris.
 - **Passation d'animation.** Le rôle change de téléphone sans que personne ne quitte le salon,
   scores et statuts compris.

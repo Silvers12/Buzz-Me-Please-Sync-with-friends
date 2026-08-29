@@ -101,7 +101,8 @@ private val steps = listOf(
         title = "Éliminer, réactiver, compter",
         body = "L'animateur appuie sur la ligne d'un joueur pour ouvrir son pupitre : buzzer noir " +
             "(éliminé) ou réactivé en un geste, points en +1, +3 ou −1, exclusion du salon. Un " +
-            "joueur éliminé reste sur le plateau et peut revenir à tout moment.",
+            "joueur éliminé disparaît du plateau des autres — il ne joue plus — mais reste sur " +
+            "celui de l'animateur, qui peut le rappeler à tout moment.",
         accent = Stage.Amber,
     ),
     TutorialStep(
@@ -122,6 +123,15 @@ private val steps = listOf(
             "le sien, vous gardez le tableau complet. Le décompte et les sons se coupent au " +
             "même endroit.",
         accent = Stage.VioletSoft,
+    ),
+    TutorialStep(
+        number = "9",
+        title = "Préparer ses bruitages",
+        body = "Le bouton « Sons », au-dessus du plateau, ouvre la sonothèque de l'animateur : " +
+            "neuf touches à remplir avant la partie parmi les bruitages de l'application. Un " +
+            "appui joue le son, un appui long change la touche ou la libère. Votre sélection est " +
+            "conservée d'une partie à l'autre, et le panneau se rétracte sur le plateau.",
+        accent = Stage.Cyan,
     ),
 )
 
@@ -153,7 +163,7 @@ fun TutorialScreen(onBack: () -> Unit) {
 
             Spacer(Modifier.height(8.dp))
             Text(
-                "Huit étapes, de la création du salon au passage de l'animation.",
+                "Neuf étapes, de la création du salon à la sonothèque de l'animateur.",
                 style = MaterialTheme.typography.bodyLarge,
                 color = Stage.TextSecondary,
             )
