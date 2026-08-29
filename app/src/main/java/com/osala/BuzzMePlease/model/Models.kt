@@ -53,10 +53,11 @@ data class RoomOptions(
     /** Son + vibration à l'armement et au buzz. */
     val sound: Boolean = true,
     /**
-     * Scores masqués sur les téléphones des joueurs : chacun ne voit plus que le sien, et
-     * l'animateur garde le tableau complet. De quoi garder le suspense jusqu'au dénouement.
+     * Plateau masqué sur les téléphones des joueurs : chacun ne voit plus que sa propre ligne,
+     * avec son score, et l'animateur garde le tableau complet. De quoi garder le suspense
+     * jusqu'au dénouement — personne ne sait où en sont les autres.
      */
-    val hideScores: Boolean = false,
+    val hideBoard: Boolean = false,
 )
 
 @Serializable

@@ -255,11 +255,11 @@ fun RoomOptionsDialog(
                 )
                 Spacer(Modifier.height(14.dp))
                 OptionSwitch(
-                    title = stringResource(R.string.rules_hide_scores_title),
-                    subtitle = stringResource(R.string.rules_hide_scores_subtitle),
-                    checked = options.hideScores,
+                    title = stringResource(R.string.rules_hide_board_title),
+                    subtitle = stringResource(R.string.rules_hide_board_subtitle),
+                    checked = options.hideBoard,
                     enabled = amHost,
-                    onCheckedChange = { onOptions(options.copy(hideScores = it)) },
+                    onCheckedChange = { onOptions(options.copy(hideBoard = it)) },
                 )
                 Spacer(Modifier.height(14.dp))
                 OptionSwitch(

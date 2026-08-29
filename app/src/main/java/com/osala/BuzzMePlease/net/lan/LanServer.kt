@@ -11,6 +11,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.net.InetSocketAddress
@@ -42,9 +43,11 @@ class LanServer(
     @Volatile
     private var serverSocket: ServerSocket? = null
     private var acceptJob: Job? = null
+    private var watchdogJob: Job? = null
 
     fun start(port: Int = GAME_PORT) {
         if (acceptJob != null) return
+        watchdogJob = scope.launch { watchPeers() }
         acceptJob = scope.launch(Dispatchers.IO) {
             val socket = bind(port)
             if (socket == null) {
@@ -105,6 +108,22 @@ class LanServer(
         }
     }
 
+    /**
+     * Le joueur envoie une sonde toutes les deux secondes, à laquelle l'hôte répond aussitôt.
+     * Un silence prolongé signe donc une liaison morte que TCP n'a pas vue passer : on ferme,
+     * la boucle de lecture rend la main et le plateau montre le joueur hors ligne. Sans cela,
+     * la ligne resterait verte pour un téléphone qui ne reçoit plus rien.
+     */
+    private suspend fun watchPeers() {
+        while (currentCoroutineContext().isActive) {
+            delay(WATCHDOG_TICK_MILLIS)
+            peers.filter { it.silentForMillis() > PEER_SILENCE_MILLIS }.forEach { stale ->
+                Log.d(TAG, "pair muet depuis ${stale.silentForMillis()} ms, fermeture")
+                stale.close()
+            }
+        }
+    }
+
     fun broadcast(message: NetMessage) {
         peers.forEach { it.send(message) }
     }
@@ -127,6 +146,8 @@ class LanServer(
     }
 
     fun stop() {
+        watchdogJob?.cancel()
+        watchdogJob = null
         acceptJob?.cancel()
         acceptJob = null
         runCatching { serverSocket?.close() }
@@ -140,5 +161,9 @@ class LanServer(
         const val BACKLOG = 24
         const val BIND_ATTEMPTS = 12
         const val BIND_RETRY_MILLIS = 250L
+
+        /** Quatre sondes manquées : le joueur ne parle plus, sa connexion est morte. */
+        const val PEER_SILENCE_MILLIS = 8_000L
+        const val WATCHDOG_TICK_MILLIS = 2_000L
     }
 }

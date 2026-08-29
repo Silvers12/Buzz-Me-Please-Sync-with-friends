@@ -235,18 +235,28 @@ fun RoomScreen(
 
                     Spacer(Modifier.height(8.dp))
 
-                    // Le plateau tel qu'il s'affiche ici : c'est aussi lui que compte le « x/y en ligne ».
-                    val ordered = remember(state, amHost) {
+                    // Le plateau du salon, et ce qu'on en montre ici : c'est le premier que
+                    // compte le « x/y en ligne », pour que le joueur sache qui est là même
+                    // quand le tableau lui est masqué.
+                    val board = remember(state, amHost) {
                         orderPlayers(state, keepEliminated = amHost, myId = session.myId)
+                    }
+                    val hidden = !amHost && state.options.hideBoard
+                    val ordered = remember(board, hidden) {
+                        if (hidden) board.filter { it.id == session.myId } else board
                     }
 
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         SectionLabel(
                             when {
                                 showSounds -> stringResource(R.string.room_board_sounds)
-                                // Rappel utile des deux côtés : l'animateur sait ce qu'il a coupé, le
-                                // joueur comprend pourquoi les pastilles des autres sont barrées.
-                                state.options.hideScores -> stringResource(R.string.room_board_hidden)
+                                // Rappel utile des deux côtés, mais pas le même : l'animateur
+                                // sait ce qu'il a coupé, le joueur comprend pourquoi il se
+                                // retrouve seul sur le tableau.
+                                state.options.hideBoard && amHost ->
+                                    stringResource(R.string.room_board_hidden_host)
+
+                                state.options.hideBoard -> stringResource(R.string.room_board_hidden)
                                 amHost -> stringResource(R.string.room_board_host)
                                 else -> stringResource(R.string.room_board)
                             },
@@ -260,8 +270,8 @@ fun RoomScreen(
                             Text(
                                 stringResource(
                                     R.string.room_online_count,
-                                    ordered.count { it.connected },
-                                    ordered.size,
+                                    board.count { it.connected },
+                                    board.size,
                                 ),
                                 style = MaterialTheme.typography.labelMedium,
                                 color = Stage.TextMuted,
@@ -318,11 +328,6 @@ fun RoomScreen(
                                 isMe = session.myId == player.id,
                                 showControls = amHost,
                                 onClick = { selectedPlayer = player.id },
-                                // Scores masqués : chaque joueur garde le sien sous les yeux, et
-                                // l'animateur continue de voir le tableau entier.
-                                showScore = amHost ||
-                                    !state.options.hideScores ||
-                                    player.id == session.myId,
                             )
                         }
                     }

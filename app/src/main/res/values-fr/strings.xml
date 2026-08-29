@@ -71,7 +71,8 @@
     <string name="room_rules">Règles de la partie</string>
     <string name="room_board">Plateau</string>
     <string name="room_board_host">Plateau · appuyez sur un joueur</string>
-    <string name="room_board_hidden">Plateau · scores masqués</string>
+    <string name="room_board_hidden">Plateau · votre ligne</string>
+    <string name="room_board_hidden_host">Plateau · masqué aux joueurs</string>
     <string name="room_board_sounds">Sonothèque · appui long pour changer</string>
     <string name="room_online_count">%1$d/%2$d en ligne</string>
     <string name="room_sounds_open">Sons</string>
@@ -112,7 +113,6 @@
     <string name="player_ready">Prêt</string>
     <string name="player_ready_ping">Prêt · %1$d ms</string>
     <string name="player_winner_desc">Vainqueur de la manche</string>
-    <string name="player_score_hidden">Score masqué par l\'animateur</string>
 
     <!-- Pupitre du joueur -->
     <string name="dialog_score">Score</string>
@@ -131,8 +131,8 @@
     <string name="rules_duel_subtitle">Le premier qui buzze verrouille tous les autres. Désactivé, tout le monde buzze et l\'on obtient un classement complet.</string>
     <string name="rules_countdown_title">Décompte 3 · 2 · 1</string>
     <string name="rules_countdown_subtitle">Tous les appareils s\'arment au même instant, à la milliseconde près.</string>
-    <string name="rules_hide_scores_title">Scores masqués</string>
-    <string name="rules_hide_scores_subtitle">Sur le téléphone des joueurs, chacun ne voit plus que son propre score. Vous gardez le tableau complet.</string>
+    <string name="rules_hide_board_title">Plateau masqué</string>
+    <string name="rules_hide_board_subtitle">Sur le téléphone des joueurs, le plateau se réduit à leur propre ligne et à leur score. Vous gardez le tableau complet.</string>
     <string name="rules_sound_title">Sons et vibrations</string>
     <string name="rules_sound_subtitle">Bips du décompte, go de départ et retour au buzz.</string>
     <string name="rules_reset_scores">Remettre les scores à zéro</string>

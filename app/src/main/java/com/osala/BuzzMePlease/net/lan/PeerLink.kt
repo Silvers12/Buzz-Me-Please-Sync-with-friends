@@ -1,5 +1,6 @@
 package com.osala.BuzzMePlease.net.lan
 
+import android.os.SystemClock
 import android.util.Log
 import com.osala.BuzzMePlease.net.NetMessage
 import com.osala.BuzzMePlease.net.ProtocolJson
@@ -29,6 +30,16 @@ class PeerLink(private val socket: Socket) {
 
     @Volatile
     private var closed = false
+
+    /**
+     * Dernier signe de vie reçu. TCP ne dit rien d'une liaison à demi ouverte — un Wi-Fi qui
+     * décroche, un téléphone qui s'endort — et la lecture attendrait alors indéfiniment. C'est
+     * donc au protocole de trancher : au-delà d'un certain silence, la connexion est morte.
+     */
+    @Volatile
+    private var lastHeardAt = SystemClock.elapsedRealtime()
+
+    fun silentForMillis(): Long = SystemClock.elapsedRealtime() - lastHeardAt
 
     private val outbox = Channel<String>(Channel.UNLIMITED)
     private var writerJob: Job? = null
@@ -77,6 +88,7 @@ class PeerLink(private val socket: Socket) {
         try {
             while (true) {
                 val line = reader.readLine() ?: break
+                lastHeardAt = SystemClock.elapsedRealtime()
                 if (line.isBlank()) continue
                 val message = runCatching { ProtocolJson.decodeFromString<NetMessage>(line) }
                     .onFailure { Log.w(TAG, "message illisible: ${it.message}") }

@@ -103,6 +103,7 @@ class LanRoomSession(
     // -- rôle joueur
     private var clientJob: Job? = null
     private var pingJob: Job? = null
+    private var watchdogJob: Job? = null
 
     @Volatile
     private var clientLink: PeerLink? = null
@@ -307,12 +308,32 @@ class LanRoomSession(
 
         pingJob?.cancel()
         pingJob = scope.launch { pingLoop(peer) }
+        watchdogJob?.cancel()
+        watchdogJob = scope.launch { watchHost(peer) }
 
         withContext(Dispatchers.IO) { peer.readLoop { onGuestMessage(it) } }
 
         pingJob?.cancel(); pingJob = null
+        watchdogJob?.cancel(); watchdogJob = null
         peer.close()
         if (clientLink === peer) clientLink = null
+    }
+
+    /**
+     * L'hôte répond à chaque sonde : son silence prolongé veut dire que la liaison est morte
+     * sans que TCP l'ait signalé — Wi-Fi qui décroche, téléphone qui s'endort, hôte qui a
+     * planté. La lecture attendrait alors indéfiniment et le buzzer resterait éteint au go,
+     * comme si le joueur avait quitté le salon. On coupe donc nous-mêmes : la boucle de
+     * connexion enchaîne aussitôt sur une reconnexion, sans rien demander à personne.
+     */
+    private suspend fun watchHost(peer: PeerLink) {
+        while (coroutineContext.isActive) {
+            delay(WATCHDOG_TICK_MILLIS)
+            if (peer.silentForMillis() <= HOST_SILENCE_MILLIS) continue
+            Log.d(TAG, "hôte muet depuis ${peer.silentForMillis()} ms, on se reconnecte")
+            peer.close()
+            return
+        }
     }
 
     /**
@@ -389,6 +410,7 @@ class LanRoomSession(
     private fun stopGuest() {
         clientJob?.cancel(); clientJob = null
         pingJob?.cancel(); pingJob = null
+        watchdogJob?.cancel(); watchdogJob = null
         clientLink?.close()
         clientLink = null
     }
@@ -539,6 +561,10 @@ class LanRoomSession(
         private const val RECONNECT_MILLIS = 400L
         private const val STALE_ADDRESS_ATTEMPTS = 3
         private const val PING_INTERVAL_MILLIS = 2_000L
+
+        /** Trois sondes sans réponse : la liaison avec l'hôte est morte, on repart de zéro. */
+        private const val HOST_SILENCE_MILLIS = 6_000L
+        private const val WATCHDOG_TICK_MILLIS = 1_000L
         private const val BURST_INTERVAL_MILLIS = 150L
         private const val BURST_COUNT = 8
         private const val HANDOVER_FLUSH_MILLIS = 300L

@@ -73,7 +73,8 @@
     <string name="room_rules">Game rules</string>
     <string name="room_board">Board</string>
     <string name="room_board_host">Board · tap a player</string>
-    <string name="room_board_hidden">Board · scores hidden</string>
+    <string name="room_board_hidden">Board · your line only</string>
+    <string name="room_board_hidden_host">Board · hidden from players</string>
     <string name="room_board_sounds">Soundboard · long press to change</string>
     <string name="room_online_count">%1$d/%2$d online</string>
     <string name="room_sounds_open">Sounds</string>
@@ -114,7 +115,6 @@
     <string name="player_ready">Ready</string>
     <string name="player_ready_ping">Ready · %1$d ms</string>
     <string name="player_winner_desc">Round winner</string>
-    <string name="player_score_hidden">Score hidden by the host</string>
 
     <!-- Pupitre du joueur -->
     <string name="dialog_score">Score</string>
@@ -133,8 +133,8 @@
     <string name="rules_duel_subtitle">The first to buzz locks everyone else out. Turn it off and everyone buzzes, for a full ranking.</string>
     <string name="rules_countdown_title">Countdown 3 · 2 · 1</string>
     <string name="rules_countdown_subtitle">Every device arms at the same instant, to the millisecond.</string>
-    <string name="rules_hide_scores_title">Hidden scores</string>
-    <string name="rules_hide_scores_subtitle">On the players\' phones, everyone only sees their own score. You keep the full table.</string>
+    <string name="rules_hide_board_title">Hidden board</string>
+    <string name="rules_hide_board_subtitle">On the players\' phones, the board shrinks to their own line and score. You keep the full table.</string>
     <string name="rules_sound_title">Sound and vibration</string>
     <string name="rules_sound_subtitle">Countdown beeps, go signal and buzz feedback.</string>
     <string name="rules_reset_scores">Reset all scores</string>
