@@ -73,7 +73,6 @@
     <string name="room_rules">Game rules</string>
     <string name="room_board">Board</string>
     <string name="room_board_host">Board · tap a player</string>
-    <string name="room_board_hidden">Board · your line only</string>
     <string name="room_board_hidden_host">Board · hidden from players</string>
     <string name="room_board_sounds">Soundboard · long press to change</string>
     <string name="room_online_count">%1$d/%2$d online</string>

@@ -71,7 +71,6 @@
     <string name="room_rules">Règles de la partie</string>
     <string name="room_board">Plateau</string>
     <string name="room_board_host">Plateau · appuyez sur un joueur</string>
-    <string name="room_board_hidden">Plateau · votre ligne</string>
     <string name="room_board_hidden_host">Plateau · masqué aux joueurs</string>
     <string name="room_board_sounds">Sonothèque · appui long pour changer</string>
     <string name="room_online_count">%1$d/%2$d en ligne</string>
