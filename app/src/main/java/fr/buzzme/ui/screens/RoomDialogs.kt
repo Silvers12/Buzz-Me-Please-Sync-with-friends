@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -32,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -241,6 +243,15 @@ fun RoomOptionsDialog(
                 )
                 Spacer(Modifier.height(14.dp))
                 OptionSwitch(
+                    title = "Scores masqués",
+                    subtitle = "Sur le téléphone des joueurs, chacun ne voit plus que son propre " +
+                        "score. Vous gardez le tableau complet.",
+                    checked = options.hideScores,
+                    enabled = amHost,
+                    onCheckedChange = { onOptions(options.copy(hideScores = it)) },
+                )
+                Spacer(Modifier.height(14.dp))
+                OptionSwitch(
                     title = "Sons et vibrations",
                     subtitle = "Bips du décompte, top de départ et retour au buzz.",
                     checked = options.sound,
@@ -279,7 +290,16 @@ fun OptionSwitch(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 2.dp),
+            // Toute la ligne bascule l'option : viser la pastille de l'interrupteur, sur un
+            // téléphone tenu à bout de bras pendant une partie, c'est une cible bien trop fine.
+            // Au passage, le titre devient le libellé annoncé par les lecteurs d'écran.
+            .toggleable(
+                value = checked,
+                enabled = enabled,
+                role = Role.Switch,
+                onValueChange = onCheckedChange,
+            )
+            .padding(vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(modifier = Modifier.weight(1f)) {
@@ -297,7 +317,8 @@ fun OptionSwitch(
         Spacer(Modifier.width(12.dp))
         Switch(
             checked = checked,
-            onCheckedChange = onCheckedChange,
+            // La ligne entière porte déjà le geste : l'interrupteur ne le capte pas une seconde fois.
+            onCheckedChange = null,
             enabled = enabled,
             colors = SwitchDefaults.colors(
                 checkedThumbColor = Color.White,

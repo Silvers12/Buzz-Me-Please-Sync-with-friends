@@ -58,6 +58,9 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     private var endedJob: Job? = null
 
+    /** Écran vers lequel refermer le tutoriel. */
+    private var tutorialOrigin: Route = Route.Home
+
     init {
         viewModelScope.launch {
             prefs.ensurePlayerId()
@@ -90,13 +93,17 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun goTutorial() {
+        // Le tutoriel se referme là d'où on l'a ouvert : appelé depuis les réglages, il y
+        // ramène plutôt que de renvoyer l'utilisateur à l'accueil.
+        tutorialOrigin = _route.value.takeIf { it == Route.Settings } ?: Route.Home
         _route.value = Route.Tutorial
     }
 
     /** Sortie du tutoriel : on ne le rouvrira plus tout seul. */
     fun closeTutorial() {
         viewModelScope.launch { prefs.setTutorialSeen() }
-        _route.value = Route.Home
+        _route.value = tutorialOrigin
+        tutorialOrigin = Route.Home
     }
 
     fun dismissNotice() {
