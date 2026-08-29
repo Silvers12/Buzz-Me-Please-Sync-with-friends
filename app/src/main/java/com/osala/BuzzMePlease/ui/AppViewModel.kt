@@ -44,6 +44,11 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
      * sons suivent la langue choisie, la liste se refait donc quand elle change. */
     private val _soundLibrary = MutableStateFlow(SoundLibrary.clips(AppLocale.wrap(application)))
     val soundLibrary = _soundLibrary.asStateFlow()
+
+    /** Les sons de buzzer proposés au joueur, mêmes libellés traduits que la sonothèque. */
+    private val _buzzerLibrary =
+        MutableStateFlow(SoundLibrary.clips(AppLocale.wrap(application), SoundLibrary.BUZZER))
+    val buzzerLibrary = _buzzerLibrary.asStateFlow()
     val clipPlayer = ClipPlayer(application)
 
     private val _settings = MutableStateFlow(
@@ -55,6 +60,8 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             tutorialSeen = true,
             soundboard = List(SoundLibrary.SLOTS) { "" },
             language = AppLanguage.SYSTEM,
+            buzzerSound = "",
+            buzzerImport = "",
         ),
     )
     val settings = _settings.asStateFlow()
@@ -83,9 +90,12 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                 if (AppLocale.current != loaded.language) {
                     AppLocale.current = loaded.language
                     _soundLibrary.value = SoundLibrary.clips(AppLocale.wrap(getApplication()))
+                    _buzzerLibrary.value =
+                        SoundLibrary.clips(AppLocale.wrap(getApplication()), SoundLibrary.BUZZER)
                 }
                 _settings.value = loaded
                 soundFx.enabled = loaded.sound
+                soundFx.buzzerSound = loaded.buzzerSound
                 if (_route.value == Route.Loading) {
                     // Première ouverture : on explique le jeu avant de laisser créer un salon.
                     _route.value = if (loaded.tutorialSeen) Route.Home else Route.Tutorial
@@ -152,6 +162,14 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     fun playClip(clip: SoundClip) = clipPlayer.play(clip)
 
     fun stopClip() = clipPlayer.stop()
+
+    /** Choisit le son du buzzer : un son livré, un fichier importé, ou le bip d'origine. */
+    fun setBuzzerSound(source: String) {
+        viewModelScope.launch { prefs.setBuzzerSound(source) }
+    }
+
+    /** Fait écouter un son sans attendre la prochaine manche. */
+    fun previewBuzzerSound(source: String) = soundFx.preview(source)
 
     fun setLanguage(language: AppLanguage) {
         viewModelScope.launch { prefs.setLanguage(language) }

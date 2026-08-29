@@ -3,70 +3,77 @@ package com.osala.BuzzMePlease.core
 import android.content.Context
 import android.media.AudioAttributes
 import android.media.MediaPlayer
+import android.net.Uri
+import android.util.Log
 import java.text.Collator
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 /**
- * Un son de la sonothèque : le nom du fichier déposé dans `res/raw`, et le libellé montré à
- * l'animateur.
+ * Un son embarqué : le nom du fichier sans extension, le libellé montré à l'écran, et son
+ * chemin dans les assets (« soundbox/correct.mp3 »).
  */
-data class SoundClip(val id: String, val label: String, val resId: Int)
+data class SoundClip(val id: String, val label: String, val path: String)
 
 /**
- * La sonothèque de l'animateur.
+ * Les sons livrés avec l'application, rangés en deux familles.
  *
- * **Ajouter un son** : déposer le fichier dans `app/src/main/res/raw` (nom en minuscules, sans
- * accent ni tiret : `correct.mp3`, `time_up.ogg`…) puis ajouter une ligne dans [CATALOG]. Un
- * son déclaré ici mais absent du dossier est simplement ignoré : le projet compile toujours,
- * et la sonothèque n'affiche que ce qui existe vraiment.
+ * **Ajouter un son** : déposer le fichier dans `app/src/main/assets/soundbox` pour la sonothèque
+ * de l'animateur, ou dans `app/src/main/assets/buzzer` pour les sons de buzzer proposés aux
+ * joueurs. Rien d'autre à faire : le dossier est lu à l'exécution. Le libellé se traduit en
+ * ajoutant une clé `sound_<nom du fichier>` dans `strings.xml` ; sans elle, le nom du fichier
+ * s'affiche tel quel, en clair.
+ *
+ * Les assets plutôt que `res/raw`, parce que `res/raw` est plat : il n'accepte pas de
+ * sous-dossier, et les deux familles finiraient mélangées.
  */
 object SoundLibrary {
 
-    /**
-     * Sons proposés. L'ordre est sans importance : la liste de choix est classée par libellé.
-     * Le libellé de chacun vit dans `strings.xml` sous la clé `sound_<id>`, pour être traduit
-     * comme le reste.
-     */
-    private val CATALOG = listOf(
-        // Verdicts : les deux touches qu'un animateur pose en premier.
-        "correct", "wrong", "tadaa", "wow", "cash_register", "fireworks", "drum_joke",
-        "boom", "gunshot", "glass_breaking", "whoosh", "pop", "doorbell", "horn",
-        "car_honk", "police_siren", "car_engine", "clock", "slow_clock_ticking",
-        "heartbeat", "winter_wind", "keyboard_typing", "violin", "witch_laugh",
-        "evil_laugh", "monster_growl", "pathetic_screaming", "i_see_you", "stop_it",
-        "shut_up", "baby_crying", "meow", "goat", "frog", "rooster_crowing", "wet_fart",
-    )
+    /** La sonothèque de l'animateur. */
+    const val SOUNDBOX = "soundbox"
 
-    /**
-     * Les sons réellement présents dans l'application, classés par libellé.
-     *
-     * Le tri suit la langue affichée — un [Collator] plutôt qu'une comparaison de chaînes, pour
-     * que « Éclat de rire » se range à sa place et non après le Z. Trente-six sons, on doit
-     * pouvoir en retrouver un sans balayer la liste.
-     */
-    fun clips(context: Context): List<SoundClip> {
-        val res = context.resources
-        val packageName = context.packageName
-        val collator = Collator.getInstance(AppLocale.locale)
-        return CATALOG.mapNotNull { id ->
-            @Suppress("DiscouragedApi")
-            val resId = res.getIdentifier(id, "raw", packageName)
-            if (resId == 0) return@mapNotNull null
-            @Suppress("DiscouragedApi")
-            val labelId = res.getIdentifier("sound_$id", "string", packageName)
-            SoundClip(id, if (labelId == 0) id else context.getString(labelId), resId)
-        }.sortedWith { a, b -> collator.compare(a.label, b.label) }
-    }
+    /** Les sons de buzzer proposés au joueur. */
+    const val BUZZER = "buzzer"
 
     /** Nombre de touches de la sonothèque : trois rangées de trois, à portée du pouce. */
     const val SLOTS = 9
+
+    /**
+     * Les sons d'un dossier, classés par libellé.
+     *
+     * Le tri suit la langue affichée — un [Collator] plutôt qu'une comparaison de chaînes, pour
+     * que « Bébé qui pleure » se range après « Battements de cœur » et non après le Z.
+     */
+    fun clips(context: Context, folder: String = SOUNDBOX): List<SoundClip> {
+        val files = runCatching { context.assets.list(folder) }.getOrNull().orEmpty()
+        val collator = Collator.getInstance(AppLocale.locale)
+        return files.mapNotNull { file ->
+            val id = file.substringBeforeLast('.', missingDelimiterValue = "")
+            if (id.isBlank()) return@mapNotNull null
+            SoundClip(id, label(context, id), "$folder/$file")
+        }.sortedWith { a, b -> collator.compare(a.label, b.label) }
+    }
+
+    /** Le chemin du son « mauvaise réponse », joué chez celui qui perd la parole. */
+    fun wrongPath(context: Context): String? =
+        clips(context).firstOrNull { it.id == "wrong" }?.path
+
+    /** Le libellé traduit du son, ou son nom de fichier rendu lisible faute de traduction. */
+    private fun label(context: Context, id: String): String {
+        @Suppress("DiscouragedApi")
+        val labelId = context.resources.getIdentifier("sound_$id", "string", context.packageName)
+        if (labelId != 0) return context.getString(labelId)
+        return id.replace('_', ' ').replaceFirstChar { it.uppercase() }
+    }
 }
 
 /**
- * Lecteur de la sonothèque. Un seul son à la fois : réappuyer coupe le précédent, ce qui évite
- * l'empilement de jingles quand l'animateur enchaîne les manches.
+ * Lecteur de sons. Un seul à la fois : réappuyer coupe le précédent, ce qui évite l'empilement
+ * de jingles quand l'animateur enchaîne les manches.
+ *
+ * Il lit aussi bien un son embarqué qu'un fichier choisi par l'utilisateur sur son téléphone,
+ * d'où la source en texte : un chemin d'asset, ou une URI `content://`.
  */
 class ClipPlayer(context: Context) {
 
@@ -77,15 +84,11 @@ class ClipPlayer(context: Context) {
     private val _playing = MutableStateFlow<String?>(null)
     val playing: StateFlow<String?> = _playing.asStateFlow()
 
-    fun play(clip: SoundClip, onFinished: () -> Unit = {}) {
+    fun play(clip: SoundClip, onFinished: () -> Unit = {}) = play(clip.path, clip.id, onFinished)
+
+    fun play(source: String, tag: String = source, onFinished: () -> Unit = {}) {
         stop()
-        val created = runCatching { MediaPlayer.create(appContext, clip.resId) }.getOrNull() ?: return
-        created.setAudioAttributes(
-            AudioAttributes.Builder()
-                .setUsage(AudioAttributes.USAGE_MEDIA)
-                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                .build(),
-        )
+        val created = open(appContext, source) ?: return
         created.setOnCompletionListener {
             _playing.value = null
             onFinished()
@@ -93,7 +96,7 @@ class ClipPlayer(context: Context) {
             if (player === it) player = null
         }
         player = created
-        _playing.value = clip.id
+        _playing.value = tag
         runCatching { created.start() }
     }
 
@@ -107,3 +110,26 @@ class ClipPlayer(context: Context) {
 
     fun release() = stop()
 }
+
+/**
+ * Prépare un lecteur sur la source demandée, prêt à démarrer, ou null si elle est illisible —
+ * un fichier importé peut avoir été supprimé ou déplacé depuis, et le jeu doit continuer.
+ */
+internal fun open(context: Context, source: String): MediaPlayer? = runCatching<MediaPlayer> {
+    val player = MediaPlayer()
+    player.setAudioAttributes(
+        AudioAttributes.Builder()
+            .setUsage(AudioAttributes.USAGE_MEDIA)
+            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+            .build(),
+    )
+    if (source.startsWith("content://") || source.startsWith("file://")) {
+        player.setDataSource(context, Uri.parse(source))
+    } else {
+        context.assets.openFd(source).use { fd ->
+            player.setDataSource(fd.fileDescriptor, fd.startOffset, fd.length)
+        }
+    }
+    player.prepare()
+    player
+}.onFailure { Log.w("SoundLibrary", "son illisible : $source", it) }.getOrNull()

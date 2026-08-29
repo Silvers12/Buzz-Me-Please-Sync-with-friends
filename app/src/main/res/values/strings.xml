@@ -41,6 +41,12 @@
     <string name="settings_language_fr">Français</string>
     <string name="settings_language_en">English</string>
     <string name="settings_comfort_label">Playing comfort</string>
+    <string name="settings_buzzer_label">Buzzer sound</string>
+    <string name="settings_buzzer_hint">What your own phone plays when you press. Tap a sound to hear it.</string>
+    <string name="settings_buzzer_default">Default beep</string>
+    <string name="settings_buzzer_import">Import a sound…</string>
+    <string name="settings_buzzer_imported">Imported sound</string>
+    <string name="settings_buzzer_unreadable">That file cannot be read. Pick another one.</string>
     <string name="settings_sound_title">Sound and vibration</string>
     <string name="settings_sound_subtitle">Countdown beeps, go signal, buzz feedback.</string>
     <string name="settings_screen_title">Keep the screen on</string>

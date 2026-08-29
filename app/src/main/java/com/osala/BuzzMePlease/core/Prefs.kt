@@ -24,6 +24,16 @@ data class Settings(
     val soundboard: List<String>,
     /** Langue choisie à la main, ou [AppLanguage.SYSTEM] pour suivre le téléphone. */
     val language: AppLanguage,
+    /**
+     * Le son du buzzer : un chemin d'asset pour un son livré avec le jeu, une URI
+     * `content://` pour un fichier importé, vide pour le bip d'origine.
+     */
+    val buzzerSound: String,
+    /**
+     * Le dernier fichier importé, gardé même quand un autre son est choisi : il reste dans la
+     * liste, on n'a pas à le rechercher pour y revenir.
+     */
+    val buzzerImport: String,
 )
 
 /**
@@ -59,6 +69,8 @@ class Prefs(context: Context) {
             tutorialSeen = prefs[KEY_TUTORIAL_SEEN] ?: false,
             soundboard = decodeSoundboard(prefs[KEY_SOUNDBOARD]),
             language = AppLanguage.of(prefs[KEY_LANGUAGE]),
+            buzzerSound = prefs[KEY_BUZZER_SOUND].orEmpty(),
+            buzzerImport = prefs[KEY_BUZZER_IMPORT].orEmpty(),
         )
     }
 
@@ -86,6 +98,12 @@ class Prefs(context: Context) {
 
     suspend fun setLanguage(language: AppLanguage) = store.edit { it[KEY_LANGUAGE] = language.name }
 
+    /** Le son du buzzer, vide pour revenir au bip. */
+    suspend fun setBuzzerSound(source: String) = store.edit {
+        it[KEY_BUZZER_SOUND] = source
+        if (source.startsWith("content://")) it[KEY_BUZZER_IMPORT] = source
+    }
+
     /** Mémorise la sonothèque telle qu'elle est posée : elle sera rechargée au salon suivant. */
     suspend fun setSoundboard(slots: List<String>) = store.edit {
         it[KEY_SOUNDBOARD] = slots.take(SoundLibrary.SLOTS).joinToString(SEPARATOR)
@@ -100,6 +118,8 @@ class Prefs(context: Context) {
     private companion object {
         const val SEPARATOR = "|"
         val KEY_SOUNDBOARD = stringPreferencesKey("soundboard")
+        val KEY_BUZZER_SOUND = stringPreferencesKey("buzzer_sound")
+        val KEY_BUZZER_IMPORT = stringPreferencesKey("buzzer_import")
         val KEY_LANGUAGE = stringPreferencesKey("language")
         val KEY_PLAYER_ID = stringPreferencesKey("player_id")
         val KEY_NAME = stringPreferencesKey("name")

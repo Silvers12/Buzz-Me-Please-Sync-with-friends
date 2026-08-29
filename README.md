@@ -28,8 +28,13 @@ sort du réseau de la maison.
   sons de l'application et préparées avant la partie : bonne réponse, mauvaise réponse, klaxon,
   tic-tac… Le panneau se rétracte sur le plateau, la sélection est conservée d'une partie à
   l'autre. Pour ajouter un son : déposer le fichier dans
-  [`app/src/main/res/raw`](app/src/main/res/raw) (nom en minuscules, sans accent ni tiret :
-  `correct.mp3`) puis ajouter une ligne dans `core/SoundLibrary.kt`.
+  [`app/src/main/assets/soundbox`](app/src/main/assets/soundbox), c'est tout — le dossier est lu
+  au démarrage. Le libellé se traduit en ajoutant une clé `sound_<nom du fichier>` dans les deux
+  `strings.xml` ; sans elle, le nom du fichier s'affiche tel quel.
+- **Son du buzzer.** Chaque joueur choisit dans les réglages ce que son propre téléphone joue
+  quand il appuie : le bip d'origine, l'un des sons livrés
+  ([`app/src/main/assets/buzzer`](app/src/main/assets/buzzer)), ou n'importe quel fichier audio
+  de son téléphone — MP3, WAV, OGG, ce que sait lire Android.
 - **Relance / reset.** Nouvelle manche immédiate, même si un buzzer est déjà pris.
 - **Passation d'animation.** Le rôle change de téléphone sans que personne ne quitte le salon,
   scores et statuts compris.

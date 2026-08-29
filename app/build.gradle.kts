@@ -47,6 +47,12 @@ android {
         compose = true
     }
 
+    androidResources {
+        // Les sons sont lus par un descripteur de fichier : compressés dans l'APK, ils
+        // seraient illisibles tels quels.
+        noCompress += listOf("mp3", "wav", "ogg", "m4a", "aac", "flac")
+    }
+
     packaging {
         resources.excludes += setOf(
             "/META-INF/{AL2.0,LGPL2.1}",

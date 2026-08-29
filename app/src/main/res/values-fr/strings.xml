@@ -39,6 +39,12 @@
     <string name="settings_language_fr">Français</string>
     <string name="settings_language_en">English</string>
     <string name="settings_comfort_label">Confort de jeu</string>
+    <string name="settings_buzzer_label">Son du buzzer</string>
+    <string name="settings_buzzer_hint">Ce que joue votre propre téléphone quand vous appuyez. Touchez un son pour l\'écouter.</string>
+    <string name="settings_buzzer_default">Bip d\'origine</string>
+    <string name="settings_buzzer_import">Importer un son…</string>
+    <string name="settings_buzzer_imported">Son importé</string>
+    <string name="settings_buzzer_unreadable">Ce fichier est illisible. Choisissez-en un autre.</string>
     <string name="settings_sound_title">Sons et vibrations</string>
     <string name="settings_sound_subtitle">Bips du décompte, go de départ, retour au buzz.</string>
     <string name="settings_screen_title">Garder l\'écran allumé</string>
