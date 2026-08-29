@@ -13,8 +13,8 @@ android {
         applicationId = "com.osala.buzzmeplease"
         minSdk = 26
         targetSdk = 35
-        versionCode = 101
-        versionName = "1.01"
+        versionCode = 102
+        versionName = "1.02"
         resourceConfigurations += listOf("fr", "en")
     }
 
