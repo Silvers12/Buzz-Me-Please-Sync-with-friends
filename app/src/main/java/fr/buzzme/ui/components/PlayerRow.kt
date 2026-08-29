@@ -20,7 +20,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EmojiEvents
-import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -43,6 +43,7 @@ import fr.buzzme.ui.theme.Stage
 
 private fun accentFor(visual: BuzzerVisual): Color = when (visual) {
     BuzzerVisual.ARMED -> Stage.Green
+    BuzzerVisual.SPEAKING -> Stage.Green
     BuzzerVisual.BUZZED -> Stage.Red
     BuzzerVisual.COUNTDOWN -> Stage.Amber
     BuzzerVisual.LOST -> Color(0xFF454568)
@@ -129,7 +130,7 @@ fun PlayerRow(
                 if (isHost) {
                     Spacer(Modifier.width(6.dp))
                     Icon(
-                        Icons.Filled.Star,
+                        Icons.Filled.Mic,
                         contentDescription = "Animateur",
                         tint = Stage.Gold,
                         modifier = Modifier.size(15.dp),

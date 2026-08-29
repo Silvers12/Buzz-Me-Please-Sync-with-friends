@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
@@ -17,9 +18,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.PersonRemove
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -72,7 +74,12 @@ fun PlayerActionsDialog(
                 Text(player.name, style = MaterialTheme.typography.headlineMedium, color = Stage.TextPrimary)
                 if (isHost) {
                     Spacer(Modifier.width(8.dp))
-                    Text("★", color = Stage.Gold, style = MaterialTheme.typography.headlineMedium)
+                    Icon(
+                        Icons.Filled.Mic,
+                        contentDescription = "Animateur",
+                        tint = Stage.Gold,
+                        modifier = Modifier.size(22.dp),
+                    )
                 }
             }
         },
@@ -117,7 +124,7 @@ fun PlayerActionsDialog(
                     Spacer(Modifier.height(8.dp))
                     GhostAction(
                         text = "Passer l'animation",
-                        icon = Icons.Filled.Star,
+                        icon = Icons.Filled.Mic,
                         onClick = { confirmTransfer = true },
                         accent = Stage.Gold,
                         modifier = Modifier.fillMaxWidth(),

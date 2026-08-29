@@ -20,7 +20,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Login
+import androidx.compose.material.icons.automirrored.filled.Login
 import androidx.compose.material.icons.filled.Router
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -142,7 +142,7 @@ fun JoinScreen(
                 Spacer(Modifier.height(14.dp))
                 PrimaryAction(
                     text = "Rejoindre",
-                    icon = Icons.Filled.Login,
+                    icon = Icons.AutoMirrored.Filled.Login,
                     enabled = Codes.isValid(code),
                     onClick = { onJoin(code, rooms.firstOrNull { it.code == code }?.address) },
                     modifier = Modifier.fillMaxWidth(),
