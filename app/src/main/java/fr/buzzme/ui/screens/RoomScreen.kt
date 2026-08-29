@@ -3,8 +3,13 @@ package fr.buzzme.ui.screens
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -115,8 +120,31 @@ fun RoomScreen(
     // Le buzzer est taillé sur la hauteur de l'écran, pas sur ce qui reste une fois le bandeau
     // de résultat affiché : sur un petit téléphone il garde une taille jouable, sur un grand il
     // ne flotte pas au milieu du vide.
-    val buzzerHeight = (LocalConfiguration.current.screenHeightDp.dp * 0.32f)
-        .coerceIn(150.dp, 300.dp)
+    val configuration = LocalConfiguration.current
+    val buzzerHeight = (configuration.screenHeightDp.dp * 0.32f).coerceIn(150.dp, 300.dp)
+
+    // Manche en cours, côté joueur : le plateau et l'en-tête s'effacent par le haut et par le
+    // bas, le buzzer prend toute la place. Plus rien à lire, plus rien à surveiller — juste le
+    // bouton sous le pouce. L'animateur, lui, garde son pupitre entier : c'est son tableau de bord.
+    val focused = !amHost &&
+        (myVisual == BuzzerVisual.COUNTDOWN || myVisual == BuzzerVisual.ARMED)
+    val focusSide = minOf(
+        configuration.screenWidthDp.dp - 36.dp,
+        configuration.screenHeightDp.dp * 0.82f,
+    )
+    val stageHeight by animateDpAsState(
+        targetValue = if (focused) focusSide else buzzerHeight,
+        animationSpec = tween(durationMillis = 420, easing = FastOutSlowInEasing),
+        label = "stage",
+    )
+    // Une fois l'écran vidé, le buzzer se recentre : la marge du haut se creuse à mesure que le
+    // reste s'en va, pour que le bouton finisse au milieu de l'écran, sous le pouce.
+    val focusGap = ((configuration.screenHeightDp.dp - focusSide) / 2 - 28.dp).coerceAtLeast(0.dp)
+    val stageGap by animateDpAsState(
+        targetValue = if (focused) focusGap else 0.dp,
+        animationSpec = tween(durationMillis = 420, easing = FastOutSlowInEasing),
+        label = "stageGap",
+    )
 
     StageBackground {
         Column(
@@ -125,22 +153,31 @@ fun RoomScreen(
                 .systemBarsPadding()
                 .padding(horizontal = 18.dp),
         ) {
-            RoomHeader(
-                state = state,
-                linkPhase = link.phase,
-                linkDetail = link.detail,
-                pingMillis = link.pingMillis,
-                precisionMillis = link.clockPrecisionMillis,
-                amHost = amHost,
-                onLeave = onLeave,
-            )
+            AnimatedVisibility(
+                visible = !focused,
+                enter = slideInVertically { -it } + fadeIn(),
+                exit = slideOutVertically { -it } + fadeOut(),
+            ) {
+                Column {
+                    RoomHeader(
+                        state = state,
+                        linkPhase = link.phase,
+                        linkDetail = link.detail,
+                        pingMillis = link.pingMillis,
+                        precisionMillis = link.clockPrecisionMillis,
+                        amHost = amHost,
+                        onLeave = onLeave,
+                    )
+                    Spacer(Modifier.height(10.dp))
+                }
+            }
 
-            Spacer(Modifier.height(10.dp))
+            Spacer(Modifier.height(stageGap))
 
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(buzzerHeight),
+                    .height(stageHeight),
                 contentAlignment = Alignment.Center,
             ) {
                 // fillMaxHeight + aspectRatio(1f) côté buzzer : le dôme reste rond quelle que
@@ -154,92 +191,101 @@ fun RoomScreen(
                 )
             }
 
-            Spacer(Modifier.height(10.dp))
-
-            if (amHost) {
-                HostControls(
-                    state = state,
-                    onArm = session::arm,
-                    onReset = session::reset,
-                    onOptions = { showOptions = true },
-                )
-                Spacer(Modifier.height(12.dp))
-            }
-
-            ResultBanner(
-                state = state,
-                myId = session.myId,
-                amHost = amHost,
-                onWrongAnswer = session::passSpeaker,
-            )
-
-            Spacer(Modifier.height(8.dp))
-
-            // Le plateau tel qu'il s'affiche ici : c'est aussi lui que compte le « x/y en ligne ».
-            val ordered = remember(state, amHost) {
-                orderPlayers(state, keepEliminated = amHost, myId = session.myId)
-            }
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                SectionLabel(
-                    when {
-                        // Rappel utile des deux côtés : l'animateur sait ce qu'il a coupé, le
-                        // joueur comprend pourquoi les pastilles des autres sont barrées.
-                        state.options.hideScores -> "Plateau · scores masqués"
-                        amHost -> "Plateau · appuyez sur un joueur"
-                        else -> "Plateau"
-                    },
-                    modifier = Modifier.weight(1f),
-                )
-                Spacer(Modifier.width(8.dp))
-                Text(
-                    "${ordered.count { it.connected }}/${ordered.size} en ligne",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = Stage.TextMuted,
-                    maxLines = 1,
-                )
-            }
-
-            Spacer(Modifier.height(8.dp))
-
-            // Les buzz réordonnent le plateau : sans cela, la liste suivrait le joueur qui était
-            // en tête et afficherait une ligne coupée au lieu du classement de la manche.
-            val boardState = rememberLazyListState()
-            LaunchedEffect(state.round, state.winnerId) {
-                if (boardState.firstVisibleItemIndex != 0 || boardState.firstVisibleItemScrollOffset != 0) {
-                    boardState.animateScrollToItem(0)
-                }
-            }
-            LazyColumn(
-                state = boardState,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(bottom = 24.dp),
+            AnimatedVisibility(
+                visible = !focused,
+                modifier = Modifier.weight(1f, fill = false),
+                enter = slideInVertically { it } + fadeIn(),
+                exit = slideOutVertically { it } + fadeOut(),
             ) {
-                items(ordered, key = { it.id }) { player ->
-                    PlayerRow(
-                        player = player,
-                        visual = state.visualFor(
-                            player.id,
-                            nowHost,
-                            if (player.id == session.myId) localBuzzRound else null,
-                        ),
-                        buzz = state.buzzOf(player.id),
-                        gapMillis = state.gapOf(player.id),
-                        rank = state.rankOf(player.id),
-                        isWinner = state.winnerId == player.id,
-                        isHost = state.hostId == player.id,
-                        isMe = session.myId == player.id,
-                        showControls = amHost,
-                        onClick = { selectedPlayer = player.id },
-                        // Scores masqués : chaque joueur garde le sien sous les yeux, et
-                        // l'animateur continue de voir le tableau entier.
-                        showScore = amHost ||
-                            !state.options.hideScores ||
-                            player.id == session.myId,
+                Column {
+                    Spacer(Modifier.height(10.dp))
+
+                    if (amHost) {
+                        HostControls(
+                            state = state,
+                            onArm = session::arm,
+                            onReset = session::reset,
+                            onOptions = { showOptions = true },
+                        )
+                        Spacer(Modifier.height(12.dp))
+                    }
+
+                    ResultBanner(
+                        state = state,
+                        myId = session.myId,
+                        amHost = amHost,
+                        onWrongAnswer = session::passSpeaker,
                     )
+
+                    Spacer(Modifier.height(8.dp))
+
+                    // Le plateau tel qu'il s'affiche ici : c'est aussi lui que compte le « x/y en ligne ».
+                    val ordered = remember(state, amHost) {
+                        orderPlayers(state, keepEliminated = amHost, myId = session.myId)
+                    }
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        SectionLabel(
+                            when {
+                                // Rappel utile des deux côtés : l'animateur sait ce qu'il a coupé, le
+                                // joueur comprend pourquoi les pastilles des autres sont barrées.
+                                state.options.hideScores -> "Plateau · scores masqués"
+                                amHost -> "Plateau · appuyez sur un joueur"
+                                else -> "Plateau"
+                            },
+                            modifier = Modifier.weight(1f),
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Text(
+                            "${ordered.count { it.connected }}/${ordered.size} en ligne",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = Stage.TextMuted,
+                            maxLines = 1,
+                        )
+                    }
+
+                    Spacer(Modifier.height(8.dp))
+
+                    // Les buzz réordonnent le plateau : sans cela, la liste suivrait le joueur qui était
+                    // en tête et afficherait une ligne coupée au lieu du classement de la manche.
+                    val boardState = rememberLazyListState()
+                    LaunchedEffect(state.round, state.winnerId) {
+                        if (boardState.firstVisibleItemIndex != 0 || boardState.firstVisibleItemScrollOffset != 0) {
+                            boardState.animateScrollToItem(0)
+                        }
+                    }
+                    LazyColumn(
+                        state = boardState,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        contentPadding = PaddingValues(bottom = 24.dp),
+                    ) {
+                        items(ordered, key = { it.id }) { player ->
+                            PlayerRow(
+                                player = player,
+                                visual = state.visualFor(
+                                    player.id,
+                                    nowHost,
+                                    if (player.id == session.myId) localBuzzRound else null,
+                                ),
+                                buzz = state.buzzOf(player.id),
+                                gapMillis = state.gapOf(player.id),
+                                rank = state.rankOf(player.id),
+                                isWinner = state.winnerId == player.id,
+                                isHost = state.hostId == player.id,
+                                isMe = session.myId == player.id,
+                                showControls = amHost,
+                                onClick = { selectedPlayer = player.id },
+                                // Scores masqués : chaque joueur garde le sien sous les yeux, et
+                                // l'animateur continue de voir le tableau entier.
+                                showScore = amHost ||
+                                    !state.options.hideScores ||
+                                    player.id == session.myId,
+                            )
+                        }
+                    }
                 }
             }
         }

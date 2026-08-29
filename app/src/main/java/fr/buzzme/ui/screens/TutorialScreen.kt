@@ -71,7 +71,9 @@ private val steps = listOf(
         title = "Lancer le top",
         body = "L'animateur appuie sur « TOP ! ». Un décompte 3 · 2 · 1 se déclenche sur tous les " +
             "téléphones en même temps, puis chaque buzzer passe au vert à la milliseconde près. " +
-            "L'animateur participe comme les autres : son buzzer est le même.",
+            "Chez les joueurs, le reste de l'écran s'efface le temps de la manche : il ne reste " +
+            "que le buzzer, en grand, au milieu. L'animateur garde son pupitre entier — c'est son " +
+            "tableau de bord — et participe comme les autres.",
         accent = Stage.Green,
     ),
     TutorialStep(

@@ -17,7 +17,8 @@ Le jeu fonctionne **en Wi-Fi local, sans Internet et sans serveur**.
 - **Salon par code.** L'animateur crée, les autres rejoignent. En Wi-Fi local, le salon est
   détecté automatiquement (mDNS) : un appui suffit, sans même taper le code.
 - **Le top.** Un décompte 3 · 2 · 1 se déclenche au même instant sur tous les téléphones, puis
-  les buzzers passent au vert.
+  les buzzers passent au vert. Chez les joueurs, l'écran se vide le temps de la manche — en-tête
+  et plateau glissent hors champ, le buzzer occupe le centre. L'animateur garde son pupitre.
 - **Le buzz.** Le premier qui appuie passe au rouge et verrouille tous les autres. Son heure
   exacte — heure, minute, seconde, milliseconde — remonte à l'animateur.
 - **La parole.** Une fois le classement arrêté, un seul buzzer reste vert : celui qui répond. Sur
