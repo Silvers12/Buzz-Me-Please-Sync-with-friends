@@ -44,10 +44,10 @@ jobs:
           path: app/build/reports/tests/
           if-no-files-found: ignore
 
-      # Installable directement : « buzz-me-debug » à télécharger sur la page du run.
+      # Installable directement : « buzz-me-please-debug » à télécharger sur la page du run.
       - name: Publier l'APK
         uses: actions/upload-artifact@v4
         with:
-          name: buzz-me-debug
+          name: buzz-me-please-debug
           path: app/build/outputs/apk/debug/*.apk
           if-no-files-found: error

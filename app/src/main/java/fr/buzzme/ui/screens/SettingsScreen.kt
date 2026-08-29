@@ -125,7 +125,7 @@ fun SettingsScreen(
             Spacer(Modifier.height(24.dp))
 
             Text(
-                "Buzz Me · buzzer de quiz synchronisé",
+                "Buzz Me Please · buzzer de quiz synchronisé",
                 style = MaterialTheme.typography.bodyMedium,
                 color = Stage.TextMuted,
             )

@@ -23,9 +23,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Login
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CloudQueue
-import androidx.compose.material.icons.filled.Login
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material3.Icon
@@ -93,15 +93,18 @@ fun HomeScreen(
 
             Spacer(Modifier.height(12.dp))
 
+            // Le titre en deux temps, comme un générique : le nom en blanc, la chute en or.
             Text(
-                text = "BUZZ",
+                text = "BUZZ ME",
                 style = MaterialTheme.typography.displayLarge,
                 color = Stage.TextPrimary,
+                maxLines = 1,
             )
             Text(
-                text = "ME",
+                text = "PLEASE",
                 style = MaterialTheme.typography.displayLarge,
                 color = Stage.Gold,
+                maxLines = 1,
             )
             Spacer(Modifier.height(8.dp))
             Text(
@@ -206,7 +209,7 @@ fun HomeScreen(
             Spacer(Modifier.height(12.dp))
             PrimaryAction(
                 text = "Rejoindre avec un code",
-                icon = Icons.Filled.Login,
+                icon = Icons.AutoMirrored.Filled.Login,
                 enabled = ready,
                 onClick = onJoin,
                 modifier = Modifier.fillMaxWidth(),
