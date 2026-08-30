@@ -104,6 +104,12 @@ data class Player(
     val yellowCards: Int = 0,
     val redCards: Int = 0,
     val joinedAt: Long = 0,
+    /**
+     * La manche où l'animateur l'a remis en jeu, zéro s'il n'a jamais été éliminé. Un joueur
+     * réactivé en cours de manche n'y était pas : son buzzer ne doit pas lui annoncer « trop
+     * tard », qui est le mot de celui qui pouvait appuyer et n'a pas été assez rapide.
+     */
+    val revivedRound: Int = 0,
 ) {
     val isEliminated: Boolean get() = status == PlayerStatus.ELIMINATED
 }
@@ -294,7 +300,10 @@ fun RoomState.visualFor(
 ): BuzzerVisual {
     val p = player(playerId) ?: return BuzzerVisual.OFF
     if (p.isEliminated) return BuzzerVisual.ELIMINATED
-    val buzzed = buzzOf(playerId) != null || localBuzzedRound == round
+    // Le repère local d'un joueur réactivé ne vaut plus rien : l'hôte a effacé son buzz en
+    // l'éliminant, la manche a continué sans lui.
+    val buzzed = buzzOf(playerId) != null ||
+        (localBuzzedRound == round && p.revivedRound != round)
     // Quand la parole est tranchée. En duel, il faut attendre la fin de la fenêtre d'arbitrage :
     // deux joueurs peuvent appuyer avant que le verrouillage ne les atteigne, et le classement
     // bouge encore. En course, personne ne verrouille personne — le premier buzz donne déjà la
@@ -320,7 +329,10 @@ fun RoomState.visualFor(
         buzzed -> BuzzerVisual.BUZZED
         effectiveRoundState(nowHostMillis) == RoundState.ARMED -> BuzzerVisual.ARMED
         roundState == RoundState.COUNTDOWN -> BuzzerVisual.COUNTDOWN
-        roundState == RoundState.LOCKED -> BuzzerVisual.LOST
+        // Manche prise par un autre. Celui que l'animateur vient de remettre en jeu n'a rien
+        // laissé passer : son buzzer s'éteint simplement, en attendant le prochain go.
+        roundState == RoundState.LOCKED ->
+            if (p.revivedRound == round) BuzzerVisual.OFF else BuzzerVisual.LOST
         else -> BuzzerVisual.OFF
     }
 }

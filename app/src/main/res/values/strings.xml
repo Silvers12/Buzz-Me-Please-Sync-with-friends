@@ -112,6 +112,7 @@
     <string name="rules_end_game_body">The winner and their score are announced on every phone. Nothing is erased: you can carry on playing afterwards.</string>
     <string name="announce_late">TOO LATE</string>
     <string name="announce_out">YOU ARE OUT</string>
+    <string name="announce_back">YOU ARE BACK IN</string>
     <string name="announce_host_you">YOU ARE THE HOST</string>
     <string name="announce_host_other">NEW HOST\n%1$s</string>
     <string name="room_all_out">Everyone is knocked out. Bring a player back, or turn every buzzer on again with the arrow.</string>

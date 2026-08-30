@@ -110,6 +110,7 @@
     <string name="rules_end_game_body">Le vainqueur et son score sont annoncés sur tous les téléphones. Rien n\'est effacé : vous pouvez continuer à jouer ensuite.</string>
     <string name="announce_late">TROP TARD</string>
     <string name="announce_out">VOUS ÊTES ÉLIMINÉ</string>
+    <string name="announce_back">VOUS ÊTES RÉACTIVÉ</string>
     <string name="announce_host_you">VOUS ÊTES ANIMATEUR</string>
     <string name="announce_host_other">NOUVEL ANIMATEUR\n%1$s</string>
     <string name="room_all_out">Tout le monde est éliminé. Réactivez un joueur, ou rallumez tous les buzzers avec la flèche.</string>

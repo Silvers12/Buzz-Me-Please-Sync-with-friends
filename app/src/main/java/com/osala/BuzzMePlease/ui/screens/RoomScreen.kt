@@ -188,6 +188,7 @@ fun RoomScreen(
     val lateText = stringResource(R.string.announce_late)
     val passedText = stringResource(R.string.buzzer_passed)
     val outText = stringResource(R.string.announce_out)
+    val backText = stringResource(R.string.announce_back)
 
     // Ce qui arrive à son propre buzzer, et à lui seul : on n'annonce pas le sort des autres.
     // La clé porte la manche, sans quoi deux verdicts identiques d'affilée passeraient muets.
@@ -215,10 +216,18 @@ fun RoomScreen(
     }
 
     // L'élimination ne se rattache à aucune manche : elle dure jusqu'à ce qu'on soit réactivé.
-    // On l'annonce donc au basculement, une fois, et pas à chaque nouveau go.
+    // On l'annonce donc au basculement, une fois, et pas à chaque nouveau go — dans les deux
+    // sens, car revenir en jeu se dit aussi. Arriver dans un salon en étant déjà éliminé n'est
+    // pas un basculement : on ne l'annonce qu'à partir du premier changement.
     val amEliminated = state.player(session.myId)?.isEliminated == true
+    var wasEliminated by remember { mutableStateOf<Boolean?>(null) }
     LaunchedEffect(amEliminated) {
-        if (amEliminated) announcement = Announce(outText, Stage.TextSecondary)
+        val previous = wasEliminated
+        wasEliminated = amEliminated
+        when {
+            amEliminated -> announcement = Announce(outText, Stage.TextSecondary)
+            previous == true -> announcement = Announce(backText, Stage.Green)
+        }
     }
 
     // Les annonces de l'animateur arrivent par le réseau : ce sont des événements, pas un état,

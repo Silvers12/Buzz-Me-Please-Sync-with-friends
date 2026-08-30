@@ -182,6 +182,29 @@ class GameEngineTest {
         assertTrue(engine.snapshot.canBuzz("p3", armedAt + 200))
     }
 
+    /**
+     * Remis en jeu pendant qu'un autre a la main : son buzzer s'éteint en attendant le
+     * prochain go. « Trop tard » serait un reproche — il n'était pas là pour appuyer.
+     */
+    @Test
+    fun `un joueur reactive en pleine manche n'est pas en retard`() {
+        armWithCountdown()
+        engine.markArmed(1)
+        engine.setStatus("p3", PlayerStatus.ELIMINATED)
+        engine.registerBuzz("p1", 1, armedAt + 320, 3)
+        engine.closeAdjudication(1)
+        assertEquals(BuzzerVisual.LOST, engine.snapshot.visualFor("p2", armedAt + 400))
+
+        engine.setStatus("p3", PlayerStatus.ACTIVE)
+        assertEquals(BuzzerVisual.OFF, engine.snapshot.visualFor("p3", armedAt + 400))
+        // Le voisin, lui, pouvait appuyer et ne l'a pas fait : pour lui le mot reste juste.
+        assertEquals(BuzzerVisual.LOST, engine.snapshot.visualFor("p2", armedAt + 400))
+
+        // La manche suivante le remet dans le rang.
+        engine.arm(armAtMillis = armedAt + 10_000, withCountdown = false)
+        assertEquals(BuzzerVisual.ARMED, engine.snapshot.visualFor("p3", armedAt + 10_000))
+    }
+
     @Test
     fun `le plateau remis a neuf rallume les buzzers sans toucher aux scores`() {
         engine.addPoints("p1", 5)

@@ -18,8 +18,10 @@ import kotlinx.serialization.json.Json
  *
  * 2 → 3 : l'état du salon porte la parole donnée à la main par l'animateur, et chaque joueur
  * ses cartons jaunes et rouges.
+ *
+ * 3 → 4 : chaque joueur porte la manche où il a été remis en jeu.
  */
-const val PROTOCOL_VERSION = 3
+const val PROTOCOL_VERSION = 4
 
 /** Port TCP du salon. Fixe : il permet de reconstruire l'adresse de l'hôte après une passation. */
 const val GAME_PORT = 47821
@@ -39,9 +41,15 @@ const val NSD_ATTR_VERSION = "ver"
  */
 const val NSD_ATTR_VERSION_CODE = "vc"
 
+/**
+ * Les valeurs par défaut ne sont pas écrites : un champ absent reprend la valeur déclarée
+ * dans le modèle, qui est la même des deux côtés puisque le salon impose la même version.
+ * L'état entier étant rediffusé à chaque changement, tout ce qui n'est pas dit est autant
+ * de moins à envoyer — un plateau de huit joueurs au repos ne coûte presque rien.
+ */
 val ProtocolJson: Json = Json {
     ignoreUnknownKeys = true
-    encodeDefaults = true
+    encodeDefaults = false
     classDiscriminator = "t"
 }
 

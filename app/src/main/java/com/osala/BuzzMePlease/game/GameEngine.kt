@@ -63,7 +63,12 @@ class GameEngine(code: String, hostId: String, options: RoomOptions = RoomOption
 
     fun setStatus(id: String, status: PlayerStatus) = mutate { current ->
         val p = current.player(id) ?: return@mutate current
-        var next = current.copy(players = current.players.upsert(p.copy(status = status)))
+        // Remis en jeu au milieu d'une manche : on retient laquelle, pour que son buzzer ne
+        // lui reproche pas une manche qu'il n'a pas jouée.
+        val revived = if (status == PlayerStatus.ACTIVE && p.isEliminated) current.round else 0
+        var next = current.copy(
+            players = current.players.upsert(p.copy(status = status, revivedRound = revived)),
+        )
         if (status == PlayerStatus.ELIMINATED) {
             // Un joueur éliminé ne peut pas rester détenteur du buzz en cours.
             next = next.copy(
