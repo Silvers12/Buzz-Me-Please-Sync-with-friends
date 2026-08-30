@@ -392,4 +392,27 @@ class GameEngineTest {
         assertTrue(player?.connected == true)
         assertEquals(4, engine.snapshot.players.size)
     }
+
+    @Test
+    fun `le go est refuse quand tout le salon est elimine`() {
+        listOf("host", "p1", "p2", "p3").forEach { engine.setStatus(it, PlayerStatus.ELIMINATED) }
+        assertFalse(engine.snapshot.canArm)
+
+        armWithCountdown()
+
+        // Rien n'a bougé : ni manche, ni décompte. Le buzz ne pouvait aller nulle part.
+        assertEquals(0, engine.snapshot.round)
+        assertEquals(RoundState.IDLE, engine.snapshot.roundState)
+    }
+
+    @Test
+    fun `un seul joueur encore en lice suffit pour lancer`() {
+        listOf("p1", "p2", "p3").forEach { engine.setStatus(it, PlayerStatus.ELIMINATED) }
+        assertTrue(engine.snapshot.canArm)
+
+        armWithCountdown()
+
+        assertEquals(1, engine.snapshot.round)
+        assertEquals(RoundState.COUNTDOWN, engine.snapshot.roundState)
+    }
 }

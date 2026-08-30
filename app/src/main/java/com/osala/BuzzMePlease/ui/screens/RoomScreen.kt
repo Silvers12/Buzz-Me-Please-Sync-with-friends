@@ -730,29 +730,43 @@ internal fun HostControls(
     onOptions: () -> Unit,
 ) {
     val armed = state.roundState == RoundState.ARMED || state.roundState == RoundState.COUNTDOWN
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        PrimaryAction(
-            text = stringResource(if (armed) R.string.room_restart else R.string.room_go),
-            icon = Icons.Filled.Bolt,
-            onClick = onArm,
-            colors = listOf(Stage.Gold, Color(0xFFDE9A12)),
-            modifier = Modifier.weight(1f),
-        )
-        IconAction(
-            icon = Icons.Filled.Refresh,
-            contentDescription = stringResource(R.string.room_reset),
-            onClick = onReset,
-            accent = Stage.TextSecondary,
-        )
-        IconAction(
-            icon = Icons.Filled.Tune,
-            contentDescription = stringResource(R.string.room_rules),
-            onClick = onOptions,
-        )
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            PrimaryAction(
+                text = stringResource(if (armed) R.string.room_restart else R.string.room_go),
+                icon = Icons.Filled.Bolt,
+                // Tout le salon éliminé : le go n'arme personne, le bouton s'éteint.
+                enabled = state.canArm,
+                onClick = onArm,
+                colors = listOf(Stage.Gold, Color(0xFFDE9A12)),
+                modifier = Modifier.weight(1f),
+            )
+            IconAction(
+                icon = Icons.Filled.Refresh,
+                contentDescription = stringResource(R.string.room_reset),
+                onClick = onReset,
+                accent = Stage.TextSecondary,
+            )
+            IconAction(
+                icon = Icons.Filled.Tune,
+                contentDescription = stringResource(R.string.room_rules),
+                onClick = onOptions,
+            )
+        }
+
+        // Un bouton éteint sans un mot laisserait l'animateur chercher : on dit par où repartir.
+        if (!state.canArm) {
+            Spacer(Modifier.height(8.dp))
+            Text(
+                text = stringResource(R.string.room_all_out),
+                style = MaterialTheme.typography.bodyMedium,
+                color = Stage.Amber,
+            )
+        }
     }
 }
 

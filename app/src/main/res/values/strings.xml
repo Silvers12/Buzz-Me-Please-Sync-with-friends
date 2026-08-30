@@ -75,6 +75,7 @@
     <string name="room_restart">Restart</string>
     <string name="room_reset">Reset: every buzzer back on</string>
     <string name="room_rules">Game rules</string>
+    <string name="room_all_out">Everyone is knocked out. Bring a player back, or turn every buzzer on again with the arrow.</string>
     <string name="room_board">Board</string>
     <string name="room_board_host">Board · tap a player</string>
     <string name="room_board_hidden_host">Board · hidden from players</string>

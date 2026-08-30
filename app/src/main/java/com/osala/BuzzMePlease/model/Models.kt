@@ -189,6 +189,13 @@ data class RoomState(
     val activePlayers: List<Player> get() = players.filter { it.status == PlayerStatus.ACTIVE }
 
     /**
+     * Y a-t-il encore quelqu'un pour appuyer ? Une manche lancée alors que tout le salon est
+     * éliminé ne mènerait nulle part : le décompte s'égrènerait sur des buzzers éteints, et
+     * l'animateur attendrait un buzz qui ne peut plus venir.
+     */
+    val canArm: Boolean get() = activePlayers.isNotEmpty()
+
+    /**
      * État réellement visible à l'instant [nowHostMillis] : pendant le décompte, chaque appareil
      * bascule tout seul en ARMED à l'heure prévue, sans attendre un message de l'hôte.
      */

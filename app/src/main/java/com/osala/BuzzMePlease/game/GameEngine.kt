@@ -112,6 +112,9 @@ class GameEngine(code: String, hostId: String, options: RoomOptions = RoomOption
      *   connaissent l'échéance et s'arment d'eux-mêmes à la milliseconde près.
      */
     fun arm(armAtMillis: Long, withCountdown: Boolean) = mutate { current ->
+        // Personne en lice, rien à lancer. Le pupitre grise déjà le GO ; on le refuse aussi ici,
+        // parce que c'est l'hôte qui fait autorité et qu'un autre appareil peut toujours demander.
+        if (!current.canArm) return@mutate current
         current.copy(
             round = current.round + 1,
             roundState = if (withCountdown) RoundState.COUNTDOWN else RoundState.ARMED,
