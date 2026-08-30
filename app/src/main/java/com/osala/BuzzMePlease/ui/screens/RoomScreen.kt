@@ -177,10 +177,42 @@ fun RoomScreen(
     // dernière chasse la précédente, comme un carton d'émission.
     var announcement by remember { mutableStateOf<Announce?>(null) }
     val floorText = stringResource(R.string.announce_floor)
-    // La clé porte la manche : la parole prise deux fois de suite se rejoue à chaque fois.
+    val rightText = stringResource(R.string.announce_right)
+    val wrongText = stringResource(R.string.announce_wrong)
+    val outText = stringResource(R.string.announce_out)
+
+    // Ce qui arrive à son propre buzzer, et à lui seul : on n'annonce pas le sort des autres.
+    // La clé porte la manche, sans quoi deux verdicts identiques d'affilée passeraient muets.
     LaunchedEffect(state.round, myVisual) {
-        if (myVisual == BuzzerVisual.SPEAKING) {
-            announcement = Announce(floorText, Stage.GoldSoft)
+        when (myVisual) {
+            BuzzerVisual.SPEAKING -> announcement = Announce(floorText, Stage.GoldSoft)
+            BuzzerVisual.RIGHT -> announcement = Announce(rightText, Stage.Green)
+            BuzzerVisual.WRONG -> announcement = Announce(wrongText, Stage.Red)
+            else -> Unit
+        }
+    }
+
+    // L'élimination ne se rattache à aucune manche : elle dure jusqu'à ce qu'on soit réactivé.
+    // On l'annonce donc au basculement, une fois, et pas à chaque nouveau go.
+    val amEliminated = state.player(session.myId)?.isEliminated == true
+    LaunchedEffect(amEliminated) {
+        if (amEliminated) announcement = Announce(outText, Stage.TextSecondary)
+    }
+
+    // Le passage de relais regarde tout le salon, pas seulement celui qui le reçoit : chacun
+    // doit savoir à qui parler. On ne l'annonce qu'au changement — arriver dans un salon
+    // qui a déjà son animateur n'est pas une passation.
+    val hostYouText = stringResource(R.string.announce_host_you)
+    val hostOtherText = stringResource(R.string.announce_host_other, state.host?.name.orEmpty())
+    var knownHost by remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(state.hostId) {
+        val previous = knownHost
+        knownHost = state.hostId
+        if (previous == null || previous == state.hostId) return@LaunchedEffect
+        announcement = if (state.hostId == session.myId) {
+            Announce(hostYouText, Stage.Gold)
+        } else {
+            Announce(hostOtherText, Stage.Gold)
         }
     }
 

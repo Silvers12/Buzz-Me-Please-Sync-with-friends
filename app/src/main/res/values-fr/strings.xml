@@ -74,6 +74,11 @@
     <string name="room_reset">Réinitialiser : tous les buzzers rallumés</string>
     <string name="room_rules">Règles de la partie</string>
     <string name="announce_floor">À VOUS LA PAROLE !</string>
+    <string name="announce_right">BIEN JOUÉ !</string>
+    <string name="announce_wrong">PERDU !</string>
+    <string name="announce_out">VOUS ÊTES ÉLIMINÉ</string>
+    <string name="announce_host_you">VOUS ÊTES ANIMATEUR</string>
+    <string name="announce_host_other">NOUVEL ANIMATEUR\n%1$s</string>
     <string name="room_all_out">Tout le monde est éliminé. Réactivez un joueur, ou rallumez tous les buzzers avec la flèche.</string>
     <string name="room_board">Plateau</string>
     <string name="room_board_host">Plateau · appuyez sur un joueur</string>

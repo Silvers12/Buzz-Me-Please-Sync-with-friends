@@ -76,6 +76,11 @@
     <string name="room_reset">Reset: every buzzer back on</string>
     <string name="room_rules">Game rules</string>
     <string name="announce_floor">THE FLOOR IS YOURS!</string>
+    <string name="announce_right">WELL PLAYED!</string>
+    <string name="announce_wrong">WRONG!</string>
+    <string name="announce_out">YOU ARE OUT</string>
+    <string name="announce_host_you">YOU ARE THE HOST</string>
+    <string name="announce_host_other">NEW HOST\n%1$s</string>
     <string name="room_all_out">Everyone is knocked out. Bring a player back, or turn every buzzer on again with the arrow.</string>
     <string name="room_board">Board</string>
     <string name="room_board_host">Board · tap a player</string>
