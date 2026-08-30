@@ -86,6 +86,9 @@
     <string name="announce_floor">THE FLOOR IS YOURS!</string>
     <string name="announce_right">WELL PLAYED!</string>
     <string name="announce_wrong">WRONG!</string>
+    <string name="player_yellow_cards">Yellow cards: %1$d</string>
+    <string name="player_red_cards">Red cards: %1$d</string>
+    <string name="alert_clear">CLEAR THE CARDS (%1$d yellow, %2$d red)</string>
     <string name="alert_send">Send an alert…</string>
     <string name="alert_pick_title">Which alert?</string>
     <string name="alert_yellow">Yellow card</string>

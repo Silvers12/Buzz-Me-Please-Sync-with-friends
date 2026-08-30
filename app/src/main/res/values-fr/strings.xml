@@ -84,6 +84,9 @@
     <string name="announce_floor">À VOUS LA PAROLE !</string>
     <string name="announce_right">BIEN JOUÉ !</string>
     <string name="announce_wrong">PERDU !</string>
+    <string name="player_yellow_cards">Cartons jaunes : %1$d</string>
+    <string name="player_red_cards">Cartons rouges : %1$d</string>
+    <string name="alert_clear">EFFACER LES CARTONS (%1$d jaune, %2$d rouge)</string>
     <string name="alert_send">Envoyer une alerte…</string>
     <string name="alert_pick_title">Quelle alerte ?</string>
     <string name="alert_yellow">Carton jaune</string>

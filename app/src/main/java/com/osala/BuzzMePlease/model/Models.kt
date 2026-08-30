@@ -96,6 +96,13 @@ data class Player(
     val connected: Boolean = true,
     /** Latence aller-retour mesurée avec l'hôte, en ms (0 pour l'hôte lui-même). */
     val pingMillis: Long = 0,
+    /**
+     * Les cartons reçus, qui restent au tableau tant que l'animateur n'efface pas l'ardoise.
+     * Ils ne changent rien aux règles — ils se voient, c'est tout, et c'est l'animateur qui
+     * décide de ce qu'ils valent.
+     */
+    val yellowCards: Int = 0,
+    val redCards: Int = 0,
     val joinedAt: Long = 0,
 ) {
     val isEliminated: Boolean get() = status == PlayerStatus.ELIMINATED

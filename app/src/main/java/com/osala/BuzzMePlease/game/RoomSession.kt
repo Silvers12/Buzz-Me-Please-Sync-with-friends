@@ -104,8 +104,14 @@ interface RoomSession {
     fun transferHost(playerId: String)
     fun setOptions(options: RoomOptions)
 
-    /** Annonce à tout le salon. Le nom et le score du joueur visé sont complétés par l'hôte. */
+    /**
+     * Annonce à tout le salon. Le nom et le score du joueur visé sont complétés par l'hôte,
+     * qui compte au passage le carton reçu.
+     */
     fun sendAlert(alert: RoomAlert)
+
+    /** L'ardoise effacée : les cartons de ce joueur retombent à zéro. */
+    fun clearCards(playerId: String)
 
     fun close()
 }

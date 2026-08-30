@@ -1,5 +1,6 @@
 package com.osala.BuzzMePlease.game
 
+import com.osala.BuzzMePlease.model.AlertKind
 import com.osala.BuzzMePlease.model.Buzz
 import com.osala.BuzzMePlease.model.GameMode
 import com.osala.BuzzMePlease.model.Player
@@ -92,6 +93,27 @@ class GameEngine(code: String, hostId: String, options: RoomOptions = RoomOption
     fun addPoints(id: String, delta: Int) = mutate { current ->
         val p = current.player(id) ?: return@mutate current
         current.copy(players = current.players.upsert(p.copy(score = p.score + delta)))
+    }
+
+    /**
+     * Un carton de plus au compteur. La fin de partie n'en est pas un : elle ne vise
+     * personne en particulier.
+     */
+    fun card(playerId: String, kind: AlertKind) = mutate { current ->
+        val p = current.player(playerId) ?: return@mutate current
+        val marked = when (kind) {
+            AlertKind.YELLOW_CARD -> p.copy(yellowCards = p.yellowCards + 1)
+            AlertKind.RED_CARD -> p.copy(redCards = p.redCards + 1)
+            AlertKind.GAME_OVER -> return@mutate current
+        }
+        current.copy(players = current.players.upsert(marked))
+    }
+
+    /** L'ardoise effacée : les cartons de ce joueur retombent à zéro. */
+    fun clearCards(playerId: String) = mutate { current ->
+        val p = current.player(playerId) ?: return@mutate current
+        if (p.yellowCards == 0 && p.redCards == 0) current
+        else current.copy(players = current.players.upsert(p.copy(yellowCards = 0, redCards = 0)))
     }
 
     fun resetScores() = mutate { current ->

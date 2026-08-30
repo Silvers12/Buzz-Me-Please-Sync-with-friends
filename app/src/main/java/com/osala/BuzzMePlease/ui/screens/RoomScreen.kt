@@ -354,6 +354,10 @@ fun RoomScreen(
                 session.sendAlert(RoomAlert(kind = kind, playerId = target.id))
                 selectedPlayer = null
             },
+            onClearCards = {
+                session.clearCards(target.id)
+                selectedPlayer = null
+            },
             onTransferHost = {
                 session.transferHost(target.id)
                 selectedPlayer = null

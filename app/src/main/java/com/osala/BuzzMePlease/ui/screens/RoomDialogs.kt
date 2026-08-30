@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Block
+import androidx.compose.material.icons.filled.Backspace
 import androidx.compose.material.icons.filled.Campaign
 import androidx.compose.material.icons.filled.Dangerous
 import androidx.compose.material.icons.filled.EmojiEvents
@@ -68,6 +69,7 @@ fun PlayerActionsDialog(
     onToggleStatus: () -> Unit,
     onPoints: (Int) -> Unit,
     onAlert: (AlertKind) -> Unit,
+    onClearCards: () -> Unit,
     onTransferHost: () -> Unit,
     onKick: () -> Unit,
 ) {
@@ -160,6 +162,21 @@ fun PlayerActionsDialog(
                         accent = Stage.Amber,
                         modifier = Modifier.fillMaxWidth(),
                     )
+                    // L'ardoise ne s'efface que s'il y a quelque chose dessus.
+                    if (player.yellowCards > 0 || player.redCards > 0) {
+                        Spacer(Modifier.height(8.dp))
+                        GhostAction(
+                            text = stringResource(
+                                R.string.alert_clear,
+                                player.yellowCards,
+                                player.redCards,
+                            ),
+                            icon = Icons.Filled.Backspace,
+                            onClick = onClearCards,
+                            accent = Stage.VioletSoft,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                    }
 
                     Spacer(Modifier.height(20.dp))
                     SectionLabel(stringResource(R.string.dialog_room))

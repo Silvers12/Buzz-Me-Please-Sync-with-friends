@@ -580,6 +580,10 @@ class LanRoomSession(
         host.passSpeaker(host.snapshot.round)
     }
 
+    override fun clearCards(playerId: String) {
+        engine?.clearCards(playerId)
+    }
+
     override fun giveFloor(playerId: String) {
         // Le verdict précédent est annulé avec la parole : le vert de la bonne réponse ne
         // doit pas éteindre les buzzers pendant qu'un autre parle.
@@ -662,6 +666,9 @@ class LanRoomSession(
 
             else -> {
                 val target = snapshot.player(alert.playerId) ?: return
+                // Le carton part et se compte du même geste : il reste au tableau une fois
+                // l'annonce passée.
+                host.card(target.id, alert.kind)
                 alert.copy(playerName = target.name, score = target.score)
             }
         }

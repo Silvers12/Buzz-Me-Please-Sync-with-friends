@@ -29,6 +29,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -206,6 +208,17 @@ fun PlayerRow(
 
         Spacer(Modifier.width(10.dp))
 
+        // Les cartons reçus, juste avant le score. Rien ne s'affiche tant qu'il n'y en a pas :
+        // un plateau de zéros ne dit rien que l'absence ne dise déjà.
+        if (player.yellowCards > 0) {
+            CardTally(player.yellowCards, Stage.Amber, stringResource(R.string.player_yellow_cards, player.yellowCards))
+            Spacer(Modifier.width(6.dp))
+        }
+        if (player.redCards > 0) {
+            CardTally(player.redCards, Stage.Red, stringResource(R.string.player_red_cards, player.redCards))
+            Spacer(Modifier.width(6.dp))
+        }
+
         if (isWinner && buzz != null) {
             Icon(
                 Icons.Filled.EmojiEvents,
@@ -217,6 +230,25 @@ fun PlayerRow(
         }
 
         ScorePill(score = player.score)
+    }
+}
+
+/** Un carton d'arbitre, avec son compte dedans : la forme se reconnaît sans lire. */
+@Composable
+private fun CardTally(count: Int, color: Color, description: String) {
+    Box(
+        modifier = Modifier
+            .semantics { contentDescription = description }
+            .size(width = 16.dp, height = 21.dp)
+            .background(color.copy(alpha = 0.9f), RoundedCornerShape(3.dp)),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = count.toString(),
+            color = Stage.Night,
+            fontWeight = FontWeight.Black,
+            fontSize = 12.sp,
+        )
     }
 }
 
