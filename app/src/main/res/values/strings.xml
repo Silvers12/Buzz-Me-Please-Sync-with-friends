@@ -73,7 +73,7 @@
     <string name="room_latency">%1$d ms · ± %2$d ms</string>
     <string name="room_go">Go!</string>
     <string name="room_restart">Restart</string>
-    <string name="room_reset">Reset the buzzers</string>
+    <string name="room_reset">Reset: every buzzer back on</string>
     <string name="room_rules">Game rules</string>
     <string name="room_board">Board</string>
     <string name="room_board_host">Board · tap a player</string>
@@ -144,7 +144,6 @@
     <string name="rules_hide_board_subtitle">On the players\' phones, the board shrinks to their own line and score. You keep the full table.</string>
     <string name="rules_sound_title">Sound and vibration</string>
     <string name="rules_sound_subtitle">Countdown beeps, go signal and buzz feedback.</string>
-    <string name="rules_revive_all">Bring every buzzer back</string>
     <string name="rules_reset_scores">Reset all scores</string>
 
     <!-- Sonothèque -->
@@ -231,9 +230,9 @@
     <string name="tutorial_4_title">Buzzing</string>
     <string name="tutorial_4_body">The first to press turns red, everyone else locks out instantly. The exact time of the buzz is sent — hour, minute, second and millisecond — and the host sees the ranking, the gap to the best time and the measurement uncertainty. Once the ranking settles, a single buzzer stays green: the one with the floor.</string>
     <string name="tutorial_5_title">Running the rounds</string>
-    <string name="tutorial_5_body">Three verdicts sit under the banner. “Right” adds the point, turns the player\'s buzzer green with the correct-answer sound — the host hears it too — then clears the buzzers. “Wrong” turns their buzzer red and sounds the penalty on both phones, without moving the floor; the button then becomes “Knock out”, so the same question can be put again to the players who have not answered yet. “Next player” moves the floor down the ranking. “Restart” opens a new round, and the circular arrow clears everything without touching the scores.</string>
+    <string name="tutorial_5_body">Three verdicts sit under the banner. “Right” adds the point, turns the player\'s buzzer green with the correct-answer sound — the host hears it too — then clears the buzzers. “Wrong” turns their buzzer red and sounds the penalty on both phones, without moving the floor; the button then becomes “Knock out”, so the same question can be put again to the players who have not answered yet. “Next player” moves the floor down the ranking. “Restart” opens a new round, and the circular arrow wipes the board clean: buzzes cleared, every buzzer back on, scores untouched.</string>
     <string name="tutorial_6_title">Knock out, revive, keep score</string>
-    <string name="tutorial_6_body">The host taps a player\'s row to open their desk: grey buzzer (knocked out) or brought back in one gesture, points in +1, +3 or −1, removal from the room. A knocked-out player disappears from the other players\' boards — they are not playing any more — but stays on the host\'s, who can call them back at any time. “Bring every buzzer back”, in the game rules, lights them all up at once.</string>
+    <string name="tutorial_6_body">The host taps a player\'s row to open their desk: grey buzzer (knocked out) or brought back in one gesture, points in +1, +3 or −1, removal from the room. A knocked-out player disappears from the other players\' boards — they are not playing any more — but stays on the host\'s, who can call them back at any time. The circular arrow, to the right of the go, lights them all up at once.</string>
     <string name="tutorial_7_title">Hand over hosting</string>
     <string name="tutorial_7_body">From that same desk, “Hand over hosting” gives the host role to another player. Nobody leaves the room: scores, statuses and the current round follow, and the former host becomes an ordinary player.</string>
     <string name="tutorial_8_title">Bend the rules</string>

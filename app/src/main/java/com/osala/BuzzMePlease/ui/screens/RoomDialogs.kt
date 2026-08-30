@@ -219,7 +219,6 @@ fun RoomOptionsDialog(
     onDismiss: () -> Unit,
     onOptions: (RoomOptions) -> Unit,
     onResetScores: () -> Unit,
-    onReviveAll: () -> Unit,
 ) {
     val options = state.options
     AlertDialog(
@@ -272,19 +271,7 @@ fun RoomOptionsDialog(
                 )
 
                 if (amHost) {
-                    // Une manche jouée à l'élimination laisse la moitié du plateau éteinte :
-                    // le bouton n'apparaît que là, quand il y a effectivement à rallumer.
-                    if (state.players.any { it.isEliminated }) {
-                        Spacer(Modifier.height(20.dp))
-                        GhostAction(
-                            text = stringResource(R.string.rules_revive_all),
-                            icon = Icons.Filled.CheckCircle,
-                            onClick = onReviveAll,
-                            accent = Stage.Green,
-                            modifier = Modifier.fillMaxWidth(),
-                        )
-                    }
-                    Spacer(Modifier.height(if (state.players.any { it.isEliminated }) 10.dp else 20.dp))
+                    Spacer(Modifier.height(20.dp))
                     GhostAction(
                         text = stringResource(R.string.rules_reset_scores),
                         onClick = onResetScores,

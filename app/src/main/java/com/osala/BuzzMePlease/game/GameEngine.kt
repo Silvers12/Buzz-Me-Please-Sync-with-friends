@@ -76,20 +76,6 @@ class GameEngine(code: String, hostId: String, options: RoomOptions = RoomOption
         next
     }
 
-    /**
-     * Tous les buzzers rallumés d'un coup. Une manche jouée à l'élimination laisse la moitié du
-     * plateau éteinte : les rallumer un par un serait long, et c'est toujours au même moment
-     * qu'on le veut — quand la nouvelle question repart de zéro.
-     */
-    fun reviveAll() = mutate { current ->
-        if (current.players.none { it.isEliminated }) return@mutate current
-        current.copy(
-            players = current.players.map {
-                if (it.isEliminated) it.copy(status = PlayerStatus.ACTIVE) else it
-            },
-        )
-    }
-
     fun remove(id: String) = mutate { current ->
         if (id == current.hostId) return@mutate current // l'hôte ne peut pas s'exclure lui-même
         current.copy(
@@ -148,7 +134,27 @@ class GameEngine(code: String, hostId: String, options: RoomOptions = RoomOption
         }
     }
 
-    /** Réinitialise : buzzers éteints, résultats effacés, scores conservés. */
+    /**
+     * Le plateau remis à neuf : résultats effacés **et** tous les buzzers rallumés. C'est le
+     * geste de la nouvelle question — une manche jouée à l'élimination laisse la moitié du
+     * plateau éteinte, et les rallumer un par un serait long. Les scores, eux, ne bougent pas.
+     */
+    fun resetBoard() = mutate { current ->
+        current.copy(
+            roundState = RoundState.IDLE,
+            armedAtMillis = null,
+            buzzes = emptyList(),
+            winnerId = null,
+            provisional = false,
+            passedIds = emptyList(),
+            wrongId = null,
+            players = current.players.map {
+                if (it.isEliminated) it.copy(status = PlayerStatus.ACTIVE) else it
+            },
+        )
+    }
+
+    /** Réinitialise : buzzers éteints, résultats effacés, scores et éliminations conservés. */
     fun reset() = mutate { current ->
         current.copy(
             roundState = RoundState.IDLE,

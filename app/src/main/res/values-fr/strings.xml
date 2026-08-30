@@ -71,7 +71,7 @@
     <string name="room_latency">%1$d ms · ± %2$d ms</string>
     <string name="room_go">Go !</string>
     <string name="room_restart">Relancer</string>
-    <string name="room_reset">Réinitialiser les buzzers</string>
+    <string name="room_reset">Réinitialiser : tous les buzzers rallumés</string>
     <string name="room_rules">Règles de la partie</string>
     <string name="room_board">Plateau</string>
     <string name="room_board_host">Plateau · appuyez sur un joueur</string>
@@ -142,7 +142,6 @@
     <string name="rules_hide_board_subtitle">Sur le téléphone des joueurs, le plateau se réduit à leur propre ligne et à leur score. Vous gardez le tableau complet.</string>
     <string name="rules_sound_title">Sons et vibrations</string>
     <string name="rules_sound_subtitle">Bips du décompte, go de départ et retour au buzz.</string>
-    <string name="rules_revive_all">Réactiver tous les buzzers</string>
     <string name="rules_reset_scores">Remettre les scores à zéro</string>
 
     <!-- Sonothèque -->
@@ -229,9 +228,9 @@
     <string name="tutorial_4_title">Buzzer</string>
     <string name="tutorial_4_body">Le premier qui appuie voit son buzzer virer au rouge, tous les autres se verrouillent aussitôt. L\'heure exacte du buzz est envoyée — heure, minute, seconde et milliseconde — et l\'animateur voit le classement, l\'écart avec le meilleur temps et la marge d\'incertitude de la mesure. Une fois le classement arrêté, un seul buzzer reste vert : celui qui a la parole.</string>
     <string name="tutorial_5_title">Enchaîner les manches</string>
-    <string name="tutorial_5_body">Sous le bandeau, trois verdicts. « Vrai » met le point, fait passer le buzzer du joueur au vert avec le son de la bonne réponse — que l\'animateur entend aussi — puis éteint les buzzers. « Faux » passe son buzzer au rouge et fait entendre la sanction des deux côtés, sans que la main ne bouge ; le bouton devient alors « Éliminer », de quoi relancer la même question aux seuls joueurs qui n\'ont pas encore répondu. « Suivant » descend la main au buzz d\'après. « Relancer » ouvre une nouvelle manche, la flèche circulaire éteint tout sans toucher aux scores.</string>
+    <string name="tutorial_5_body">Sous le bandeau, trois verdicts. « Vrai » met le point, fait passer le buzzer du joueur au vert avec le son de la bonne réponse — que l\'animateur entend aussi — puis éteint les buzzers. « Faux » passe son buzzer au rouge et fait entendre la sanction des deux côtés, sans que la main ne bouge ; le bouton devient alors « Éliminer », de quoi relancer la même question aux seuls joueurs qui n\'ont pas encore répondu. « Suivant » descend la main au buzz d\'après. « Relancer » ouvre une nouvelle manche, la flèche circulaire remet le plateau à neuf : buzz effacés, tous les buzzers rallumés, scores intacts.</string>
     <string name="tutorial_6_title">Éliminer, réactiver, compter</string>
-    <string name="tutorial_6_body">L\'animateur appuie sur la ligne d\'un joueur pour ouvrir son pupitre : buzzer gris (éliminé) ou réactivé en un geste, points en +1, +3 ou −1, exclusion du salon. Un joueur éliminé disparaît du plateau des autres — il ne joue plus — mais reste sur celui de l\'animateur, qui peut le rappeler à tout moment. « Réactiver tous les buzzers », dans les règles de la partie, les rallume tous d\'un coup.</string>
+    <string name="tutorial_6_body">L\'animateur appuie sur la ligne d\'un joueur pour ouvrir son pupitre : buzzer gris (éliminé) ou réactivé en un geste, points en +1, +3 ou −1, exclusion du salon. Un joueur éliminé disparaît du plateau des autres — il ne joue plus — mais reste sur celui de l\'animateur, qui peut le rappeler à tout moment. La flèche circulaire, à droite du go, les rallume tous d\'un coup.</string>
     <string name="tutorial_7_title">Passer l\'animation</string>
     <string name="tutorial_7_body">Depuis ce même pupitre, « Passer l\'animation » confie le rôle d\'animateur à un autre joueur. Personne ne quitte le salon : scores, statuts et manche en cours suivent, et l\'ancien animateur redevient un joueur ordinaire.</string>
     <string name="tutorial_8_title">Adapter les règles</string>

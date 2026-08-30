@@ -516,8 +516,9 @@ class LanRoomSession(
         engine?.setStatus(playerId, status)
     }
 
-    override fun reviveAll() {
-        engine?.reviveAll()
+    override fun resetBoard() {
+        _localBuzzRound.value = null
+        engine?.resetBoard()
     }
 
     override fun kick(playerId: String) {

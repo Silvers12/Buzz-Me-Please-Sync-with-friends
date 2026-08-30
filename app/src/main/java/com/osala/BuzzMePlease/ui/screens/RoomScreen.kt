@@ -246,7 +246,7 @@ fun RoomScreen(
                         HostControls(
                             state = state,
                             onArm = session::arm,
-                            onReset = session::reset,
+                            onReset = session::resetBoard,
                             onOptions = { showOptions = true },
                         )
                         Spacer(Modifier.height(12.dp))
@@ -430,7 +430,6 @@ fun RoomScreen(
             onDismiss = { showOptions = false },
             onOptions = session::setOptions,
             onResetScores = session::resetScores,
-            onReviveAll = session::reviveAll,
         )
     }
 }

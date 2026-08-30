@@ -128,13 +128,13 @@ class GameEngineTest {
     }
 
     @Test
-    fun `rallumer tous les buzzers ne touche pas aux scores`() {
+    fun `le plateau remis a neuf rallume les buzzers sans toucher aux scores`() {
         engine.addPoints("p1", 5)
         engine.setStatus("p1", PlayerStatus.ELIMINATED)
         engine.setStatus("p3", PlayerStatus.ELIMINATED)
         assertEquals(2, engine.snapshot.players.count { it.isEliminated })
 
-        engine.reviveAll()
+        engine.resetBoard()
 
         assertTrue(engine.snapshot.players.none { it.isEliminated })
         assertEquals(5, engine.snapshot.player("p1")?.score)

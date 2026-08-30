@@ -79,8 +79,9 @@ interface RoomSession {
 
     fun setStatus(playerId: String, status: PlayerStatus)
 
-    /** Rallume tous les buzzers éteints d'un seul geste. */
-    fun reviveAll()
+    /** Le plateau remis à neuf : résultats effacés et tous les buzzers rallumés. */
+    fun resetBoard()
+
     fun kick(playerId: String)
     fun addPoints(playerId: String, delta: Int)
     fun resetScores()
