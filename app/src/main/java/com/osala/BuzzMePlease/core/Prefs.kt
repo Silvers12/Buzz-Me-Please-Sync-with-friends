@@ -7,8 +7,10 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.osala.BuzzMePlease.model.RoomOptions
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.json.Json
 
 data class Settings(
     val playerId: String,
@@ -24,6 +26,11 @@ data class Settings(
     val soundboard: List<String>,
     /** Langue choisie à la main, ou [AppLanguage.SYSTEM] pour suivre le téléphone. */
     val language: AppLanguage,
+    /**
+     * Les réglages de partie du dernier salon animé. Un groupe qui rejoue joue le plus souvent
+     * de la même façon : inutile de les reposer à chaque salon.
+     */
+    val roomOptions: RoomOptions,
     /**
      * Le son du buzzer : un chemin d'asset pour un son livré avec le jeu, une URI
      * `content://` pour un fichier importé, vide pour le bip d'origine.
@@ -69,6 +76,7 @@ class Prefs(context: Context) {
             tutorialSeen = prefs[KEY_TUTORIAL_SEEN] ?: false,
             soundboard = decodeSoundboard(prefs[KEY_SOUNDBOARD]),
             language = AppLanguage.of(prefs[KEY_LANGUAGE]),
+            roomOptions = decodeOptions(prefs[KEY_ROOM_OPTIONS]),
             buzzerSound = prefs[KEY_BUZZER_SOUND].orEmpty(),
             buzzerImport = prefs[KEY_BUZZER_IMPORT].orEmpty(),
         )
@@ -98,6 +106,11 @@ class Prefs(context: Context) {
 
     suspend fun setLanguage(language: AppLanguage) = store.edit { it[KEY_LANGUAGE] = language.name }
 
+    /** Les réglages de partie, tels que l'animateur vient de les poser. */
+    suspend fun setRoomOptions(options: RoomOptions) = store.edit {
+        it[KEY_ROOM_OPTIONS] = optionsJson.encodeToString(RoomOptions.serializer(), options)
+    }
+
     /** Le son du buzzer, vide pour revenir au bip. */
     suspend fun setBuzzerSound(source: String) = store.edit {
         it[KEY_BUZZER_SOUND] = source
@@ -108,6 +121,11 @@ class Prefs(context: Context) {
     suspend fun setSoundboard(slots: List<String>) = store.edit {
         it[KEY_SOUNDBOARD] = slots.take(SoundLibrary.SLOTS).joinToString(SEPARATOR)
     }
+
+    /** Un réglage inconnu ou illisible ne bloque rien : on repart des valeurs d'origine. */
+    private fun decodeOptions(raw: String?): RoomOptions =
+        raw?.let { runCatching { optionsJson.decodeFromString(RoomOptions.serializer(), it) }.getOrNull() }
+            ?: RoomOptions()
 
     /** Toujours neuf entrées en sortie, quel que soit ce qui a été enregistré auparavant. */
     private fun decodeSoundboard(raw: String?): List<String> {
@@ -120,6 +138,10 @@ class Prefs(context: Context) {
         val KEY_SOUNDBOARD = stringPreferencesKey("soundboard")
         val KEY_BUZZER_SOUND = stringPreferencesKey("buzzer_sound")
         val KEY_BUZZER_IMPORT = stringPreferencesKey("buzzer_import")
+        val KEY_ROOM_OPTIONS = stringPreferencesKey("room_options")
+
+        /** Tolérant aux champs ajoutés plus tard : une option inconnue est ignorée. */
+        val optionsJson = Json { ignoreUnknownKeys = true }
         val KEY_LANGUAGE = stringPreferencesKey("language")
         val KEY_PLAYER_ID = stringPreferencesKey("player_id")
         val KEY_NAME = stringPreferencesKey("name")

@@ -60,6 +60,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             tutorialSeen = true,
             soundboard = List(SoundLibrary.SLOTS) { "" },
             language = AppLanguage.SYSTEM,
+            roomOptions = RoomOptions(),
             buzzerSound = "",
             buzzerImport = "",
         ),
@@ -77,6 +78,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     val notice = _notice.asStateFlow()
 
     private var endedJob: Job? = null
+    private var optionsJob: Job? = null
 
     /** Écran vers lequel refermer le tutoriel. */
     private var tutorialOrigin: Route = Route.Home
@@ -204,11 +206,31 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             code = code,
             startAsHost = asHost,
             hostAddress = hostAddress,
-            initialOptions = RoomOptions(sound = current.sound),
+            // L'animateur retrouve les réglages de sa dernière partie. Le joueur, lui, recevra
+            // ceux du salon dès la première synchronisation : les siens n'ont pas cours ici.
+            initialOptions = if (asHost) {
+                current.roomOptions.copy(sound = current.sound)
+            } else {
+                RoomOptions(sound = current.sound)
+            },
         )
 
         _session.value = created
         _route.value = Route.Room
+
+        // Les réglages de partie suivent l'animateur d'un salon à l'autre : un groupe qui
+        // rejoue joue le plus souvent de la même façon. Ceux d'un salon rejoint ne comptent pas,
+        // ils appartiennent à celui qui l'anime.
+        optionsJob?.cancel()
+        optionsJob = viewModelScope.launch {
+            var saved: RoomOptions? = null
+            created.state.collect { snapshot ->
+                if (snapshot.hostId != current.playerId) return@collect
+                if (snapshot.options == saved) return@collect
+                saved = snapshot.options
+                prefs.setRoomOptions(snapshot.options)
+            }
+        }
 
         endedJob?.cancel()
         endedJob = viewModelScope.launch {
@@ -228,6 +250,8 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun closeSession() {
+        optionsJob?.cancel()
+        optionsJob = null
         endedJob?.cancel()
         endedJob = null
         _session.value?.close()
