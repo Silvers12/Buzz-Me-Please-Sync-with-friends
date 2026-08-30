@@ -1026,12 +1026,17 @@ internal fun ResultBanner(
                         accent = Stage.Red,
                         modifier = Modifier.weight(if (marked) 1.3f else 1f),
                     )
-                    GhostAction(
-                        text = stringResource(R.string.banner_next),
-                        onClick = onNextPlayer,
-                        accent = Stage.VioletSoft,
-                        modifier = Modifier.weight(1.2f),
-                    )
+                    // « Suivant » n'apparaît que s'il y a un suivant. En mode rapide, le premier
+                    // buzz verrouille les autres : le plus souvent personne n'attend derrière,
+                    // et proposer de passer la main ne menait qu'à vider le plateau.
+                    if (next != null) {
+                        GhostAction(
+                            text = stringResource(R.string.banner_next),
+                            onClick = onNextPlayer,
+                            accent = Stage.VioletSoft,
+                            modifier = Modifier.weight(1.2f),
+                        )
+                    }
                 }
             }
         }
