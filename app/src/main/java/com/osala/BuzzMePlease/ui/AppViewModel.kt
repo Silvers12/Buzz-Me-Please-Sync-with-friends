@@ -40,15 +40,13 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     private val prefs = Prefs(application)
     val soundFx = SoundFx(application)
 
-    /** Sonothèque de l'animateur : la bibliothèque disponible et le lecteur. Les libellés des
-     * sons suivent la langue choisie, la liste se refait donc quand elle change. */
+    /**
+     * La bibliothèque de sons, commune au buzzer et à la sonothèque : mêmes fichiers, mêmes
+     * imports. Elle se refait quand la langue change — les libellés la suivent — et quand
+     * l'utilisateur apporte un fichier.
+     */
     private val _soundLibrary = MutableStateFlow(SoundLibrary.clips(AppLocale.wrap(application)))
     val soundLibrary = _soundLibrary.asStateFlow()
-
-    /** Les sons de buzzer proposés au joueur, mêmes libellés traduits que la sonothèque. */
-    private val _buzzerLibrary =
-        MutableStateFlow(SoundLibrary.clips(AppLocale.wrap(application), SoundLibrary.BUZZER))
-    val buzzerLibrary = _buzzerLibrary.asStateFlow()
     val clipPlayer = ClipPlayer(application)
 
     private val _settings = MutableStateFlow(
@@ -62,7 +60,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             language = AppLanguage.SYSTEM,
             roomOptions = RoomOptions(),
             buzzerSound = "",
-            buzzerImport = "",
+            imports = emptyList(),
         ),
     )
     val settings = _settings.asStateFlow()
@@ -89,11 +87,11 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             prefs.settings.collect { loaded ->
                 // La langue d'abord : le réseau et la sonothèque la lisent ici, faute de
                 // contexte Compose.
-                if (AppLocale.current != loaded.language) {
-                    AppLocale.current = loaded.language
-                    _soundLibrary.value = SoundLibrary.clips(AppLocale.wrap(getApplication()))
-                    _buzzerLibrary.value =
-                        SoundLibrary.clips(AppLocale.wrap(getApplication()), SoundLibrary.BUZZER)
+                val languageChanged = AppLocale.current != loaded.language
+                if (languageChanged) AppLocale.current = loaded.language
+                if (languageChanged || loaded.imports != _settings.value.imports) {
+                    _soundLibrary.value =
+                        SoundLibrary.all(AppLocale.wrap(getApplication()), loaded.imports)
                 }
                 _settings.value = loaded
                 soundFx.enabled = loaded.sound
@@ -168,6 +166,15 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     /** Choisit le son du buzzer : un son livré, un fichier importé, ou le bip d'origine. */
     fun setBuzzerSound(source: String) {
         viewModelScope.launch { prefs.setBuzzerSound(source) }
+    }
+
+    /**
+     * Range un fichier du téléphone dans la bibliothèque commune. Il apparaîtra aussi bien
+     * dans le choix du buzzer que dans celui des touches : importé une fois, disponible pour
+     * les deux.
+     */
+    fun importSound(uri: String) {
+        viewModelScope.launch { prefs.addImport(uri) }
     }
 
     /** Fait écouter un son sans attendre la prochaine manche. */

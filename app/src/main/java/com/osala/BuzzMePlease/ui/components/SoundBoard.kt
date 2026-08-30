@@ -24,8 +24,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.LibraryMusic
 import androidx.compose.material3.AlertDialog
 import androidx.compose.foundation.ExperimentalFoundationApi
+import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -34,6 +38,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -41,6 +46,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.osala.BuzzMePlease.R
 import com.osala.BuzzMePlease.core.SoundClip
+import com.osala.BuzzMePlease.core.SoundLibrary
 import com.osala.BuzzMePlease.ui.theme.Stage
 
 /**
@@ -156,8 +162,26 @@ fun SoundPickerDialog(
     current: SoundClip?,
     onPick: (SoundClip?) -> Unit,
     onPreview: (SoundClip) -> Unit,
+    onImport: (String) -> Unit,
     onDismiss: () -> Unit,
 ) {
+    val context = LocalContext.current
+    // Le même geste que pour le son du buzzer, et la même bibliothèque au bout : un fichier
+    // apporté ici se retrouvera aussi dans le choix du buzzer. On garde l'autorisation de
+    // lecture au-delà du redémarrage, sinon le son choisi serait muet demain.
+    val importer = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        if (uri == null) return@rememberLauncherForActivityResult
+        runCatching {
+            context.contentResolver.takePersistableUriPermission(
+                uri,
+                Intent.FLAG_GRANT_READ_URI_PERMISSION,
+            )
+        }
+        val source = uri.toString()
+        onImport(source)
+        // Posé tout de suite sur la touche : c'est pour elle qu'on vient de le chercher.
+        onPick(SoundClip(source, SoundLibrary.importedName(context, source), source))
+    }
     AlertDialog(
         onDismissRequest = onDismiss,
         containerColor = Stage.Panel,
@@ -175,6 +199,14 @@ fun SoundPickerDialog(
                     stringResource(R.string.sounds_help),
                     style = MaterialTheme.typography.bodyMedium,
                     color = Stage.TextMuted,
+                )
+                Spacer(Modifier.height(12.dp))
+                GhostAction(
+                    text = stringResource(R.string.settings_buzzer_import),
+                    icon = Icons.Filled.LibraryMusic,
+                    onClick = { importer.launch(arrayOf("audio/*")) },
+                    accent = Stage.VioletSoft,
+                    modifier = Modifier.fillMaxWidth(),
                 )
                 Spacer(Modifier.height(12.dp))
                 library.forEach { clip ->

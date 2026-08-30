@@ -60,12 +60,12 @@ fun SettingsScreen(
     keepScreenOn: Boolean,
     language: AppLanguage,
     buzzerSound: String,
-    buzzerImport: String,
-    buzzerLibrary: List<SoundClip>,
+    library: List<SoundClip>,
     onLanguage: (AppLanguage) -> Unit,
     onSound: (Boolean) -> Unit,
     onKeepScreenOn: (Boolean) -> Unit,
     onBuzzerSound: (String) -> Unit,
+    onImportSound: (String) -> Unit,
     onPreviewSound: (String) -> Unit,
     onTutorial: () -> Unit,
     onBack: () -> Unit,
@@ -81,6 +81,9 @@ fun SettingsScreen(
                 Intent.FLAG_GRANT_READ_URI_PERMISSION,
             )
         }
+        // Le fichier rejoint la bibliothèque commune : il servira aussi sur les touches de la
+        // sonothèque, sans avoir à l'importer une seconde fois.
+        onImportSound(uri.toString())
         onBuzzerSound(uri.toString())
         onPreviewSound(uri.toString())
     }
@@ -93,8 +96,7 @@ fun SettingsScreen(
     val buzzerPanel: @Composable () -> Unit = {
         BuzzerPanel(
             buzzerSound = buzzerSound,
-            buzzerImport = buzzerImport,
-            buzzerLibrary = buzzerLibrary,
+            library = library,
             onBuzzerSound = onBuzzerSound,
             onPreviewSound = onPreviewSound,
             onImport = { importer.launch(arrayOf("audio/*")) },
@@ -280,8 +282,7 @@ private fun ComfortPanel(
 @Composable
 private fun BuzzerPanel(
     buzzerSound: String,
-    buzzerImport: String,
-    buzzerLibrary: List<SoundClip>,
+    library: List<SoundClip>,
     onBuzzerSound: (String) -> Unit,
     onPreviewSound: (String) -> Unit,
     onImport: () -> Unit,
@@ -304,25 +305,15 @@ private fun BuzzerPanel(
                     onPreviewSound("")
                 },
             )
-            buzzerLibrary.forEach { clip ->
+            // La bibliothèque entière : les sons du jeu, puis ceux qu'on a apportés. Un fichier
+            // importé reste dans la liste même si on lui préfère ensuite un son du jeu.
+            library.forEach { clip ->
                 SoundChoice(
                     label = clip.label,
                     selected = buzzerSound == clip.path,
                     onClick = {
                         onBuzzerSound(clip.path)
                         onPreviewSound(clip.path)
-                    },
-                )
-            }
-            // Le son importé reste dans la liste une fois choisi, même si on lui
-            // préfère ensuite un son du jeu : on y revient d'une touche.
-            if (buzzerImport.isNotBlank()) {
-                SoundChoice(
-                    label = rememberImportedName(buzzerImport),
-                    selected = buzzerSound == buzzerImport,
-                    onClick = {
-                        onBuzzerSound(buzzerImport)
-                        onPreviewSound(buzzerImport)
                     },
                 )
             }

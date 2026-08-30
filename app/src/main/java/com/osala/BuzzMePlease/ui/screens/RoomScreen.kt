@@ -109,6 +109,7 @@ fun RoomScreen(
     playingClipId: String? = null,
     onPlayClip: (SoundClip) -> Unit = {},
     onPickClip: (index: Int, clipId: String?) -> Unit = { _, _ -> },
+    onImportSound: (String) -> Unit = {},
 ) {
     val state by session.state.collectAsStateWithLifecycle()
     val link by session.link.collectAsStateWithLifecycle()
@@ -339,6 +340,7 @@ fun RoomScreen(
                 editedSlot = null
             },
             onPreview = onPlayClip,
+            onImport = onImportSound,
             onDismiss = { editedSlot = null },
         )
     }

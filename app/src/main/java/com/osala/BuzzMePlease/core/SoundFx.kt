@@ -5,6 +5,8 @@ import android.media.AudioManager
 import android.media.MediaPlayer
 import android.media.ToneGenerator
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
@@ -40,6 +42,9 @@ class SoundFx(context: Context) {
 
     /** Le son en cours, gardé pour pouvoir le libérer. */
     private var clip: MediaPlayer? = null
+
+    /** La minuterie qui borne la durée d'un son choisi par le joueur. */
+    private val cutter = Handler(Looper.getMainLooper())
 
     private val tones: ToneGenerator? =
         runCatching { ToneGenerator(AudioManager.STREAM_MUSIC, VOLUME) }.getOrNull()
@@ -98,15 +103,32 @@ class SoundFx(context: Context) {
         }
     }
 
-    private fun playClip(source: String): Boolean {
+    /**
+     * @param limitMillis durée au-delà de laquelle le son est coupé. Un joueur peut choisir
+     *   n'importe quel fichier de son téléphone : sans cette borne, un morceau de deux minutes
+     *   couvrirait la manche entière, et la suivante.
+     */
+    private fun playClip(source: String, limitMillis: Long = MAX_CLIP_MILLIS): Boolean {
         val player = open(appContext, source) ?: return false
+        cutter.removeCallbacks(cut)
         runCatching { clip?.release() }
         player.setOnCompletionListener {
             if (clip === it) clip = null
+            cutter.removeCallbacks(cut)
             runCatching { it.release() }
         }
         clip = player
-        return runCatching { player.start() }.isSuccess
+        val started = runCatching { player.start() }.isSuccess
+        if (started && limitMillis > 0) cutter.postDelayed(cut, limitMillis)
+        return started
+    }
+
+    /** Coupe le son en cours : le fondu n'apporterait rien sur un jingle de plateau. */
+    private val cut = Runnable {
+        val current = clip ?: return@Runnable
+        clip = null
+        runCatching { current.stop() }
+        runCatching { current.release() }
     }
 
     private fun play(tone: Int, durationMillis: Int, vibrate: Long) {
@@ -123,6 +145,7 @@ class SoundFx(context: Context) {
     }
 
     fun release() {
+        cutter.removeCallbacks(cut)
         runCatching { tones?.release() }
         runCatching { clip?.release() }
         clip = null
@@ -130,5 +153,12 @@ class SoundFx(context: Context) {
 
     private companion object {
         const val VOLUME = 90
+
+        /**
+         * Un son de buzzer ne dépasse pas quatre secondes. C'est assez pour un jingle, et
+         * assez court pour que le morceau de deux minutes importé par un plaisantin ne couvre
+         * pas la manche.
+         */
+        const val MAX_CLIP_MILLIS = 4_000L
     }
 }

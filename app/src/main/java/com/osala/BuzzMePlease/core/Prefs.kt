@@ -37,10 +37,11 @@ data class Settings(
      */
     val buzzerSound: String,
     /**
-     * Le dernier fichier importé, gardé même quand un autre son est choisi : il reste dans la
-     * liste, on n'a pas à le rechercher pour y revenir.
+     * Les fichiers apportés par l'utilisateur, en URI. Ils rejoignent la bibliothèque du jeu et
+     * servent aussi bien au buzzer qu'aux touches de la sonothèque — on ne les importe qu'une
+     * fois pour les deux. Gardés même quand un autre son est choisi : on y revient d'une touche.
      */
-    val buzzerImport: String,
+    val imports: List<String>,
 )
 
 /**
@@ -77,8 +78,10 @@ class Prefs(context: Context) {
             soundboard = decodeSoundboard(prefs[KEY_SOUNDBOARD]),
             language = AppLanguage.of(prefs[KEY_LANGUAGE]),
             roomOptions = decodeOptions(prefs[KEY_ROOM_OPTIONS]),
-            buzzerSound = prefs[KEY_BUZZER_SOUND].orEmpty(),
-            buzzerImport = prefs[KEY_BUZZER_IMPORT].orEmpty(),
+            // Les sons ne vivent plus en deux dossiers : un choix enregistré avant la fusion
+            // pointerait dans le vide.
+            buzzerSound = SoundLibrary.migratePath(prefs[KEY_BUZZER_SOUND].orEmpty()),
+            imports = decodeImports(prefs[KEY_IMPORTS], prefs[KEY_BUZZER_IMPORT]),
         )
     }
 
@@ -114,7 +117,17 @@ class Prefs(context: Context) {
     /** Le son du buzzer, vide pour revenir au bip. */
     suspend fun setBuzzerSound(source: String) = store.edit {
         it[KEY_BUZZER_SOUND] = source
-        if (source.startsWith("content://")) it[KEY_BUZZER_IMPORT] = source
+    }
+
+    /**
+     * Range un fichier apporté par l'utilisateur dans la bibliothèque commune. Le même fichier
+     * importé deux fois ne s'y ajoute pas deux fois, et la liste est bornée : ce sont des
+     * autorisations d'accès que le système garde ouvertes, pas seulement des chaînes.
+     */
+    suspend fun addImport(uri: String) = store.edit { prefs ->
+        val current = decodeImports(prefs[KEY_IMPORTS], prefs[KEY_BUZZER_IMPORT])
+        if (uri.isBlank() || uri in current) return@edit
+        prefs[KEY_IMPORTS] = (current + uri).takeLast(MAX_IMPORTS).joinToString(SEPARATOR)
     }
 
     /** Mémorise la sonothèque telle qu'elle est posée : elle sera rechargée au salon suivant. */
@@ -127,6 +140,16 @@ class Prefs(context: Context) {
         raw?.let { runCatching { optionsJson.decodeFromString(RoomOptions.serializer(), it) }.getOrNull() }
             ?: RoomOptions()
 
+    /**
+     * Les sons importés. Une version antérieure n'en gardait qu'un, celui du buzzer : il ouvre
+     * la liste plutôt que d'être perdu à la mise à jour.
+     */
+    private fun decodeImports(raw: String?, legacy: String?): List<String> {
+        val saved = raw?.split(SEPARATOR)?.filter { it.isNotBlank() }.orEmpty()
+        if (saved.isNotEmpty()) return saved
+        return listOfNotNull(legacy?.takeIf { it.isNotBlank() })
+    }
+
     /** Toujours neuf entrées en sortie, quel que soit ce qui a été enregistré auparavant. */
     private fun decodeSoundboard(raw: String?): List<String> {
         val saved = raw?.split(SEPARATOR).orEmpty()
@@ -135,8 +158,14 @@ class Prefs(context: Context) {
 
     private companion object {
         const val SEPARATOR = "|"
+
+        /** Au-delà, ce sont des autorisations d'accès accumulées pour rien. */
+        const val MAX_IMPORTS = 12
         val KEY_SOUNDBOARD = stringPreferencesKey("soundboard")
         val KEY_BUZZER_SOUND = stringPreferencesKey("buzzer_sound")
+        val KEY_IMPORTS = stringPreferencesKey("sound_imports")
+
+        /** Le son importé unique d'avant : relu une fois, pour ne pas le perdre. */
         val KEY_BUZZER_IMPORT = stringPreferencesKey("buzzer_import")
         val KEY_ROOM_OPTIONS = stringPreferencesKey("room_options")
 

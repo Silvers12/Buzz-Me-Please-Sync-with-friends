@@ -41,7 +41,6 @@ fun BuzzMeApp(viewModel: AppViewModel = viewModel()) {
     val notice by viewModel.notice.collectAsStateWithLifecycle()
     val playingClip by viewModel.clipPlayer.playing.collectAsStateWithLifecycle()
     val soundLibrary by viewModel.soundLibrary.collectAsStateWithLifecycle()
-    val buzzerLibrary by viewModel.buzzerLibrary.collectAsStateWithLifecycle()
 
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -109,6 +108,7 @@ fun BuzzMeApp(viewModel: AppViewModel = viewModel()) {
                             playingClipId = playingClip,
                             onPlayClip = viewModel::playClip,
                             onPickClip = viewModel::setSoundSlot,
+                            onImportSound = viewModel::importSound,
                         )
                     }
                 }
@@ -118,12 +118,12 @@ fun BuzzMeApp(viewModel: AppViewModel = viewModel()) {
                     keepScreenOn = settings.keepScreenOn,
                     language = settings.language,
                     buzzerSound = settings.buzzerSound,
-                    buzzerImport = settings.buzzerImport,
-                    buzzerLibrary = buzzerLibrary,
+                    library = soundLibrary,
                     onLanguage = viewModel::setLanguage,
                     onSound = viewModel::setSound,
                     onKeepScreenOn = viewModel::setKeepScreenOn,
                     onBuzzerSound = viewModel::setBuzzerSound,
+                    onImportSound = viewModel::importSound,
                     onPreviewSound = viewModel::previewBuzzerSound,
                     onTutorial = viewModel::goTutorial,
                     onBack = viewModel::goHome,

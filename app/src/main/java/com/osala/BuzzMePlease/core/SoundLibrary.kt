@@ -4,7 +4,9 @@ import android.content.Context
 import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.net.Uri
+import android.provider.OpenableColumns
 import android.util.Log
+import com.osala.BuzzMePlease.R
 import java.text.Collator
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -12,47 +14,85 @@ import kotlinx.coroutines.flow.asStateFlow
 
 /**
  * Un son embarqué : le nom du fichier sans extension, le libellé montré à l'écran, et son
- * chemin dans les assets (« soundbox/correct.mp3 »).
+ * chemin dans les assets (« sound/correct.mp3 »), ou l'URI d'un fichier importé.
  */
 data class SoundClip(val id: String, val label: String, val path: String)
 
 /**
- * Les sons livrés avec l'application, rangés en deux familles.
+ * Les sons livrés avec l'application, et ceux que le joueur apporte.
  *
- * **Ajouter un son** : déposer le fichier dans `app/src/main/assets/soundbox` pour la sonothèque
- * de l'animateur, ou dans `app/src/main/assets/buzzer` pour les sons de buzzer proposés aux
- * joueurs. Rien d'autre à faire : le dossier est lu à l'exécution. Le libellé se traduit en
- * ajoutant une clé `sound_<nom du fichier>` dans `strings.xml` ; sans elle, le nom du fichier
- * s'affiche tel quel, en clair.
+ * **Un seul dossier.** Le buzzer et la sonothèque puisent dans le même : ce qu'on peut poser sur
+ * une touche, on peut le mettre sur son buzzer, et réciproquement. Les séparer obligeait à
+ * choisir pour l'utilisateur, et à livrer deux fois le même fichier quand il servait aux deux.
  *
- * Les assets plutôt que `res/raw`, parce que `res/raw` est plat : il n'accepte pas de
- * sous-dossier, et les deux familles finiraient mélangées.
+ * **Ajouter un son** : déposer le fichier dans `app/src/main/assets/sound`. Rien d'autre à
+ * faire, le dossier est lu à l'exécution. Le libellé se traduit en ajoutant une clé
+ * `sound_<nom du fichier>` dans `strings.xml` ; sans elle, le nom du fichier s'affiche tel quel.
  */
 object SoundLibrary {
 
-    /** La sonothèque de l'animateur. */
-    const val SOUNDBOX = "soundbox"
-
-    /** Les sons de buzzer proposés au joueur. */
-    const val BUZZER = "buzzer"
+    /** Le dossier des sons livrés avec le jeu. */
+    const val FOLDER = "sound"
 
     /** Nombre de touches de la sonothèque : trois rangées de trois, à portée du pouce. */
     const val SLOTS = 9
 
     /**
-     * Les sons d'un dossier, classés par libellé.
+     * Les sons livrés, classés par libellé.
      *
      * Le tri suit la langue affichée — un [Collator] plutôt qu'une comparaison de chaînes, pour
      * que « Bébé qui pleure » se range après « Battements de cœur » et non après le Z.
      */
-    fun clips(context: Context, folder: String = SOUNDBOX): List<SoundClip> {
-        val files = runCatching { context.assets.list(folder) }.getOrNull().orEmpty()
+    fun clips(context: Context): List<SoundClip> {
+        val files = runCatching { context.assets.list(FOLDER) }.getOrNull().orEmpty()
         val collator = Collator.getInstance(AppLocale.locale)
         return files.mapNotNull { file ->
             val id = file.substringBeforeLast('.', missingDelimiterValue = "")
             if (id.isBlank()) return@mapNotNull null
-            SoundClip(id, label(context, id), "$folder/$file")
+            SoundClip(id, label(context, id), "$FOLDER/$file")
         }.sortedWith { a, b -> collator.compare(a.label, b.label) }
+    }
+
+    /**
+     * La bibliothèque complète : les sons du jeu, puis ceux apportés par l'utilisateur. Les
+     * siens restent groupés à la fin plutôt que fondus dans le classement — il les a choisis,
+     * il doit les retrouver sans parcourir la liste entière.
+     *
+     * Un fichier importé est identifié par son URI : c'est ce qui est enregistré sur la touche
+     * ou dans le réglage du buzzer, et ce qui survit au redémarrage.
+     */
+    fun all(context: Context, imports: List<String>): List<SoundClip> {
+        val collator = Collator.getInstance(AppLocale.locale)
+        val mine = imports
+            .map { uri -> SoundClip(id = uri, label = importedName(context, uri), path = uri) }
+            .sortedWith { a, b -> collator.compare(a.label, b.label) }
+        return clips(context) + mine
+    }
+
+    /**
+     * Le nom du fichier importé, tel que le téléphone l'affiche. Faute de pouvoir l'interroger —
+     * fichier déplacé, autorisation perdue — on annonce simplement « son importé ».
+     */
+    fun importedName(context: Context, uri: String): String = runCatching {
+        context.contentResolver.query(
+            Uri.parse(uri),
+            arrayOf(OpenableColumns.DISPLAY_NAME),
+            null,
+            null,
+            null,
+        )?.use { cursor ->
+            if (cursor.moveToFirst()) cursor.getString(0)?.substringBeforeLast('.') else null
+        }
+    }.getOrNull() ?: context.getString(R.string.settings_buzzer_imported)
+
+    /**
+     * Ramène un chemin enregistré par une version antérieure, du temps où les sons vivaient en
+     * deux dossiers. Sans cela, le buzzer choisi avant la mise à jour redeviendrait muet.
+     */
+    fun migratePath(source: String): String = when {
+        source.startsWith("buzzer/") -> "$FOLDER/${source.removePrefix("buzzer/")}"
+        source.startsWith("soundbox/") -> "$FOLDER/${source.removePrefix("soundbox/")}"
+        else -> source
     }
 
     /** Le chemin du son « mauvaise réponse », joué chez celui qui perd la parole. */
