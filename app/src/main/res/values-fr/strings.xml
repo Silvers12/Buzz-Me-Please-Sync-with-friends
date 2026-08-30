@@ -76,6 +76,7 @@
     <string name="announce_floor">À VOUS LA PAROLE !</string>
     <string name="announce_right">BIEN JOUÉ !</string>
     <string name="announce_wrong">PERDU !</string>
+    <string name="announce_late">TROP TARD</string>
     <string name="announce_out">VOUS ÊTES ÉLIMINÉ</string>
     <string name="announce_host_you">VOUS ÊTES ANIMATEUR</string>
     <string name="announce_host_other">NOUVEL ANIMATEUR\n%1$s</string>

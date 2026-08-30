@@ -179,6 +179,7 @@ fun RoomScreen(
     val floorText = stringResource(R.string.announce_floor)
     val rightText = stringResource(R.string.announce_right)
     val wrongText = stringResource(R.string.announce_wrong)
+    val lateText = stringResource(R.string.announce_late)
     val outText = stringResource(R.string.announce_out)
 
     // Ce qui arrive à son propre buzzer, et à lui seul : on n'annonce pas le sort des autres.
@@ -188,6 +189,9 @@ fun RoomScreen(
             BuzzerVisual.SPEAKING -> announcement = Announce(floorText, Stage.GoldSoft)
             BuzzerVisual.RIGHT -> announcement = Announce(rightText, Stage.Green)
             BuzzerVisual.WRONG -> announcement = Announce(wrongText, Stage.Red)
+            // Devancé, ou passé par « suivant » : dans les deux cas on avait appuyé.
+            // Celui qui n'a pas touché son buzzer ne reçoit rien.
+            BuzzerVisual.LOST -> announcement = Announce(lateText, Stage.Blue)
             else -> Unit
         }
     }

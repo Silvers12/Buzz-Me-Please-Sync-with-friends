@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -156,6 +157,11 @@ fun Announcement(
 
         Box(
             modifier = Modifier
+                // Le bandeau se cale sur le texte, pas sur l'écran : sur une tablette, 92 % de
+                // 1280 dp donnaient une barre d'un mètre où le titre se perdait au milieu.
+                // La borne vient avant le pourcentage — après, elle ne pourrait plus rétrécir
+                // une largeur déjà figée.
+                .widthIn(max = 560.dp)
                 .fillMaxWidth(0.92f)
                 .graphicsLayer {
                     scaleX = scale.value

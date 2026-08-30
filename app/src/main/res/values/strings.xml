@@ -78,6 +78,7 @@
     <string name="announce_floor">THE FLOOR IS YOURS!</string>
     <string name="announce_right">WELL PLAYED!</string>
     <string name="announce_wrong">WRONG!</string>
+    <string name="announce_late">TOO LATE</string>
     <string name="announce_out">YOU ARE OUT</string>
     <string name="announce_host_you">YOU ARE THE HOST</string>
     <string name="announce_host_other">NEW HOST\n%1$s</string>
