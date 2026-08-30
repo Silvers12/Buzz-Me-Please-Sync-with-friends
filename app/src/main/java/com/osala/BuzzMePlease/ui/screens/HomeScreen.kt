@@ -44,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import com.osala.BuzzMePlease.R
 import com.osala.BuzzMePlease.ui.components.PrimaryAction
 import com.osala.BuzzMePlease.ui.components.SectionLabel
+import com.osala.BuzzMePlease.ui.components.readableWidth
 import com.osala.BuzzMePlease.ui.components.StageBackground
 import com.osala.BuzzMePlease.ui.components.StagePanel
 import com.osala.BuzzMePlease.ui.theme.Stage
@@ -70,6 +71,7 @@ fun HomeScreen(
                 .fillMaxSize()
                 .systemBarsPadding()
                 .verticalScroll(rememberScrollState())
+                .readableWidth()
                 .padding(horizontal = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {

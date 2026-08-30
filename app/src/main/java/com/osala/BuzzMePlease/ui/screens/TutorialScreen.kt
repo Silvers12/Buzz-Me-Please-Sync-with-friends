@@ -36,6 +36,7 @@ import com.osala.BuzzMePlease.model.BuzzerVisual
 import com.osala.BuzzMePlease.ui.components.BuzzerSample
 import com.osala.BuzzMePlease.ui.components.PrimaryAction
 import com.osala.BuzzMePlease.ui.components.SectionLabel
+import com.osala.BuzzMePlease.ui.components.readableWidth
 import com.osala.BuzzMePlease.ui.components.StageBackground
 import com.osala.BuzzMePlease.ui.components.StagePanel
 import com.osala.BuzzMePlease.ui.theme.Stage
@@ -104,6 +105,7 @@ fun TutorialScreen(onBack: () -> Unit) {
                 .fillMaxSize()
                 .systemBarsPadding()
                 .verticalScroll(rememberScrollState())
+                .readableWidth(720.dp)
                 .padding(horizontal = 24.dp),
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {

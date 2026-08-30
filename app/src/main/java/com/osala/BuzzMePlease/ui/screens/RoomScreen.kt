@@ -15,6 +15,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -67,6 +68,7 @@ import com.osala.BuzzMePlease.core.AppClock
 import com.osala.BuzzMePlease.core.SoundClip
 import com.osala.BuzzMePlease.core.SoundFx
 import com.osala.BuzzMePlease.game.LinkPhase
+import com.osala.BuzzMePlease.game.LinkStatus
 import com.osala.BuzzMePlease.game.RoomSession
 import com.osala.BuzzMePlease.model.Buzz
 import com.osala.BuzzMePlease.model.BuzzerVisual
@@ -91,6 +93,12 @@ import com.osala.BuzzMePlease.ui.components.StatusDot
 import com.osala.BuzzMePlease.ui.theme.MonoDigits
 import com.osala.BuzzMePlease.ui.theme.Stage
 import kotlinx.coroutines.delay
+
+/**
+ * Largeur à partir de laquelle une fenêtre tenue en paysage passe au pupitre. Une tablette de
+ * 10 pouces en offre 1280 dp, un téléphone jamais autant : la disposition mobile ne risque rien.
+ */
+private val CONSOLE_WIDTH = 720.dp
 
 @Composable
 fun RoomScreen(
@@ -140,246 +148,63 @@ fun RoomScreen(
         soundFx = soundFx,
     )
 
-    // Le buzzer est taillé sur la hauteur de l'écran, pas sur ce qui reste une fois le bandeau
-    // de résultat affiché : sur un petit téléphone il garde une taille jouable, sur un grand il
-    // ne flotte pas au milieu du vide.
-    val configuration = LocalConfiguration.current
-    val buzzerHeight = (configuration.screenHeightDp.dp * 0.32f).coerceIn(150.dp, 300.dp)
-
-    // Manche en cours, côté joueur : le plateau et l'en-tête s'effacent par le haut et par le
-    // bas, le buzzer prend toute la place. Plus rien à lire, plus rien à surveiller — juste le
-    // bouton sous le pouce. L'animateur, lui, garde son pupitre entier : c'est son tableau de bord.
-    val focused = !amHost &&
-        (myVisual == BuzzerVisual.COUNTDOWN || myVisual == BuzzerVisual.ARMED)
-
-    // Le plateau du salon, dont on retire sa propre ligne : elle est épinglée au bas de
-    // l'écran, sous les yeux en permanence, plateau ou pas.
     val board = remember(state, amHost) {
         orderPlayers(state, keepEliminated = amHost, myId = session.myId)
     }
+    // Le plateau du salon, dont on retire sa propre ligne : elle est épinglée au bas de
+    // l'écran, sous les yeux en permanence, plateau ou pas.
     val others = remember(board) { board.filter { it.id != session.myId } }
-    // L'animateur garde toujours son tableau — ou sa sonothèque à la place. Le joueur le perd
-    // quand l'animateur a masqué le plateau : il ne lui reste alors que sa ligne, et le buzzer
-    // occupe le milieu de l'écran.
-    val showBoard = amHost || !state.options.hideBoard
-    val centreBuzzer = !showBoard
-    val focusSide = minOf(
-        configuration.screenWidthDp.dp - 36.dp,
-        configuration.screenHeightDp.dp * 0.82f,
+
+    val view = RoomView(
+        state = state,
+        link = link,
+        myId = session.myId,
+        amHost = amHost,
+        nowHost = nowHost,
+        myVisual = myVisual,
+        remaining = remaining,
+        board = board,
+        others = others,
+        // L'animateur garde toujours son tableau. Le joueur le perd quand l'animateur a masqué
+        // le plateau : il ne lui reste alors que sa ligne, et le buzzer prend le milieu.
+        showBoard = amHost || !state.options.hideBoard,
     )
-    val stageHeight by animateDpAsState(
-        targetValue = if (focused) focusSide else buzzerHeight,
-        animationSpec = tween(durationMillis = 420, easing = FastOutSlowInEasing),
-        label = "stage",
-    )
-    // Une fois l'écran vidé, le buzzer se recentre : la marge du haut se creuse à mesure que le
-    // reste s'en va, pour que le bouton finisse au milieu de l'écran, sous le pouce.
-    val focusGap = ((configuration.screenHeightDp.dp - focusSide) / 2 - 28.dp).coerceAtLeast(0.dp)
-    val stageGap by animateDpAsState(
-        // Quand le buzzer est déjà centré par les espaces souples, il n'y a rien à creuser.
-        targetValue = if (focused && !centreBuzzer) focusGap else 0.dp,
-        animationSpec = tween(durationMillis = 420, easing = FastOutSlowInEasing),
-        label = "stageGap",
+    val sounds = SoundDesk(
+        library = soundLibrary,
+        slots = soundboard,
+        playingId = playingClipId,
+        onPlay = onPlayClip,
+        onEdit = { index -> editedSlot = index },
     )
 
-    StageBackground {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .systemBarsPadding()
-                .padding(horizontal = 18.dp),
-        ) {
-            AnimatedVisibility(
-                visible = !focused,
-                enter = slideInVertically { -it } + fadeIn(),
-                exit = slideOutVertically { -it } + fadeOut(),
-            ) {
-                Column {
-                    RoomHeader(
-                        state = state,
-                        linkPhase = link.phase,
-                        linkDetail = link.detail,
-                        pingMillis = link.pingMillis,
-                        precisionMillis = link.clockPrecisionMillis,
-                        amHost = amHost,
-                        onLeave = onLeave,
-                    )
-                    Spacer(Modifier.height(10.dp))
-                }
-            }
+    // La place réellement disponible décide de la disposition : on mesure la fenêtre plutôt que
+    // d'interroger l'écran, ce qui reste juste en écran partagé comme après une rotation. Assez
+    // large et plus large que haute, c'est une tablette posée en paysage : l'animateur a droit à
+    // son pupitre entier plutôt qu'à des panneaux qui se relaient. En dessous, rien ne change —
+    // le téléphone garde la disposition qui a été réglée écran par écran.
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        val console = maxWidth >= CONSOLE_WIDTH && maxWidth > maxHeight
 
-            Spacer(Modifier.height(stageGap))
-
-            // Sans tableau, le buzzer ne reste pas collé en haut : il se centre dans tout
-            // l'espace que le plateau laisse libre.
-            if (centreBuzzer) Spacer(Modifier.weight(1f))
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(stageHeight),
-                contentAlignment = Alignment.Center,
-            ) {
-                // fillMaxHeight + aspectRatio(1f) côté buzzer : le dôme reste rond quelle que
-                // soit la largeur de l'écran.
-                BigBuzzer(
-                    visual = myVisual,
-                    title = buzzerTitle(myVisual, remaining, state, session.myId),
-                    subtitle = buzzerSubtitle(myVisual, state, session.myId),
-                    onPress = { uptime -> session.buzz(uptime) },
-                    modifier = Modifier.fillMaxHeight(),
-                )
-            }
-
-            if (centreBuzzer) Spacer(Modifier.weight(1f))
-
-            AnimatedVisibility(
-                visible = !focused,
-                modifier = if (centreBuzzer) Modifier else Modifier.weight(1f, fill = false),
-                enter = slideInVertically { it } + fadeIn(),
-                exit = slideOutVertically { it } + fadeOut(),
-            ) {
-                Column {
-                    Spacer(Modifier.height(10.dp))
-
-                    if (amHost) {
-                        HostControls(
-                            state = state,
-                            onArm = session::arm,
-                            onReset = session::resetBoard,
-                            onOptions = { showOptions = true },
-                        )
-                        Spacer(Modifier.height(12.dp))
-                    }
-
-                    ResultBanner(
-                        state = state,
-                        myId = session.myId,
-                        amHost = amHost,
-                        // Bonne réponse : le point est mis, le buzzer du joueur passe au vert et
-                        // la récompense se fait entendre. Les buzzers s'éteignent juste après —
-                        // la manche est jouée, il n'y a plus rien à arbitrer.
-                        onRightAnswer = {
-                            state.speakerId?.let { session.addPoints(it, 1) }
-                            session.markRight()
-                        },
-                        onWrongAnswer = session::markWrong,
-                        // Éliminer celui qui vient de se tromper : la manche peut alors
-                        // repartir sans lui, aux seuls joueurs qui n'ont pas encore répondu.
-                        onKnockOut = {
-                            state.wrongId?.let { session.setStatus(it, PlayerStatus.ELIMINATED) }
-                        },
-                        onNextPlayer = session::passSpeaker,
-                    )
-
-                    Spacer(Modifier.height(8.dp))
-
-                    if (showBoard) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            SectionLabel(
-                                when {
-                                    showSounds -> stringResource(R.string.room_board_sounds)
-                                    // Rappel utile à l'animateur : il sait ce qu'il a coupé.
-                                    state.options.hideBoard ->
-                                        stringResource(R.string.room_board_hidden_host)
-
-                                    amHost -> stringResource(R.string.room_board_host)
-                                    else -> stringResource(R.string.room_board)
-                                },
-                                modifier = Modifier.weight(1f),
-                            )
-                            Spacer(Modifier.width(8.dp))
-                            if (amHost) {
-                                // Le panneau se rétracte sur le plateau : deux vues, une place.
-                                SoundBoardToggle(open = showSounds) { showSounds = !showSounds }
-                            } else {
-                                Text(
-                                    stringResource(
-                                        R.string.room_online_count,
-                                        board.count { it.connected },
-                                        board.size,
-                                    ),
-                                    style = MaterialTheme.typography.labelMedium,
-                                    color = Stage.TextMuted,
-                                    maxLines = 1,
-                                )
-                            }
-                        }
-
-                        Spacer(Modifier.height(8.dp))
-
-                        if (showSounds && amHost) {
-                            SoundBoard(
-                                slots = soundboard.map { id ->
-                                    soundLibrary.firstOrNull { it.id == id }
-                                },
-                                library = soundLibrary,
-                                playingId = playingClipId,
-                                onPlay = onPlayClip,
-                                onEdit = { index -> editedSlot = index },
-                                modifier = Modifier.weight(1f),
-                            )
-                        } else {
-                            // Les buzz réordonnent le plateau : sans cela, la liste suivrait le
-                            // joueur qui était en tête et afficherait une ligne coupée au lieu
-                            // du classement de la manche.
-                            val boardState = rememberLazyListState()
-                            LaunchedEffect(state.round, state.winnerId) {
-                                if (boardState.firstVisibleItemIndex != 0 ||
-                                    boardState.firstVisibleItemScrollOffset != 0
-                                ) {
-                                    boardState.animateScrollToItem(0)
-                                }
-                            }
-                            LazyColumn(
-                                state = boardState,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .weight(1f),
-                                verticalArrangement = Arrangement.spacedBy(8.dp),
-                                contentPadding = PaddingValues(bottom = 8.dp),
-                            ) {
-                                items(others, key = { it.id }) { player ->
-                                    PlayerRow(
-                                        player = player,
-                                        visual = state.visualFor(player.id, nowHost),
-                                        buzz = state.buzzOf(player.id),
-                                        gapMillis = state.gapOf(player.id),
-                                        rank = state.rankOf(player.id),
-                                        isWinner = state.winnerId == player.id,
-                                        isHost = state.hostId == player.id,
-                                        isMe = false,
-                                        showControls = amHost,
-                                        onClick = { selectedPlayer = player.id },
-                                    )
-                                }
-                            }
-                        }
-
-                        Spacer(Modifier.height(8.dp))
-                    }
-
-                    // Sa propre ligne, toujours sous les yeux : au pied du plateau quand il est
-                    // là, seule au bas de l'écran quand il ne l'est pas.
-                    val me = state.player(session.myId)
-                    if (me != null) {
-                        PlayerRow(
-                            player = me,
-                            visual = myVisual,
-                            buzz = state.buzzOf(me.id),
-                            gapMillis = state.gapOf(me.id),
-                            rank = state.rankOf(me.id),
-                            isWinner = state.winnerId == me.id,
-                            isHost = state.hostId == me.id,
-                            isMe = true,
-                            showControls = amHost,
-                            onClick = { selectedPlayer = me.id },
-                        )
-                    }
-
-                    Spacer(Modifier.height(8.dp))
-                }
-            }
+        if (console) {
+            RoomConsole(
+                session = session,
+                view = view,
+                sounds = sounds,
+                onSelectPlayer = { selectedPlayer = it },
+                onOptions = { showOptions = true },
+                onLeave = onLeave,
+            )
+        } else {
+            PhoneRoom(
+                session = session,
+                view = view,
+                sounds = sounds,
+                showSounds = showSounds,
+                onToggleSounds = { showSounds = !showSounds },
+                onSelectPlayer = { selectedPlayer = it },
+                onOptions = { showOptions = true },
+                onLeave = onLeave,
+            )
         }
     }
 
@@ -435,6 +260,311 @@ fun RoomScreen(
 }
 
 /**
+ * La disposition du téléphone : une seule colonne, où les panneaux se relaient faute de place.
+ * Le plateau cède la place à la sonothèque, l'en-tête et le tableau s'effacent pendant la
+ * manche pour ne laisser que le dôme.
+ */
+@Composable
+private fun PhoneRoom(
+    session: RoomSession,
+    view: RoomView,
+    sounds: SoundDesk,
+    showSounds: Boolean,
+    onToggleSounds: () -> Unit,
+    onSelectPlayer: (String) -> Unit,
+    onOptions: () -> Unit,
+    onLeave: () -> Unit,
+) {
+    val state = view.state
+    val amHost = view.amHost
+    val myVisual = view.myVisual
+    val remaining = view.remaining
+    val board = view.board
+    val showBoard = view.showBoard
+
+    // Le buzzer est taillé sur la hauteur de l'écran, pas sur ce qui reste une fois le bandeau
+    // de résultat affiché : sur un petit téléphone il garde une taille jouable, sur un grand il
+    // ne flotte pas au milieu du vide.
+    val configuration = LocalConfiguration.current
+    val buzzerHeight = (configuration.screenHeightDp.dp * 0.32f).coerceIn(150.dp, 300.dp)
+
+    // Manche en cours, côté joueur : le plateau et l'en-tête s'effacent par le haut et par le
+    // bas, le buzzer prend toute la place. Plus rien à lire, plus rien à surveiller — juste le
+    // bouton sous le pouce. L'animateur, lui, garde son pupitre entier : c'est son tableau de bord.
+    val focused = !amHost &&
+        (myVisual == BuzzerVisual.COUNTDOWN || myVisual == BuzzerVisual.ARMED)
+
+    val centreBuzzer = !showBoard
+    val focusSide = minOf(
+        configuration.screenWidthDp.dp - 36.dp,
+        configuration.screenHeightDp.dp * 0.82f,
+    )
+    val stageHeight by animateDpAsState(
+        targetValue = if (focused) focusSide else buzzerHeight,
+        animationSpec = tween(durationMillis = 420, easing = FastOutSlowInEasing),
+        label = "stage",
+    )
+    // Une fois l'écran vidé, le buzzer se recentre : la marge du haut se creuse à mesure que le
+    // reste s'en va, pour que le bouton finisse au milieu de l'écran, sous le pouce.
+    val focusGap = ((configuration.screenHeightDp.dp - focusSide) / 2 - 28.dp).coerceAtLeast(0.dp)
+    val stageGap by animateDpAsState(
+        // Quand le buzzer est déjà centré par les espaces souples, il n'y a rien à creuser.
+        targetValue = if (focused && !centreBuzzer) focusGap else 0.dp,
+        animationSpec = tween(durationMillis = 420, easing = FastOutSlowInEasing),
+        label = "stageGap",
+    )
+
+    StageBackground {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .systemBarsPadding()
+                .padding(horizontal = 18.dp),
+        ) {
+            AnimatedVisibility(
+                visible = !focused,
+                enter = slideInVertically { -it } + fadeIn(),
+                exit = slideOutVertically { -it } + fadeOut(),
+            ) {
+                Column {
+                    RoomHeader(
+                        state = state,
+                        linkPhase = view.link.phase,
+                        linkDetail = view.link.detail,
+                        pingMillis = view.link.pingMillis,
+                        precisionMillis = view.link.clockPrecisionMillis,
+                        amHost = amHost,
+                        onLeave = onLeave,
+                    )
+                    Spacer(Modifier.height(10.dp))
+                }
+            }
+
+            Spacer(Modifier.height(stageGap))
+
+            // Sans tableau, le buzzer ne reste pas collé en haut : il se centre dans tout
+            // l'espace que le plateau laisse libre.
+            if (centreBuzzer) Spacer(Modifier.weight(1f))
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(stageHeight),
+                contentAlignment = Alignment.Center,
+            ) {
+                // fillMaxHeight + aspectRatio(1f) côté buzzer : le dôme reste rond quelle que
+                // soit la largeur de l'écran.
+                BigBuzzer(
+                    visual = myVisual,
+                    title = buzzerTitle(myVisual, remaining, state, session.myId),
+                    subtitle = buzzerSubtitle(myVisual, state, session.myId),
+                    onPress = { uptime -> session.buzz(uptime) },
+                    modifier = Modifier.fillMaxHeight(),
+                )
+            }
+
+            if (centreBuzzer) Spacer(Modifier.weight(1f))
+
+            AnimatedVisibility(
+                visible = !focused,
+                modifier = if (centreBuzzer) Modifier else Modifier.weight(1f, fill = false),
+                enter = slideInVertically { it } + fadeIn(),
+                exit = slideOutVertically { it } + fadeOut(),
+            ) {
+                Column {
+                    Spacer(Modifier.height(10.dp))
+
+                    if (amHost) {
+                        HostControls(
+                            state = state,
+                            onArm = session::arm,
+                            onReset = session::resetBoard,
+                            onOptions = onOptions,
+                        )
+                        Spacer(Modifier.height(12.dp))
+                    }
+
+                    ResultBanner(
+                        state = state,
+                        myId = session.myId,
+                        amHost = amHost,
+                        // Bonne réponse : le point est mis, le buzzer du joueur passe au vert et
+                        // la récompense se fait entendre. Les buzzers s'éteignent juste après —
+                        // la manche est jouée, il n'y a plus rien à arbitrer.
+                        onRightAnswer = {
+                            state.speakerId?.let { session.addPoints(it, 1) }
+                            session.markRight()
+                        },
+                        onWrongAnswer = session::markWrong,
+                        // Éliminer celui qui vient de se tromper : la manche peut alors
+                        // repartir sans lui, aux seuls joueurs qui n'ont pas encore répondu.
+                        onKnockOut = {
+                            state.wrongId?.let { session.setStatus(it, PlayerStatus.ELIMINATED) }
+                        },
+                        onNextPlayer = session::passSpeaker,
+                    )
+
+                    Spacer(Modifier.height(8.dp))
+
+                    if (showBoard) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            SectionLabel(
+                                when {
+                                    showSounds -> stringResource(R.string.room_board_sounds)
+                                    // Rappel utile à l'animateur : il sait ce qu'il a coupé.
+                                    state.options.hideBoard ->
+                                        stringResource(R.string.room_board_hidden_host)
+
+                                    amHost -> stringResource(R.string.room_board_host)
+                                    else -> stringResource(R.string.room_board)
+                                },
+                                modifier = Modifier.weight(1f),
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            if (amHost) {
+                                // Le panneau se rétracte sur le plateau : deux vues, une place.
+                                SoundBoardToggle(open = showSounds, onToggle = onToggleSounds)
+                            } else {
+                                Text(
+                                    stringResource(
+                                        R.string.room_online_count,
+                                        board.count { it.connected },
+                                        board.size,
+                                    ),
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = Stage.TextMuted,
+                                    maxLines = 1,
+                                )
+                            }
+                        }
+
+                        Spacer(Modifier.height(8.dp))
+
+                        if (showSounds && amHost) {
+                            SoundBoard(
+                                slots = sounds.slots.map { id ->
+                                    sounds.library.firstOrNull { it.id == id }
+                                },
+                                library = sounds.library,
+                                playingId = sounds.playingId,
+                                onPlay = sounds.onPlay,
+                                onEdit = sounds.onEdit,
+                                modifier = Modifier.weight(1f),
+                            )
+                        } else {
+                            BoardList(
+                                view = view,
+                                onSelectPlayer = onSelectPlayer,
+                                modifier = Modifier.weight(1f),
+                            )
+                        }
+
+                        Spacer(Modifier.height(8.dp))
+                    }
+
+                    SelfRow(view = view, onSelectPlayer = onSelectPlayer)
+
+                    Spacer(Modifier.height(8.dp))
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Ce que les deux dispositions — le téléphone et le pupitre — lisent de la manche en cours.
+ * Réunies ici, ces valeurs ne sont calculées qu'une fois, et les deux écrans montrent
+ * forcément la même chose.
+ */
+internal data class RoomView(
+    val state: RoomState,
+    val link: LinkStatus,
+    val myId: String,
+    val amHost: Boolean,
+    val nowHost: Long,
+    val myVisual: BuzzerVisual,
+    val remaining: Long?,
+    /** Le salon entier, classement en tête. */
+    val board: List<Player>,
+    /** Le salon sans soi : sa propre ligne est affichée à part, toujours au même endroit. */
+    val others: List<Player>,
+    val showBoard: Boolean,
+)
+
+/** La sonothèque et ce qu'on peut en faire, pour ne pas traîner cinq paramètres de plus. */
+internal data class SoundDesk(
+    val library: List<SoundClip>,
+    val slots: List<String>,
+    val playingId: String?,
+    val onPlay: (SoundClip) -> Unit,
+    val onEdit: (index: Int) -> Unit,
+)
+
+/**
+ * Le classement des autres joueurs. Les buzz le réordonnent : sans le retour en tête, la liste
+ * resterait sur le joueur qui menait et montrerait une ligne coupée au lieu du haut du tableau.
+ */
+@Composable
+internal fun BoardList(
+    view: RoomView,
+    onSelectPlayer: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val state = view.state
+    val boardState = rememberLazyListState()
+    LaunchedEffect(state.round, state.winnerId) {
+        if (boardState.firstVisibleItemIndex != 0 ||
+            boardState.firstVisibleItemScrollOffset != 0
+        ) {
+            boardState.animateScrollToItem(0)
+        }
+    }
+    LazyColumn(
+        state = boardState,
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(bottom = 8.dp),
+    ) {
+        items(view.others, key = { it.id }) { player ->
+            PlayerRow(
+                player = player,
+                visual = state.visualFor(player.id, view.nowHost),
+                buzz = state.buzzOf(player.id),
+                gapMillis = state.gapOf(player.id),
+                rank = state.rankOf(player.id),
+                isWinner = state.winnerId == player.id,
+                isHost = state.hostId == player.id,
+                isMe = false,
+                showControls = view.amHost,
+                onClick = { onSelectPlayer(player.id) },
+            )
+        }
+    }
+}
+
+/**
+ * Sa propre ligne, toujours sous les yeux : au pied du plateau quand il est là, seule au bas de
+ * l'écran quand il ne l'est pas.
+ */
+@Composable
+internal fun SelfRow(view: RoomView, onSelectPlayer: (String) -> Unit) {
+    val state = view.state
+    val me = state.player(view.myId) ?: return
+    PlayerRow(
+        player = me,
+        visual = view.myVisual,
+        buzz = state.buzzOf(me.id),
+        gapMillis = state.gapOf(me.id),
+        rank = state.rankOf(me.id),
+        isWinner = state.winnerId == me.id,
+        isHost = state.hostId == me.id,
+        isMe = true,
+        showControls = view.amHost,
+        onClick = { onSelectPlayer(me.id) },
+    )
+}
+
+/**
  * Trie le plateau : les buzz dans l'ordre chronologique d'abord, le reste par ordre d'arrivée.
  *
  * Un joueur éliminé ne peut plus buzzer : sur les téléphones des joueurs, sa ligne disparaît du
@@ -450,7 +580,7 @@ private fun orderPlayers(state: RoomState, keepEliminated: Boolean, myId: String
 }
 
 @Composable
-private fun buzzerTitle(
+internal fun buzzerTitle(
     visual: BuzzerVisual,
     remaining: Long?,
     state: RoomState,
@@ -470,7 +600,7 @@ private fun buzzerTitle(
 }
 
 @Composable
-private fun buzzerSubtitle(visual: BuzzerVisual, state: RoomState, myId: String): String =
+internal fun buzzerSubtitle(visual: BuzzerVisual, state: RoomState, myId: String): String =
     when (visual) {
         BuzzerVisual.COUNTDOWN -> stringResource(R.string.buzzer_get_ready)
         BuzzerVisual.ARMED -> stringResource(R.string.buzzer_press)
@@ -488,7 +618,7 @@ private fun buzzerSubtitle(visual: BuzzerVisual, state: RoomState, myId: String)
 // ------------------------------------------------------------------- en-tête
 
 @Composable
-private fun RoomHeader(
+internal fun RoomHeader(
     state: RoomState,
     linkPhase: LinkPhase,
     linkDetail: String,
@@ -598,7 +728,7 @@ private fun SoundBoardToggle(open: Boolean, onToggle: () -> Unit) {
 // ------------------------------------------------------------ pupitre animateur
 
 @Composable
-private fun HostControls(
+internal fun HostControls(
     state: RoomState,
     onArm: () -> Unit,
     onReset: () -> Unit,
@@ -634,7 +764,7 @@ private fun HostControls(
 // ------------------------------------------------------------------- bandeau
 
 @Composable
-private fun ResultBanner(
+internal fun ResultBanner(
     state: RoomState,
     myId: String,
     amHost: Boolean,

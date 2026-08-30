@@ -43,6 +43,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -110,6 +111,18 @@ fun StageBackground(
         }
         content()
     }
+}
+
+/**
+ * Une colonne de lecture ne s'étale pas sur toute la largeur d'une tablette : passé une
+ * certaine largeur, les lignes deviennent illisibles et les boutons démesurés. On creuse alors
+ * les marges au lieu de contraindre la taille — sur un téléphone, plus étroit que la limite,
+ * l'appel ne fait rien du tout et la disposition reste exactement celle qui a été réglée.
+ */
+@Composable
+fun Modifier.readableWidth(max: Dp = 560.dp): Modifier {
+    val width = LocalConfiguration.current.screenWidthDp.dp
+    return if (width <= max) this else padding(horizontal = (width - max) / 2)
 }
 
 @Composable

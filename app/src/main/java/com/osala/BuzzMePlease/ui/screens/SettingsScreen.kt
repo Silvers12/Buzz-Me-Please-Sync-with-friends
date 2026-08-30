@@ -56,6 +56,7 @@ import com.osala.BuzzMePlease.core.SoundClip
 import com.osala.BuzzMePlease.ui.components.GhostAction
 import com.osala.BuzzMePlease.ui.components.PrimaryAction
 import com.osala.BuzzMePlease.ui.components.SectionLabel
+import com.osala.BuzzMePlease.ui.components.readableWidth
 import com.osala.BuzzMePlease.ui.components.StageBackground
 import com.osala.BuzzMePlease.ui.components.StageBadge
 import com.osala.BuzzMePlease.ui.components.StagePanel
@@ -97,6 +98,7 @@ fun SettingsScreen(
                 .fillMaxSize()
                 .systemBarsPadding()
                 .verticalScroll(rememberScrollState())
+                .readableWidth()
                 .padding(horizontal = 24.dp),
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {

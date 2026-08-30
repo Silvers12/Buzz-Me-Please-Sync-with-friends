@@ -51,6 +51,7 @@ import com.osala.BuzzMePlease.net.lan.DiscoveredRoom
 import com.osala.BuzzMePlease.net.lan.NsdBrowser
 import com.osala.BuzzMePlease.ui.components.PrimaryAction
 import com.osala.BuzzMePlease.ui.components.SectionLabel
+import com.osala.BuzzMePlease.ui.components.readableWidth
 import com.osala.BuzzMePlease.ui.components.StageBackground
 import com.osala.BuzzMePlease.ui.components.StagePanel
 import com.osala.BuzzMePlease.ui.theme.Stage
@@ -77,6 +78,7 @@ fun JoinScreen(
                 .fillMaxSize()
                 .systemBarsPadding()
                 .verticalScroll(rememberScrollState())
+                .readableWidth()
                 .padding(horizontal = 24.dp),
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {

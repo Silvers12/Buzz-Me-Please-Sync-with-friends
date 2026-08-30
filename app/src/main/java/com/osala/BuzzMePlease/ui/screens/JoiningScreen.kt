@@ -27,6 +27,7 @@ import com.osala.BuzzMePlease.game.LinkPhase
 import com.osala.BuzzMePlease.ui.components.CodeDisplay
 import com.osala.BuzzMePlease.ui.components.GhostAction
 import com.osala.BuzzMePlease.ui.components.SectionLabel
+import com.osala.BuzzMePlease.ui.components.readableWidth
 import com.osala.BuzzMePlease.ui.components.StageBackground
 import com.osala.BuzzMePlease.ui.components.StagePanel
 import com.osala.BuzzMePlease.ui.theme.Stage
@@ -50,6 +51,7 @@ fun JoiningScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .systemBarsPadding()
+                .readableWidth()
                 .padding(horizontal = 24.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,

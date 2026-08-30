@@ -165,5 +165,9 @@ fun BuzzMeApp(viewModel: AppViewModel = viewModel()) {
 @Composable
 private fun rememberLocalizedContext(language: AppLanguage): Context {
     val base = LocalContext.current
-    return remember(base, language) { AppLocale.wrap(base) }
+    // La configuration doit être une clé : une tablette qu'on tourne change de dimensions sans
+    // que l'activité soit recréée. Sans cela, l'arbre continuerait de lire la largeur d'avant la
+    // rotation — et de choisir la disposition qui allait avec.
+    val configuration = LocalConfiguration.current
+    return remember(base, language, configuration) { AppLocale.wrap(base) }
 }
