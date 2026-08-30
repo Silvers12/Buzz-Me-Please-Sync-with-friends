@@ -87,6 +87,12 @@ interface RoomSession {
     /** Au suivant : la main descend au buzz d'après, et le buzzer précédent s'éteint. */
     fun passSpeaker()
 
+    /**
+     * La parole donnée de la main de l'animateur, depuis la liste des joueurs. Elle passe
+     * devant le classement, et le désigné n'a pas eu besoin de buzzer.
+     */
+    fun giveFloor(playerId: String)
+
     fun setStatus(playerId: String, status: PlayerStatus)
 
     /** Le plateau remis à neuf : résultats effacés et tous les buzzers rallumés. */

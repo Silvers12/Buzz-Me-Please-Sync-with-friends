@@ -70,6 +70,7 @@ class GameEngine(code: String, hostId: String, options: RoomOptions = RoomOption
                 passedIds = next.passedIds.filterNot { it == id },
                 wrongIds = next.wrongIds.filterNot { it == id },
                 rightId = next.rightId?.takeIf { it != id },
+                floorId = next.floorId?.takeIf { it != id },
             )
             if (next.winnerId == id) next = next.recomputeWinner()
         }
@@ -84,6 +85,7 @@ class GameEngine(code: String, hostId: String, options: RoomOptions = RoomOption
             passedIds = current.passedIds.filterNot { it == id },
             wrongIds = current.wrongIds.filterNot { it == id },
             rightId = current.rightId?.takeIf { it != id },
+            floorId = current.floorId?.takeIf { it != id },
         ).let { if (it.winnerId == id) it.recomputeWinner() else it }
     }
 
@@ -125,6 +127,7 @@ class GameEngine(code: String, hostId: String, options: RoomOptions = RoomOption
             passedIds = emptyList(),
             wrongIds = emptyList(),
             rightId = null,
+            floorId = null,
         )
     }
 
@@ -151,6 +154,7 @@ class GameEngine(code: String, hostId: String, options: RoomOptions = RoomOption
             provisional = false,
             passedIds = emptyList(),
             wrongIds = emptyList(),
+            floorId = null,
             players = current.players.map {
                 if (it.isEliminated) it.copy(status = PlayerStatus.ACTIVE) else it
             },
@@ -168,6 +172,7 @@ class GameEngine(code: String, hostId: String, options: RoomOptions = RoomOption
             passedIds = emptyList(),
             wrongIds = emptyList(),
             rightId = null,
+            floorId = null,
         )
     }
 
@@ -239,7 +244,9 @@ class GameEngine(code: String, hostId: String, options: RoomOptions = RoomOption
         if (current.round != round || current.provisional) return@mutate current
         val speaker = current.speakerId ?: return@mutate current
         // Le rouge de celui qui vient de se tromper reste : la main passe, la faute demeure.
-        current.copy(passedIds = current.passedIds + speaker, rightId = null)
+        // La parole donnée à la main est rendue au classement : « suivant », c'est le suivant
+        // de la file, pas celui que l'animateur avait désigné.
+        current.copy(passedIds = current.passedIds + speaker, rightId = null, floorId = null)
     }
 
     /**
@@ -255,6 +262,28 @@ class GameEngine(code: String, hostId: String, options: RoomOptions = RoomOption
         } else {
             current.copy(wrongIds = current.wrongIds + speaker, rightId = null)
         }
+    }
+
+    /**
+     * L'animateur donne la parole à quelqu'un en particulier, depuis la liste des joueurs.
+     *
+     * Le classement propose, l'animateur dispose : le meilleur buzz garde la main par défaut,
+     * mais rien n'oblige à la lui laisser. Le désigné n'a pas besoin d'avoir buzzé — c'est
+     * ainsi qu'on interroge quelqu'un directement. Un joueur éliminé, en revanche, ne parle
+     * pas : son buzzer est éteint, la parole n'aurait nulle part où se poser.
+     */
+    fun giveFloor(playerId: String) = mutate { current ->
+        val target = current.player(playerId) ?: return@mutate current
+        if (target.isEliminated) return@mutate current
+        current.copy(
+            floorId = playerId,
+            // Il parle : il n'est plus parmi ceux à qui l'on a repris la main, et le verdict
+            // qui lui était tombé dessus ne le suit pas — sans quoi son buzzer resterait rouge
+            // pendant qu'on l'écoute.
+            passedIds = current.passedIds.filterNot { it == playerId },
+            wrongIds = current.wrongIds.filterNot { it == playerId },
+            rightId = null,
+        )
     }
 
     /**

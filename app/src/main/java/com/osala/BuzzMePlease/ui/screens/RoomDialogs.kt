@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.PersonRemove
+import androidx.compose.material.icons.filled.RecordVoiceOver
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -60,7 +61,10 @@ fun PlayerActionsDialog(
     player: Player,
     isHost: Boolean,
     isMe: Boolean,
+    /** Faux quand il a déjà la parole, ou qu'il est éliminé : l'action n'aurait rien à faire. */
+    canGiveFloor: Boolean,
     onDismiss: () -> Unit,
+    onGiveFloor: () -> Unit,
     onToggleStatus: () -> Unit,
     onPoints: (Int) -> Unit,
     onAlert: (AlertKind) -> Unit,
@@ -96,6 +100,21 @@ fun PlayerActionsDialog(
             // Un petit écran (ou une police système agrandie) ne doit pas rogner le bas du
             // pupitre : le contenu défile plutôt que de déborder.
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                // En tête, parce que c'est le geste qui presse : la question est posée, il
+                // faut désigner qui répond. Le classement propose, l'animateur dispose.
+                if (canGiveFloor) {
+                    SectionLabel(stringResource(R.string.dialog_floor))
+                    Spacer(Modifier.height(8.dp))
+                    GhostAction(
+                        text = stringResource(R.string.dialog_give_floor),
+                        icon = Icons.Filled.RecordVoiceOver,
+                        onClick = onGiveFloor,
+                        accent = Stage.Gold,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                    Spacer(Modifier.height(20.dp))
+                }
+
                 SectionLabel(stringResource(R.string.dialog_score))
                 Spacer(Modifier.height(8.dp))
                 Row(

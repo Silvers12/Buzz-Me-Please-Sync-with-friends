@@ -132,6 +132,7 @@
     <!-- Bandeau de résultat -->
     <string name="banner_yours">À vous !</string>
     <string name="banner_has_hand">%1$s a la main</string>
+    <string name="banner_given">Parole donnée par l\'animateur</string>
     <string name="banner_reaction">Réaction %1$s</string>
     <string name="banner_precision">" (± %1$d ms)"</string>
     <string name="banner_ahead">" · devance %1$s de %2$s"</string>
@@ -153,6 +154,8 @@
 
     <!-- Pupitre du joueur -->
     <string name="dialog_score">Score</string>
+    <string name="dialog_floor">PAROLE</string>
+    <string name="dialog_give_floor">DONNER LA PAROLE</string>
     <string name="dialog_buzzer">Buzzer</string>
     <string name="dialog_alert">Alerte</string>
     <string name="dialog_room">Salon</string>

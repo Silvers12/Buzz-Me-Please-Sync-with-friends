@@ -114,6 +114,39 @@ class GameEngineTest {
         assertEquals(0L, engine.snapshot.buzzOf("p1")?.reactionMillis)
     }
 
+    /**
+     * Le classement propose, l'animateur dispose. Il donne la parole à qui il veut, y compris
+     * à quelqu'un qui n'a pas buzzé — et « suivant » la rend ensuite à la file d'attente.
+     */
+    @Test
+    fun `l'animateur donne la parole a qui il veut, meme sans buzz`() {
+        armWithCountdown()
+        engine.markArmed(1)
+        engine.registerBuzz("p1", 1, armedAt + 320, 3)
+        engine.closeAdjudication(1)
+        assertEquals("p1", engine.snapshot.speakerId)
+
+        engine.giveFloor("p3")
+        assertEquals("p3", engine.snapshot.speakerId)
+        assertEquals(BuzzerVisual.SPEAKING, engine.snapshot.visualFor("p3", armedAt + 400))
+
+        engine.passSpeaker(1)
+        assertEquals("p1", engine.snapshot.speakerId)
+    }
+
+    /** Un buzzer éteint ne parle pas : la parole n'aurait nulle part où se poser. */
+    @Test
+    fun `un joueur elimine ne recoit pas la parole`() {
+        engine.setStatus("p3", PlayerStatus.ELIMINATED)
+        armWithCountdown()
+        engine.markArmed(1)
+        engine.registerBuzz("p1", 1, armedAt + 320, 3)
+        engine.closeAdjudication(1)
+
+        engine.giveFloor("p3")
+        assertEquals("p1", engine.snapshot.speakerId)
+    }
+
     @Test
     fun `un joueur elimine a un buzzer gris et ne peut plus buzzer`() {
         engine.setStatus("p3", PlayerStatus.ELIMINATED)

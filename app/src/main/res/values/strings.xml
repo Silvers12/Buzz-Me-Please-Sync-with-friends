@@ -134,6 +134,7 @@
     <!-- Bandeau de résultat -->
     <string name="banner_yours">Your turn!</string>
     <string name="banner_has_hand">%1$s has the floor</string>
+    <string name="banner_given">Floor given by the host</string>
     <string name="banner_reaction">Reaction %1$s</string>
     <string name="banner_precision">" (± %1$d ms)"</string>
     <string name="banner_ahead">" · ahead of %1$s by %2$s"</string>
@@ -155,6 +156,8 @@
 
     <!-- Pupitre du joueur -->
     <string name="dialog_score">Score</string>
+    <string name="dialog_floor">FLOOR</string>
+    <string name="dialog_give_floor">GIVE THE FLOOR</string>
     <string name="dialog_buzzer">Buzzer</string>
     <string name="dialog_alert">Alert</string>
     <string name="dialog_room">Room</string>

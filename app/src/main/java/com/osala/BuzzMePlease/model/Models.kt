@@ -187,6 +187,13 @@ data class RoomState(
      * les buzzers s'éteignent juste après, la manche étant jouée.
      */
     val rightId: String? = null,
+    /**
+     * Celui à qui l'animateur a donné la parole de sa propre main, depuis la liste des
+     * joueurs. Il passe devant le classement : la parole revient au meilleur buzz tant que
+     * l'animateur n'en décide pas autrement, et il peut la donner à quelqu'un qui n'a pas
+     * buzzé du tout — pour interroger un joueur en particulier.
+     */
+    val floorId: String? = null,
     val options: RoomOptions = RoomOptions(),
 ) {
     fun player(id: String): Player? = players.firstOrNull { it.id == id }
@@ -197,10 +204,13 @@ data class RoomState(
     val ranking: List<Buzz> get() = buzzes.sortedBy { it.atHostMillis }
 
     /**
-     * Qui a la parole : le meilleur buzz que l'animateur n'a pas encore écarté. Null quand
-     * personne n'a buzzé, ou quand tout le monde s'est trompé — la manche est alors à relancer.
+     * Qui a la parole : celui que l'animateur a désigné, sinon le meilleur buzz qu'il n'a pas
+     * encore écarté. Null quand personne n'a buzzé, ou quand tout le monde s'est trompé — la
+     * manche est alors à relancer.
      */
-    val speakerId: String? get() = ranking.firstOrNull { it.playerId !in passedIds }?.playerId
+    val speakerId: String? get() =
+        floorId?.takeIf { player(it)?.isEliminated == false }
+            ?: ranking.firstOrNull { it.playerId !in passedIds }?.playerId
 
     fun rankOf(id: String): Int {
         val index = ranking.indexOfFirst { it.playerId == id }
@@ -282,7 +292,9 @@ fun RoomState.visualFor(
     // deux joueurs peuvent appuyer avant que le verrouillage ne les atteigne, et le classement
     // bouge encore. En course, personne ne verrouille personne — le premier buzz donne déjà la
     // main, les autres continuent de jouer pour leur place au classement.
-    val decided = when (options.mode) {
+    // Une parole donnée à la main tranche d'elle-même : elle ne descend pas d'un classement,
+    // elle n'a donc pas à attendre que le classement soit clos.
+    val decided = floorId != null || when (options.mode) {
         GameMode.DUEL -> roundState == RoundState.LOCKED && !provisional
         GameMode.COURSE -> buzzes.isNotEmpty()
     }

@@ -255,8 +255,14 @@ fun RoomScreen(
                     hold = ANNOUNCE_HOLD_FINAL_MILLIS,
                 )
             }
-            // Le feu d'artifice part avec le carton, et sur tous les téléphones à la fois.
-            if (alert.kind == AlertKind.GAME_OVER && roomSound) soundFx.celebrate()
+            // Le son part avec le carton, sur tous les téléphones à la fois : le feu
+            // d'artifice pour le dénouement, la sanction pour les avertissements.
+            if (roomSound) {
+                when (alert.kind) {
+                    AlertKind.GAME_OVER -> soundFx.celebrate()
+                    AlertKind.YELLOW_CARD, AlertKind.RED_CARD -> soundFx.wrong()
+                }
+            }
         }
     }
 
@@ -327,7 +333,13 @@ fun RoomScreen(
             player = target,
             isHost = state.hostId == target.id,
             isMe = target.id == session.myId,
+            // Inutile de proposer la parole à qui l'a déjà, ni à un buzzer éteint.
+            canGiveFloor = !target.isEliminated && state.speakerId != target.id,
             onDismiss = { selectedPlayer = null },
+            onGiveFloor = {
+                session.giveFloor(target.id)
+                selectedPlayer = null
+            },
             onToggleStatus = {
                 session.setStatus(
                     target.id,
@@ -937,14 +949,17 @@ internal fun ResultBanner(
         return
     }
 
-    val visible = speaker != null && buzz != null
+    // Le bandeau dit qui a la parole ; le chronomètre n'est qu'un détail. Une parole donnée
+    // à la main n'a pas de buzz derrière elle et doit pourtant s'afficher : c'est là que se
+    // trouvent « vrai », « faux » et « suivant ».
+    val visible = speaker != null
 
     AnimatedVisibility(
         visible = visible,
         enter = fadeIn() + scaleIn(initialScale = 0.92f),
         exit = fadeOut() + scaleOut(targetScale = 0.92f),
     ) {
-        if (speaker == null || buzz == null) return@AnimatedVisibility
+        if (speaker == null) return@AnimatedVisibility
         val winner = speaker
         val shape = RoundedCornerShape(18.dp)
         Column(
@@ -973,13 +988,15 @@ internal fun ResultBanner(
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f),
                 )
-                Spacer(Modifier.width(10.dp))
-                Text(
-                    text = buzz.wallClockText(),
-                    style = MonoDigits,
-                    color = Stage.GoldSoft,
-                    maxLines = 1,
-                )
+                if (buzz != null) {
+                    Spacer(Modifier.width(10.dp))
+                    Text(
+                        text = buzz.wallClockText(),
+                        style = MonoDigits,
+                        color = Stage.GoldSoft,
+                        maxLines = 1,
+                    )
+                }
             }
             Spacer(Modifier.height(4.dp))
             // Le suivant dans la file : celui à qui la main reviendra en cas de mauvaise réponse.
@@ -987,19 +1004,25 @@ internal fun ResultBanner(
                 it.playerId != speaker.id && it.playerId !in state.passedIds
             }
             val detail = buildString {
-                append(stringResource(R.string.banner_reaction, Buzz.formatReaction(buzz.reactionMillis)))
-                if (buzz.precisionMillis > 0) {
-                    append(stringResource(R.string.banner_precision, buzz.precisionMillis))
-                }
-                if (next != null) {
-                    val gap = next.atHostMillis - buzz.atHostMillis
-                    append(
-                        stringResource(
-                            R.string.banner_ahead,
-                            state.player(next.playerId)?.name.orEmpty(),
-                            Buzz.formatGap(gap),
-                        ),
-                    )
+                if (buzz == null) {
+                    // Personne n'a buzzé pour lui : il n'y a pas de chronomètre à montrer,
+                    // seulement d'où lui vient la parole.
+                    append(stringResource(R.string.banner_given))
+                } else {
+                    append(stringResource(R.string.banner_reaction, Buzz.formatReaction(buzz.reactionMillis)))
+                    if (buzz.precisionMillis > 0) {
+                        append(stringResource(R.string.banner_precision, buzz.precisionMillis))
+                    }
+                    if (next != null) {
+                        val gap = next.atHostMillis - buzz.atHostMillis
+                        append(
+                            stringResource(
+                                R.string.banner_ahead,
+                                state.player(next.playerId)?.name.orEmpty(),
+                                Buzz.formatGap(gap),
+                            ),
+                        )
+                    }
                 }
             }
             Text(

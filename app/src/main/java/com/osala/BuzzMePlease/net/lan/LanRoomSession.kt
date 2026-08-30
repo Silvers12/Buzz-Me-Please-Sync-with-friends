@@ -580,6 +580,13 @@ class LanRoomSession(
         host.passSpeaker(host.snapshot.round)
     }
 
+    override fun giveFloor(playerId: String) {
+        // Le verdict précédent est annulé avec la parole : le vert de la bonne réponse ne
+        // doit pas éteindre les buzzers pendant qu'un autre parle.
+        rightJob?.cancel(); rightJob = null
+        engine?.giveFloor(playerId)
+    }
+
     override fun setStatus(playerId: String, status: PlayerStatus) {
         engine?.setStatus(playerId, status)
     }
