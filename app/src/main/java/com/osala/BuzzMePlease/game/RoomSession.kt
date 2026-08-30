@@ -52,12 +52,13 @@ interface RoomSession {
      */
     fun nowHostMillis(): Long
 
-    /** Convertit une heure locale (epoch ms) vers la même horloge de référence. */
-    fun toHostMillis(localWallMillis: Long): Long
-
     // ------------------------------------------------------------ joueur
-    /** @param atWallMillis heure exacte de l'appui, issue de l'événement tactile. */
-    fun buzz(atWallMillis: Long)
+    /**
+     * @param atUptimeMillis horodatage brut de l'événement tactile. La session le ramène
+     *   elle-même sur l'horloge du salon : chez l'hôte par son heure murale, chez le joueur par
+     *   sa base monotone, qu'aucun réglage d'heure ne déplace.
+     */
+    fun buzz(atUptimeMillis: Long)
 
     fun rename(name: String)
 

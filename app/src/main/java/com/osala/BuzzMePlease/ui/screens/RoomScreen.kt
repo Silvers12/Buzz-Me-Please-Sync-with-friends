@@ -226,7 +226,7 @@ fun RoomScreen(
                     visual = myVisual,
                     title = buzzerTitle(myVisual, remaining, state, session.myId),
                     subtitle = buzzerSubtitle(myVisual, state, session.myId),
-                    onPress = { uptime -> session.buzz(AppClock.wallFromUptime(uptime)) },
+                    onPress = { uptime -> session.buzz(uptime) },
                     modifier = Modifier.fillMaxHeight(),
                 )
             }

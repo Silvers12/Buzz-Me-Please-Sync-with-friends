@@ -205,7 +205,13 @@ class LanRoomSession(
     }
 
     private fun handleBuzz(current: GameEngine, playerId: String, request: BuzzRequest) {
-        val hostTime = request.clientWall + request.offset
+        // L'heure annoncée par le joueur, ramenée sur celle de l'hôte. Elle vient de sa base
+        // monotone, qu'aucun réglage d'heure ne déplace — mais rien n'empêche une application
+        // modifiée d'annoncer ce qu'elle veut. L'hôte sait au moins quand le message lui est
+        // parvenu : un buzz prétendument plus vieux que ce que le réseau permet est ramené à
+        // cette limite, faute de quoi il suffirait d'antidater son appui pour gagner à coup sûr.
+        val floor = AppClock.wallNow() - MAX_BACKDATE_MILLIS
+        val hostTime = maxOf(request.clientWall + request.offset, floor)
         val precision = request.rtt / 2
         val outcome = current.registerBuzz(playerId, request.round, hostTime, precision)
         if (outcome == BuzzOutcome.FIRST) startAdjudication(request.round)
@@ -349,7 +355,7 @@ class LanRoomSession(
         var seq = 0
         var burst = BURST_COUNT
         while (coroutineContext.isActive) {
-            peer.send(Ping(seq++, AppClock.wallNow()))
+            peer.send(Ping(seq++, AppClock.elapsedNow()))
             if (burst > 0) {
                 burst--
                 delay(BURST_INTERVAL_MILLIS)
@@ -362,7 +368,7 @@ class LanRoomSession(
     private fun onGuestMessage(message: NetMessage) {
         when (message) {
             is Pong -> {
-                clock.record(message.clientSent, message.hostWall, AppClock.wallNow())
+                clock.record(message.clientSent, message.hostWall, AppClock.elapsedNow())
                 _link.value = _link.value.copy(
                     phase = LinkPhase.CONNECTED,
                     detail = text(R.string.link_connected),
@@ -424,21 +430,29 @@ class LanRoomSession(
 
     // =================================================================== commandes
 
-    override fun buzz(atWallMillis: Long) {
+    override fun buzz(atUptimeMillis: Long) {
         val current = _state.value
         if (!current.canBuzz(myId, nowHostMillis())) return
-        // Retour visuel immédiat : le buzzer vire au rouge sans attendre l'aller-retour réseau.
+        // Retour visuel immédiat : le buzzer vire au bleu sans attendre l'aller-retour réseau.
         _localBuzzRound.value = current.round
 
         val host = engine
         if (host != null) {
-            val outcome = host.registerBuzz(myId, current.round, atWallMillis, 0)
+            // Chez l'hôte, l'heure du salon est son heure murale : l'appui s'y ramène directement.
+            val outcome = host.registerBuzz(
+                myId,
+                current.round,
+                AppClock.wallFromUptime(atUptimeMillis),
+                0,
+            )
             if (outcome == BuzzOutcome.FIRST) startAdjudication(current.round)
         } else {
+            // Chez le joueur, l'appui est daté sur l'horloge monotone — celle qu'aucun réglage
+            // d'heure ne déplace — et c'est elle que l'offset ramène sur l'heure de l'hôte.
             clientLink?.send(
                 BuzzRequest(
                     round = current.round,
-                    clientWall = atWallMillis,
+                    clientWall = AppClock.elapsedFromUptime(atUptimeMillis),
                     offset = clock.offsetMillis,
                     rtt = clock.rttMillis,
                 ),
@@ -579,13 +593,8 @@ class LanRoomSession(
     }
 
     /** Heure locale ramenée sur l'horloge de l'hôte (identité quand on est l'hôte). */
-    override fun nowHostMillis(): Long {
-        val now = AppClock.wallNow()
-        return if (engine != null) now else clock.toHostTime(now)
-    }
-
-    override fun toHostMillis(localWallMillis: Long): Long =
-        if (engine != null) localWallMillis else clock.toHostTime(localWallMillis)
+    override fun nowHostMillis(): Long =
+        if (engine != null) AppClock.wallNow() else clock.toHostTime(AppClock.elapsedNow())
 
     companion object {
         private const val TAG = "LanRoomSession"
@@ -603,6 +612,12 @@ class LanRoomSession(
         /** Trois sondes sans réponse : la liaison avec l'hôte est morte, on repart de zéro. */
         private const val HOST_SILENCE_MILLIS = 6_000L
         private const val WATCHDOG_TICK_MILLIS = 1_000L
+
+        /**
+         * Antériorité maximale acceptée pour un buzz annoncé. Très au-delà de ce qu'un Wi-Fi
+         * local demande, et bien en deçà de ce qu'une triche exigerait pour être utile.
+         */
+        private const val MAX_BACKDATE_MILLIS = 1_500L
         private const val BURST_INTERVAL_MILLIS = 150L
         private const val BURST_COUNT = 8
         private const val HANDOVER_FLUSH_MILLIS = 300L
