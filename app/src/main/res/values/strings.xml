@@ -243,6 +243,8 @@
     <string name="end_kicked">The host removed you from the room.</string>
     <string name="end_version_update">The host is playing with a newer version of Buzz Me Please. Update yours from the Play Store to join.</string>
     <string name="end_version_host_old">The host is playing with an older version of Buzz Me Please. Ask them to update theirs.</string>
+    <string name="join_room_newer">Newer version · update yours to join</string>
+    <string name="join_room_older">Older version · they need to update</string>
     <string name="join_room_host_version">At %1$s\'s · v%2$s</string>
     <string name="end_version">The other phone runs a different version of Buzz Me Please. Update both from the Play Store to play together.</string>
     <string name="end_left">Player left</string>

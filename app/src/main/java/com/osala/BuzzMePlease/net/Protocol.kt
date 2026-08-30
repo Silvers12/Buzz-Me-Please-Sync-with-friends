@@ -30,6 +30,12 @@ const val NSD_ATTR_PROTOCOL = "proto"
 /** Version du jeu chez l'animateur, lisible dans la liste des salons avant de s'y connecter. */
 const val NSD_ATTR_VERSION = "ver"
 
+/**
+ * Le même numéro sous sa forme comparable. « 1.10 » et « 1.9 » ne se rangent pas dans le bon
+ * ordre par leurs noms : c'est ce nombre qui dit laquelle des deux versions est en avance.
+ */
+const val NSD_ATTR_VERSION_CODE = "vc"
+
 val ProtocolJson: Json = Json {
     ignoreUnknownKeys = true
     encodeDefaults = true

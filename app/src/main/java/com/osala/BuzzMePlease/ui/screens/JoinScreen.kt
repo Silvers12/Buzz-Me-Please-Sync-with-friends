@@ -47,7 +47,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.osala.BuzzMePlease.R
 import com.osala.BuzzMePlease.core.Codes
-import com.osala.BuzzMePlease.core.appVersionName
+import com.osala.BuzzMePlease.core.appVersionCode
 import com.osala.BuzzMePlease.net.lan.DiscoveredRoom
 import com.osala.BuzzMePlease.net.lan.NsdBrowser
 import com.osala.BuzzMePlease.ui.components.PrimaryAction
@@ -208,10 +208,15 @@ private fun DiscoveredRoomRow(room: DiscoveredRoom, onClick: () -> Unit) {
                 color = Stage.GoldSoft,
                 fontWeight = FontWeight.Black,
             )
-            // La version de l'animateur se lit avant de frapper à la porte : un salon d'une
-            // autre version se signale en ambre, plutôt que de se refuser une fois dedans.
-            val sameVersion = room.version.isBlank() ||
-                room.version == LocalContext.current.appVersionName()
+            // La version de l'animateur se lit avant de frapper à la porte, et l'écart se dit en
+            // toutes lettres : savoir qu'un numéro diffère ne dit pas lequel doit bouger.
+            // Une annonce sans numéro vient forcément d'une version antérieure à ce contrôle.
+            val mine = LocalContext.current.appVersionCode()
+            val gap = when {
+                room.versionCode == mine -> null
+                room.versionCode > mine -> R.string.join_room_newer
+                else -> R.string.join_room_older
+            }
             Text(
                 text = when {
                     room.hostName.isBlank() -> room.address
@@ -223,8 +228,15 @@ private fun DiscoveredRoomRow(room: DiscoveredRoom, onClick: () -> Unit) {
                     )
                 },
                 style = MaterialTheme.typography.bodyMedium,
-                color = if (sameVersion) Stage.TextMuted else Stage.Amber,
+                color = if (gap == null) Stage.TextMuted else Stage.Amber,
             )
+            if (gap != null) {
+                Text(
+                    text = stringResource(gap),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = Stage.Amber,
+                )
+            }
         }
         Text(stringResource(R.string.join_room_action), style = MaterialTheme.typography.labelMedium, color = Stage.VioletSoft)
     }

@@ -174,7 +174,7 @@ class LanRoomSession(
         val lan = LanServer(appContext, scope, hostCallbacks())
         server = lan
         lan.start()
-        advertiser.register(code, myName, appVersionLabel)
+        advertiser.register(code, myName, appVersionLabel, appVersion)
         _link.value = LinkStatus(LinkPhase.CONNECTED, text(R.string.link_hosting))
     }
 

@@ -10,6 +10,7 @@ import com.osala.BuzzMePlease.net.NSD_ATTR_CODE
 import com.osala.BuzzMePlease.net.NSD_ATTR_HOST
 import com.osala.BuzzMePlease.net.NSD_ATTR_PROTOCOL
 import com.osala.BuzzMePlease.net.NSD_ATTR_VERSION
+import com.osala.BuzzMePlease.net.NSD_ATTR_VERSION_CODE
 import com.osala.BuzzMePlease.net.NSD_SERVICE_TYPE
 import com.osala.BuzzMePlease.net.PROTOCOL_VERSION
 import kotlinx.coroutines.CancellationException
@@ -32,6 +33,12 @@ data class DiscoveredRoom(
     val port: Int,
     /** Version du jeu chez l'animateur, vide si son annonce ne la porte pas. */
     val version: String = "",
+    /**
+     * La même version en nombre, pour savoir qui est en avance. Zéro quand l'annonce ne la
+     * porte pas : seules les versions qui connaissent ce contrôle la publient, une annonce
+     * muette vient donc forcément d'une version antérieure.
+     */
+    val versionCode: Long = 0,
 )
 
 /**
@@ -44,7 +51,7 @@ class NsdAdvertiser(context: Context) {
     private val nsdManager = appContext.getSystemService(Context.NSD_SERVICE) as? NsdManager
     private var listener: NsdManager.RegistrationListener? = null
 
-    fun register(code: String, hostName: String, version: String = "") {
+    fun register(code: String, hostName: String, version: String = "", versionCode: Long = 0) {
         val manager = nsdManager ?: return
         unregister()
         val info = NsdServiceInfo().apply {
@@ -55,6 +62,7 @@ class NsdAdvertiser(context: Context) {
             setAttribute(NSD_ATTR_HOST, hostName.take(32))
             setAttribute(NSD_ATTR_PROTOCOL, PROTOCOL_VERSION.toString())
             setAttribute(NSD_ATTR_VERSION, version)
+            setAttribute(NSD_ATTR_VERSION_CODE, versionCode.toString())
         }
         val registration = object : NsdManager.RegistrationListener {
             override fun onRegistrationFailed(serviceInfo: NsdServiceInfo, errorCode: Int) {
@@ -240,10 +248,13 @@ object NsdBrowser {
             ?: return null
         val hostName = attributes[NSD_ATTR_HOST]?.toString(Charsets.UTF_8).orEmpty()
         val version = attributes[NSD_ATTR_VERSION]?.toString(Charsets.UTF_8).orEmpty()
+        val versionCode = attributes[NSD_ATTR_VERSION_CODE]
+            ?.toString(Charsets.UTF_8)?.toLongOrNull() ?: 0L
         return DiscoveredRoom(
             code = code.trim().uppercase(),
             hostName = hostName,
             version = version,
+            versionCode = versionCode,
             address = address,
             port = if (port > 0) port else GAME_PORT,
         )
