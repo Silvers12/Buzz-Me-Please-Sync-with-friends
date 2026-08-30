@@ -516,6 +516,10 @@ class LanRoomSession(
         engine?.setStatus(playerId, status)
     }
 
+    override fun reviveAll() {
+        engine?.reviveAll()
+    }
+
     override fun kick(playerId: String) {
         val host = engine ?: return
         if (playerId == myId) return

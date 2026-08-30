@@ -128,6 +128,19 @@ class GameEngineTest {
     }
 
     @Test
+    fun `rallumer tous les buzzers ne touche pas aux scores`() {
+        engine.addPoints("p1", 5)
+        engine.setStatus("p1", PlayerStatus.ELIMINATED)
+        engine.setStatus("p3", PlayerStatus.ELIMINATED)
+        assertEquals(2, engine.snapshot.players.count { it.isEliminated })
+
+        engine.reviveAll()
+
+        assertTrue(engine.snapshot.players.none { it.isEliminated })
+        assertEquals(5, engine.snapshot.player("p1")?.score)
+    }
+
+    @Test
     fun `eliminer le vainqueur redonne la main au suivant`() {
         engine.arm(armAtMillis = armedAt, withCountdown = false)
         engine.registerBuzz("p1", 1, armedAt + 100, 0)

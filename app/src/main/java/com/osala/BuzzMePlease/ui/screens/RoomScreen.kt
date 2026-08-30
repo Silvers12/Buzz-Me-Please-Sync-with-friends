@@ -264,6 +264,11 @@ fun RoomScreen(
                             session.markRight()
                         },
                         onWrongAnswer = session::markWrong,
+                        // Éliminer celui qui vient de se tromper : la manche peut alors
+                        // repartir sans lui, aux seuls joueurs qui n'ont pas encore répondu.
+                        onKnockOut = {
+                            state.wrongId?.let { session.setStatus(it, PlayerStatus.ELIMINATED) }
+                        },
                         onNextPlayer = session::passSpeaker,
                     )
 
@@ -425,6 +430,7 @@ fun RoomScreen(
             onDismiss = { showOptions = false },
             onOptions = session::setOptions,
             onResetScores = session::resetScores,
+            onReviveAll = session::reviveAll,
         )
     }
 }
@@ -635,6 +641,7 @@ private fun ResultBanner(
     amHost: Boolean,
     onRightAnswer: () -> Unit,
     onWrongAnswer: () -> Unit,
+    onKnockOut: () -> Unit,
     onNextPlayer: () -> Unit,
 ) {
     // Le bandeau suit celui qui a la parole, pas le premier chronomètre : après une mauvaise
@@ -732,6 +739,10 @@ private fun ResultBanner(
                 // Le verdict de l'animateur, en deux gestes : le point est mis et la manche se
                 // clôt, ou la main descend au suivant. Une fois « vrai » prononcé, les boutons
                 // s'effacent : le point est déjà compté, il ne peut pas l'être deux fois.
+                // Une fois la réponse déclarée fausse, « faux » n'a plus rien à dire : la place
+                // revient à l'élimination. En mode rapide, c'est ce qui permet de relancer la
+                // même question aux seuls joueurs qui n'ont pas encore répondu.
+                val marked = state.wrongId == speaker.id
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     GhostAction(
                         text = stringResource(R.string.banner_right),
@@ -740,10 +751,12 @@ private fun ResultBanner(
                         modifier = Modifier.weight(1f),
                     )
                     GhostAction(
-                        text = stringResource(R.string.banner_wrong),
-                        onClick = onWrongAnswer,
+                        text = stringResource(
+                            if (marked) R.string.banner_knock_out else R.string.banner_wrong,
+                        ),
+                        onClick = if (marked) onKnockOut else onWrongAnswer,
                         accent = Stage.Red,
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.weight(if (marked) 1.3f else 1f),
                     )
                     GhostAction(
                         text = stringResource(R.string.banner_next),
