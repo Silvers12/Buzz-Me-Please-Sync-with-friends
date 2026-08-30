@@ -281,6 +281,8 @@ fun RoomScreen(
         } else {
             Announce(hostOtherText, Stage.Gold)
         }
+        // La fanfare de la passation, sur tous les téléphones comme l'annonce.
+        if (roomSound) soundFx.fanfare()
     }
 
     Box(modifier = Modifier.fillMaxSize()) {

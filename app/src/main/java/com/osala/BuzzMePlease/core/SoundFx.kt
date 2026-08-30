@@ -94,6 +94,15 @@ class SoundFx(context: Context) {
         runCatching { tones?.startTone(ToneGenerator.TONE_PROP_ACK, 350) }
     }
 
+    /** Passation : le pupitre change de main, et cela s'entend dans tout le salon. */
+    fun fanfare() {
+        if (!enabled) return
+        vibrate(90)
+        val path = SoundLibrary.tadaaPath(appContext)
+        if (path != null && playClip(path, ANNOUNCE_MILLIS)) return
+        runCatching { tones?.startTone(ToneGenerator.TONE_PROP_ACK, 350) }
+    }
+
     /**
      * Éliminé : le verre brisé. Chez celui qui sort du jeu, et chez l'animateur qui vient de
      * l'en sortir — comme la bonne et la mauvaise réponse, qui s'entendent des deux côtés.
@@ -189,5 +198,12 @@ class SoundFx(context: Context) {
 
         /** Le feu d'artifice de la fin de partie, borné à la durée du carton qu'il habille. */
         const val CELEBRATION_MILLIS = 10_000L
+
+        /**
+         * Un son d'annonce peut aller jusqu'au bout du carton qui l'accompagne. La fanfare
+         * de la passation dure près de cinq secondes : les quatre du buzzer la couperaient
+         * juste avant sa dernière note.
+         */
+        const val ANNOUNCE_MILLIS = 5_000L
     }
 }

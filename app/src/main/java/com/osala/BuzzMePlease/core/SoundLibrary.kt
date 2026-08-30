@@ -95,6 +95,9 @@ object SoundLibrary {
         else -> source
     }
 
+    /** Le chemin de la fanfare, jouée quand le pupitre change de main. */
+    fun tadaaPath(context: Context): String? = pathOf(context, "tadaa")
+
     /** Le chemin du verre brisé, joué quand un joueur est éliminé. */
     fun glassPath(context: Context): String? = pathOf(context, "glass_breaking")
 
