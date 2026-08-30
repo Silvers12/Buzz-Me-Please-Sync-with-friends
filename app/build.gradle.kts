@@ -7,15 +7,19 @@ plugins {
 
 android {
     namespace = "com.osala.BuzzMePlease"
-    compileSdk = 35
+    compileSdk = 36
+
+    // Deux langues embarquées, pas les cent-quarante d'AndroidX : l'application pèse moins.
+    androidResources {
+        localeFilters += listOf("fr", "en")
+    }
 
     defaultConfig {
         applicationId = "com.osala.buzzmeplease"
         minSdk = 26
-        targetSdk = 35
-        versionCode = 104
-        versionName = "1.04"
-        resourceConfigurations += listOf("fr", "en")
+        targetSdk = 36
+        versionCode = 105
+        versionName = "1.05"
     }
 
     buildTypes {
