@@ -84,6 +84,7 @@
     <!-- Buzzer -->
     <string name="buzzer_buzz">BUZZ</string>
     <string name="buzzer_taken">TAKEN</string>
+    <string name="buzzer_correct">CORRECT</string>
     <string name="buzzer_missed">MISSED</string>
     <string name="buzzer_too_late">TOO LATE</string>
     <string name="buzzer_out">OUT</string>
@@ -92,6 +93,7 @@
     <string name="buzzer_press">Press!</string>
     <string name="buzzer_recorded">Recorded</string>
     <string name="buzzer_your_turn">Your turn to answer</string>
+    <string name="buzzer_point">Point scored</string>
     <string name="buzzer_can_return">The host can bring you back</string>
     <string name="buzzer_waiting">Waiting for the go</string>
 
@@ -223,7 +225,7 @@
     <string name="tutorial_4_title">Buzzing</string>
     <string name="tutorial_4_body">The first to press turns red, everyone else locks out instantly. The exact time of the buzz is sent — hour, minute, second and millisecond — and the host sees the ranking, the gap to the best time and the measurement uncertainty. Once the ranking settles, a single buzzer stays green: the one with the floor.</string>
     <string name="tutorial_5_title">Running the rounds</string>
-    <string name="tutorial_5_body">Wrong answer? “Wrong answer · next player”, under the banner, switches off the buzzer of whoever had the floor — they hear an error signal — and lights up the runner-up\'s, who hears that the floor is theirs. “Restart” opens a new round, the circular arrow clears everything without touching the scores.</string>
+    <string name="tutorial_5_body">Wrong answer? “Wrong answer · next player”, under the banner, switches off the buzzer of whoever had the floor — they hear an error signal — and lights up the runner-up\'s, who hears that the floor is theirs. “Right” scores the point, turns that player\'s buzzer green with the correct-answer sound — the host hears it too — then switches the buzzers off. “Restart” opens a new round, the circular arrow clears everything without touching the scores.</string>
     <string name="tutorial_6_title">Knock out, revive, keep score</string>
     <string name="tutorial_6_body">The host taps a player\'s row to open their desk: grey buzzer (knocked out) or brought back in one gesture, points in +1, +3 or −1, removal from the room. A knocked-out player disappears from the other players\' boards — they are not playing any more — but stays on the host\'s, who can call them back at any time.</string>
     <string name="tutorial_7_title">Hand over hosting</string>

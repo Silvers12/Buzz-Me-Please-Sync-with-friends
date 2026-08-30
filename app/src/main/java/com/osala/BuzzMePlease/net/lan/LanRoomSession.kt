@@ -99,6 +99,7 @@ class LanRoomSession(
     private var engineJob: Job? = null
     private var countdownJob: Job? = null
     private var adjudicationJob: Job? = null
+    private var rightJob: Job? = null
 
     // -- rôle joueur
     private var clientJob: Job? = null
@@ -459,6 +460,7 @@ class LanRoomSession(
         _localBuzzRound.value = null
         countdownJob?.cancel()
         adjudicationJob?.cancel()
+        rightJob?.cancel(); rightJob = null
         host.arm(armAt, withCountdown)
         if (withCountdown) {
             val round = host.snapshot.round
@@ -473,13 +475,30 @@ class LanRoomSession(
         val host = engine ?: return
         countdownJob?.cancel(); countdownJob = null
         adjudicationJob?.cancel(); adjudicationJob = null
+        rightJob?.cancel(); rightJob = null
         _localBuzzRound.value = null
         host.reset()
     }
 
     override fun markWrong() {
         val host = engine ?: return
+        rightJob?.cancel(); rightJob = null
         host.markWrong(host.snapshot.round)
+    }
+
+    override fun markRight() {
+        val host = engine ?: return
+        val round = host.snapshot.round
+        host.markRight(round)
+        if (host.snapshot.rightId == null) return
+        rightJob?.cancel()
+        // Le vert et le son ont le temps d'arriver jusqu'au bout de la table, puis les buzzers
+        // s'éteignent d'eux-mêmes. Si l'animateur a déjà relancé entre-temps, on ne touche à rien.
+        rightJob = scope.launch {
+            delay(RIGHT_HOLD_MILLIS)
+            val current = engine ?: return@launch
+            if (current.snapshot.round == round && current.snapshot.rightId != null) reset()
+        }
     }
 
     override fun passSpeaker() {
@@ -560,6 +579,9 @@ class LanRoomSession(
     companion object {
         private const val TAG = "LanRoomSession"
         const val COUNTDOWN_MILLIS = 3_000L
+
+        /** Combien de temps le buzzer reste vert après « vrai », avant l'extinction générale. */
+        const val RIGHT_HOLD_MILLIS = 1_600L
         private const val CONNECT_TIMEOUT_MILLIS = 3_000
         private const val DISCOVERY_TIMEOUT_MILLIS = 6_000L
         private const val RETRY_MILLIS = 900L

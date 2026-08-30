@@ -13,9 +13,9 @@ import android.os.VibratorManager
  * Habillage sonore et haptique du plateau.
  *
  * Tout ce qui doit tomber à l'instant près — le décompte, le go — passe par [ToneGenerator] :
- * aucune latence de décodage, un bip demandé part immédiatement. Le buzz et la mauvaise réponse
- * jouent un vrai son : ils arrivent après coup, l'heure du buzz étant déjà relevée sur l'appui
- * lui-même, et méritent d'être entendus comme tels.
+ * aucune latence de décodage, un bip demandé part immédiatement. Le buzz et les verdicts de
+ * l'animateur jouent un vrai son : ils arrivent après coup, l'heure du buzz étant déjà relevée
+ * sur l'appui lui-même, et méritent d'être entendus comme tels.
  */
 class SoundFx(context: Context) {
 
@@ -75,6 +75,18 @@ class SoundFx(context: Context) {
         val path = SoundLibrary.wrongPath(appContext)
         if (path != null && playClip(path)) return
         runCatching { tones?.startTone(ToneGenerator.TONE_SUP_ERROR, 450) }
+    }
+
+    /**
+     * Bonne réponse : l'animateur valide, le buzzer passe au vert. Le vrai son du jeu là aussi,
+     * avec le bip d'acquittement en secours si le fichier est illisible.
+     */
+    fun correct() {
+        if (!enabled) return
+        vibrate(70)
+        val path = SoundLibrary.correctPath(appContext)
+        if (path != null && playClip(path)) return
+        runCatching { tones?.startTone(ToneGenerator.TONE_PROP_ACK, 350) }
     }
 
     /** Fait écouter un son sans passer par le jeu : l'aperçu des réglages. */

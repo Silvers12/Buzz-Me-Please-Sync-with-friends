@@ -49,6 +49,7 @@ private fun accentFor(visual: BuzzerVisual): Color = when (visual) {
     BuzzerVisual.SPEAKING -> Color(0xFFF1F3FF)
     BuzzerVisual.BUZZED -> Stage.Blue
     BuzzerVisual.COUNTDOWN -> Stage.Amber
+    BuzzerVisual.RIGHT -> Stage.Green
     BuzzerVisual.WRONG -> Stage.Red
     BuzzerVisual.LOST -> Color(0xFF375A83)
     BuzzerVisual.ELIMINATED -> Color(0xFF4A4A54)

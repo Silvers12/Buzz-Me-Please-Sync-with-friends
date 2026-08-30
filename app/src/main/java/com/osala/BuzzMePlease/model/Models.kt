@@ -150,6 +150,12 @@ data class RoomState(
      * « suivant » : à lui de décider quand la partie repart.
      */
     val wrongId: String? = null,
+    /**
+     * Celui que l'animateur vient de déclarer dans le vrai. Son buzzer passe au vert et la
+     * récompense se fait entendre, chez lui comme chez l'animateur, le temps de savourer :
+     * les buzzers s'éteignent juste après, la manche étant jouée.
+     */
+    val rightId: String? = null,
     val options: RoomOptions = RoomOptions(),
 ) {
     fun player(id: String): Player? = players.firstOrNull { it.id == id }
@@ -218,12 +224,13 @@ data class RoomState(
  * Couleur logique d'un buzzer, indépendante du thème.
  *
  * Cinq couleurs, cinq significations. **Blanc**, la parole : un seul joueur à la fois, une fois
- * la manche tranchée. **Vert**, les buzzers ouverts, quand chacun peut encore appuyer.
- * **Rouge**, la mauvaise réponse : l'animateur vient de la prononcer. **Gris**, le buzzer
- * désactivé. **Bleu**, tout le reste, à commencer par le cas le plus courant : quelqu'un
- * d'autre a la main. L'ambre du décompte reste à part, trois secondes de feu orange avant le go.
+ * la manche tranchée. **Vert**, les buzzers ouverts, quand chacun peut encore appuyer — et la
+ * bonne réponse, qui referme la manche sur la même promesse tenue. **Rouge**, la mauvaise
+ * réponse : l'animateur vient de la prononcer. **Gris**, le buzzer désactivé. **Bleu**, tout le
+ * reste, à commencer par le cas le plus courant : quelqu'un d'autre a la main. L'ambre du
+ * décompte reste à part, trois secondes de feu orange avant le go.
  */
-enum class BuzzerVisual { OFF, COUNTDOWN, ARMED, BUZZED, SPEAKING, WRONG, LOST, ELIMINATED }
+enum class BuzzerVisual { OFF, COUNTDOWN, ARMED, BUZZED, SPEAKING, RIGHT, WRONG, LOST, ELIMINATED }
 
 fun RoomState.visualFor(
     playerId: String,
@@ -242,8 +249,9 @@ fun RoomState.visualFor(
         GameMode.COURSE -> buzzes.isNotEmpty()
     }
     return when {
-        // Le rouge passe avant le vert : celui qui vient de se tromper a encore la main, mais
-        // ce n'est plus ce qu'il faut lui montrer.
+        // Le verdict passe avant tout le reste : celui qui vient d'être jugé a encore la main,
+        // mais ce n'est plus ce qu'il faut lui montrer.
+        playerId == rightId -> BuzzerVisual.RIGHT
         playerId == wrongId -> BuzzerVisual.WRONG
         decided && speakerId == playerId -> BuzzerVisual.SPEAKING
         // Il a eu la parole et l'a rendue : la manche continue sans lui.

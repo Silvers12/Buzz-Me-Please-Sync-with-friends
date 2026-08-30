@@ -94,6 +94,17 @@ private fun skinFor(visual: BuzzerVisual): BuzzerSkin = when (visual) {
         text = Color(0xFF10101C),
     )
 
+    // Bonne réponse : le vert du jeu revient, plus clair encore que celui des buzzers ouverts.
+    // La manche se referme sur la couleur qui l'a ouverte.
+    BuzzerVisual.RIGHT -> BuzzerSkin(
+        highlight = Color(0xFFD6FFE8),
+        body = Stage.Green,
+        shadow = Stage.GreenDeep,
+        ring = Color(0xFF7BFFC0),
+        glow = Stage.Green,
+        text = Color(0xFF05310F),
+    )
+
     // Mauvaise réponse : l'animateur retire la parole. Le seul rouge du jeu, il ne doit
     // signifier que cela.
     BuzzerVisual.WRONG -> BuzzerSkin(
@@ -171,13 +182,16 @@ fun BigBuzzer(
         label = "breathing",
     )
     // Le halo respire quand le buzzer attend un geste : armé, ou en attente de la réponse.
-    val alive = visual == BuzzerVisual.ARMED || visual == BuzzerVisual.SPEAKING
+    // Il respire aussi sur la bonne réponse : le vert doit se voir de loin.
+    val alive = visual == BuzzerVisual.ARMED ||
+        visual == BuzzerVisual.SPEAKING ||
+        visual == BuzzerVisual.RIGHT
     val haloBoost = if (alive) 0.55f + breathing * 0.45f else 0.35f
 
     // Onde de choc au moment du buzz.
     val shockwave = remember { Animatable(0f) }
     LaunchedEffect(visual) {
-        if (visual == BuzzerVisual.BUZZED) {
+        if (visual == BuzzerVisual.BUZZED || visual == BuzzerVisual.RIGHT) {
             shockwave.snapTo(0f)
             shockwave.animateTo(1f, tween(520, easing = LinearEasing))
         } else {

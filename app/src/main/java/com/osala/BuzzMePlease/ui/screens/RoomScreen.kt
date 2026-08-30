@@ -256,11 +256,12 @@ fun RoomScreen(
                         state = state,
                         myId = session.myId,
                         amHost = amHost,
-                        // Bonne réponse : le point est mis et les buzzers s'éteignent jusqu'au
-                        // prochain go — la manche est jouée, il n'y a plus rien à arbitrer.
+                        // Bonne réponse : le point est mis, le buzzer du joueur passe au vert et
+                        // la récompense se fait entendre. Les buzzers s'éteignent juste après —
+                        // la manche est jouée, il n'y a plus rien à arbitrer.
                         onRightAnswer = {
                             state.speakerId?.let { session.addPoints(it, 1) }
-                            session.reset()
+                            session.markRight()
                         },
                         onWrongAnswer = session::markWrong,
                         onNextPlayer = session::passSpeaker,
@@ -456,6 +457,7 @@ private fun buzzerTitle(
     BuzzerVisual.SPEAKING,
     -> state.buzzOf(myId)?.let { Buzz.formatReaction(it.reactionMillis) }
         ?: stringResource(R.string.buzzer_taken)
+    BuzzerVisual.RIGHT -> stringResource(R.string.buzzer_correct)
     BuzzerVisual.WRONG -> stringResource(R.string.buzzer_missed)
     BuzzerVisual.LOST -> stringResource(R.string.buzzer_too_late)
     BuzzerVisual.ELIMINATED -> stringResource(R.string.buzzer_out)
@@ -469,6 +471,7 @@ private fun buzzerSubtitle(visual: BuzzerVisual, state: RoomState, myId: String)
         BuzzerVisual.ARMED -> stringResource(R.string.buzzer_press)
         BuzzerVisual.BUZZED -> stringResource(R.string.buzzer_recorded)
         BuzzerVisual.SPEAKING -> stringResource(R.string.buzzer_your_turn)
+        BuzzerVisual.RIGHT -> stringResource(R.string.buzzer_point)
         // Écarté par l'animateur, ou devancé : dans les deux cas on nomme qui a la parole.
         BuzzerVisual.WRONG,
         BuzzerVisual.LOST,
@@ -724,10 +727,11 @@ private fun ResultBanner(
                     color = Stage.Amber,
                     textAlign = TextAlign.Start,
                 )
-            } else if (amHost) {
+            } else if (amHost && state.rightId == null) {
                 Spacer(Modifier.height(10.dp))
                 // Le verdict de l'animateur, en deux gestes : le point est mis et la manche se
-                // clôt, ou la main descend au suivant.
+                // clôt, ou la main descend au suivant. Une fois « vrai » prononcé, les boutons
+                // s'effacent : le point est déjà compté, il ne peut pas l'être deux fois.
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     GhostAction(
                         text = stringResource(R.string.banner_right),
@@ -824,5 +828,12 @@ private fun PlayFeedback(
         val wrong = state.wrongId ?: return@LaunchedEffect
         if (!roomSound) return@LaunchedEffect
         if (wrong == myId || amHost) soundFx.wrong()
+    }
+
+    // La récompense aussi : chez celui qui vient de marquer, et chez l'animateur qui l'a validé.
+    LaunchedEffect(state.rightId, state.round) {
+        val right = state.rightId ?: return@LaunchedEffect
+        if (!roomSound) return@LaunchedEffect
+        if (right == myId || amHost) soundFx.correct()
     }
 }

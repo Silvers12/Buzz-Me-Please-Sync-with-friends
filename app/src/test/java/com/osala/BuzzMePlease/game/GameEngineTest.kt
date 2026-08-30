@@ -285,6 +285,61 @@ class GameEngineTest {
         assertEquals(BuzzerVisual.SPEAKING, next.visualFor("p2", armedAt + 900))
     }
 
+    /**
+     * « Vrai » passe le buzzer du joueur au vert : le point est mis, le son de bonne réponse
+     * part, et l'extinction générale ne vient qu'après — ici, à la réinitialisation.
+     */
+    @Test
+    fun `vrai passe le buzzer du joueur au vert`() {
+        armWithCountdown()
+        engine.markArmed(1)
+        engine.registerBuzz("p1", 1, armedAt + 200, 2)
+        engine.registerBuzz("p2", 1, armedAt + 260, 2)
+        engine.closeAdjudication(1)
+
+        engine.markRight(1)
+        val right = engine.snapshot
+        assertEquals("p1", right.rightId)
+        assertNull(right.wrongId)
+        assertEquals(BuzzerVisual.RIGHT, right.visualFor("p1", armedAt + 900))
+        assertEquals(BuzzerVisual.LOST, right.visualFor("p2", armedAt + 900))
+
+        engine.reset()
+        val off = engine.snapshot
+        assertNull(off.rightId)
+        assertEquals(BuzzerVisual.OFF, off.visualFor("p1", armedAt + 900))
+        assertEquals(BuzzerVisual.OFF, off.visualFor("p2", armedAt + 900))
+    }
+
+    /** Un verdict chasse l'autre : l'animateur peut se reprendre sans relancer la manche. */
+    @Test
+    fun `faux efface le vert et vrai efface le rouge`() {
+        armWithCountdown()
+        engine.markArmed(1)
+        engine.registerBuzz("p1", 1, armedAt + 200, 2)
+        engine.closeAdjudication(1)
+
+        engine.markRight(1)
+        engine.markWrong(1)
+        assertNull(engine.snapshot.rightId)
+        assertEquals("p1", engine.snapshot.wrongId)
+
+        engine.markRight(1)
+        assertNull(engine.snapshot.wrongId)
+        assertEquals("p1", engine.snapshot.rightId)
+    }
+
+    /** Tant que le photo-finish n'est pas tranché, le verdict attend : le classement peut bouger. */
+    @Test
+    fun `vrai reste sans effet tant que l arbitrage court`() {
+        armWithCountdown()
+        engine.markArmed(1)
+        engine.registerBuzz("p1", 1, armedAt + 200, 2)
+
+        engine.markRight(1)
+        assertNull(engine.snapshot.rightId)
+    }
+
     @Test
     fun `la parole n est pas retiree tant que l arbitrage court`() {
         armWithCountdown()

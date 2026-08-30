@@ -69,6 +69,7 @@ class GameEngine(code: String, hostId: String, options: RoomOptions = RoomOption
                 buzzes = next.buzzes.filterNot { it.playerId == id },
                 passedIds = next.passedIds.filterNot { it == id },
                 wrongId = next.wrongId?.takeIf { it != id },
+                rightId = next.rightId?.takeIf { it != id },
             )
             if (next.winnerId == id) next = next.recomputeWinner()
         }
@@ -82,6 +83,7 @@ class GameEngine(code: String, hostId: String, options: RoomOptions = RoomOption
             buzzes = current.buzzes.filterNot { it.playerId == id },
             passedIds = current.passedIds.filterNot { it == id },
             wrongId = current.wrongId?.takeIf { it != id },
+            rightId = current.rightId?.takeIf { it != id },
         ).let { if (it.winnerId == id) it.recomputeWinner() else it }
     }
 
@@ -119,6 +121,7 @@ class GameEngine(code: String, hostId: String, options: RoomOptions = RoomOption
             provisional = false,
             passedIds = emptyList(),
             wrongId = null,
+            rightId = null,
         )
     }
 
@@ -141,6 +144,7 @@ class GameEngine(code: String, hostId: String, options: RoomOptions = RoomOption
             provisional = false,
             passedIds = emptyList(),
             wrongId = null,
+            rightId = null,
         )
     }
 
@@ -211,7 +215,7 @@ class GameEngine(code: String, hostId: String, options: RoomOptions = RoomOption
     fun passSpeaker(round: Int) = mutate { current ->
         if (current.round != round || current.provisional) return@mutate current
         val speaker = current.speakerId ?: return@mutate current
-        current.copy(passedIds = current.passedIds + speaker, wrongId = null)
+        current.copy(passedIds = current.passedIds + speaker, wrongId = null, rightId = null)
     }
 
     /**
@@ -222,7 +226,18 @@ class GameEngine(code: String, hostId: String, options: RoomOptions = RoomOption
     fun markWrong(round: Int) = mutate { current ->
         if (current.round != round || current.provisional) return@mutate current
         val speaker = current.speakerId ?: return@mutate current
-        if (current.wrongId == speaker) current else current.copy(wrongId = speaker)
+        if (current.wrongId == speaker) current else current.copy(wrongId = speaker, rightId = null)
+    }
+
+    /**
+     * Bonne réponse : le buzzer de celui qui a la parole passe au vert et la récompense se fait
+     * entendre, chez lui comme chez l'animateur. La manche est jouée — les buzzers s'éteignent
+     * juste après, le temps que le vert et le son aient été vus et entendus.
+     */
+    fun markRight(round: Int) = mutate { current ->
+        if (current.round != round || current.provisional) return@mutate current
+        val speaker = current.speakerId ?: return@mutate current
+        if (current.rightId == speaker) current else current.copy(rightId = speaker, wrongId = null)
     }
 
     // ------------------------------------------------------------------ utils

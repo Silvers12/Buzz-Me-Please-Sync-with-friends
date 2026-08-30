@@ -61,6 +61,12 @@ interface RoomSession {
     /** Mauvaise réponse : buzzer rouge et son de sanction, sans que la main ne bouge. */
     fun markWrong()
 
+    /**
+     * Bonne réponse : buzzer vert et son de récompense chez le joueur comme chez l'animateur,
+     * puis extinction des buzzers — la manche est jouée.
+     */
+    fun markRight()
+
     /** Au suivant : la main descend au buzz d'après, et le buzzer précédent s'éteint. */
     fun passSpeaker()
 

@@ -56,8 +56,13 @@ object SoundLibrary {
     }
 
     /** Le chemin du son « mauvaise réponse », joué chez celui qui perd la parole. */
-    fun wrongPath(context: Context): String? =
-        clips(context).firstOrNull { it.id == "wrong" }?.path
+    fun wrongPath(context: Context): String? = pathOf(context, "wrong")
+
+    /** Le chemin du son « bonne réponse », joué chez celui qui vient de marquer. */
+    fun correctPath(context: Context): String? = pathOf(context, "correct")
+
+    private fun pathOf(context: Context, id: String): String? =
+        clips(context).firstOrNull { it.id == id }?.path
 
     /** Le libellé traduit du son, ou son nom de fichier rendu lisible faute de traduction. */
     private fun label(context: Context, id: String): String {
