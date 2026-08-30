@@ -90,11 +90,15 @@ private val steps = listOf(
         accent = Color(0xFFF1F3FF),
         extra = { ColourLegend() },
     ),
-    TutorialStep("6", R.string.tutorial_5_title, R.string.tutorial_5_body, Stage.Cyan),
-    TutorialStep("7", R.string.tutorial_6_title, R.string.tutorial_6_body, Stage.Amber),
-    TutorialStep("8", R.string.tutorial_7_title, R.string.tutorial_7_body, Stage.GoldSoft),
-    TutorialStep("9", R.string.tutorial_8_title, R.string.tutorial_8_body, Stage.VioletSoft),
-    TutorialStep("10", R.string.tutorial_9_title, R.string.tutorial_9_body, Stage.Cyan),
+    // Les cartons se montrent avant les verdicts : c'est ce que le joueur voit en premier,
+    // avant même de comprendre qui a appuyé sur quoi.
+    TutorialStep("6", R.string.tutorial_cards_title, R.string.tutorial_cards_body, Stage.GoldSoft),
+    TutorialStep("7", R.string.tutorial_5_title, R.string.tutorial_5_body, Stage.Cyan),
+    TutorialStep("8", R.string.tutorial_6_title, R.string.tutorial_6_body, Stage.Amber),
+    TutorialStep("9", R.string.tutorial_alerts_title, R.string.tutorial_alerts_body, Stage.Red),
+    TutorialStep("10", R.string.tutorial_7_title, R.string.tutorial_7_body, Stage.GoldSoft),
+    TutorialStep("11", R.string.tutorial_8_title, R.string.tutorial_8_body, Stage.VioletSoft),
+    TutorialStep("12", R.string.tutorial_9_title, R.string.tutorial_9_body, Stage.Cyan),
 )
 
 @Composable
