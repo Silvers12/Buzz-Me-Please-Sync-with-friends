@@ -69,13 +69,19 @@ fun Context.startSupportMail() {
         Locale.getDefault().toLanguageTag(),
     )
 
-    val mail = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:${Links.SUPPORT_MAIL}")).apply {
-        putExtra(Intent.EXTRA_SUBJECT, subject)
-        putExtra(Intent.EXTRA_TEXT, body)
-        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-    }
+    // Tout est écrit dans l'adresse, destinataire compris. Les extras EXTRA_SUBJECT et
+    // EXTRA_TEXT sont la voie Android, mais beaucoup de courrielleurs ne les lisent pas et
+    // ouvrent un message vide — c'est ce qui se passait. Cette forme-ci est celle qui remplit
+    // bien le message dans Compteur Congés, sur les mêmes téléphones.
+    val target = Uri.parse("mailto:").buildUpon()
+        .appendQueryParameter("to", Links.SUPPORT_MAIL)
+        .appendQueryParameter("subject", subject)
+        .appendQueryParameter("body", body)
+        .build()
+
+    val mail = Intent(Intent.ACTION_SENDTO, target).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     if (runCatching { startActivity(mail) }.isSuccess) return
-    openLink("mailto:${Links.SUPPORT_MAIL}")
+    openLink(target.toString())
 }
 
 /** Ouvre un lien avec ce que l'appareil a sous la main. Rien ne se passe s'il n'a rien. */

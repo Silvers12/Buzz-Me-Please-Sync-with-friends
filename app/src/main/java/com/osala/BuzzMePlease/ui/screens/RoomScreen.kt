@@ -81,6 +81,8 @@ import com.osala.BuzzMePlease.model.RoomAlert
 import com.osala.BuzzMePlease.model.RoomState
 import com.osala.BuzzMePlease.model.RoundState
 import com.osala.BuzzMePlease.model.visualFor
+import com.osala.BuzzMePlease.ui.components.ANNOUNCE_HOLD_FINAL_MILLIS
+import com.osala.BuzzMePlease.ui.components.ANNOUNCE_HOLD_MILLIS
 import com.osala.BuzzMePlease.ui.components.Announcement
 import com.osala.BuzzMePlease.ui.components.BigBuzzer
 import com.osala.BuzzMePlease.ui.components.CodeDisplay
@@ -149,9 +151,7 @@ fun RoomScreen(
         soundFx = soundFx,
     )
 
-    val board = remember(state, amHost) {
-        orderPlayers(state, keepEliminated = amHost, myId = session.myId)
-    }
+    val board = remember(state) { orderPlayers(state) }
     // Le plateau du salon, dont on retire sa propre ligne : elle est épinglée au bas de
     // l'écran, sous les yeux en permanence, plateau ou pas.
     val others = remember(board) { board.filter { it.id != session.myId } }
@@ -243,10 +243,12 @@ fun RoomScreen(
                     Stage.Red,
                 )
 
+                // La partie est finie : l'annonce n'a plus rien après quoi courir, elle reste.
                 AlertKind.GAME_OVER -> Announce(
                     if (alert.tied) tieText
                     else resources.getString(R.string.announce_game_over, alert.playerName),
                     Stage.Gold,
+                    hold = ANNOUNCE_HOLD_FINAL_MILLIS,
                 )
             }
         }
@@ -307,6 +309,7 @@ fun RoomScreen(
             Announcement(
                 text = current.text,
                 accent = current.accent,
+                holdMillis = current.hold,
                 onDone = { announcement = null },
             )
         }
@@ -587,8 +590,12 @@ private fun PhoneRoom(
     }
 }
 
-/** Un carton d'annonce en attente d'être crié : son texte et sa couleur. */
-internal data class Announce(val text: String, val accent: Color)
+/** Une annonce en attente d'être jouée. [hold] dit combien de temps le carton reste posé. */
+internal data class Announce(
+    val text: String,
+    val accent: Color,
+    val hold: Long = ANNOUNCE_HOLD_MILLIS,
+)
 
 /**
  * Ce que les deux dispositions — le téléphone et le pupitre — lisent de la manche en cours.
@@ -685,18 +692,18 @@ internal fun SelfRow(view: RoomView, onSelectPlayer: (String) -> Unit) {
 }
 
 /**
- * Trie le plateau : les buzz dans l'ordre chronologique d'abord, le reste par ordre d'arrivée.
+ * Trie le plateau : les buzz dans l'ordre chronologique d'abord, le reste par ordre d'arrivée,
+ * les éliminés en queue.
  *
- * Un joueur éliminé ne peut plus buzzer : sur les téléphones des joueurs, sa ligne disparaît du
- * plateau plutôt que d'encombrer le tableau. L'animateur, lui, la garde — c'est de là qu'il le
- * réactive ou lui remet des points. Chacun continue de se voir soi-même, éliminé ou non.
+ * Un joueur éliminé garde sa ligne sur tous les écrans, buzzer éteint. Elle disparaissait chez
+ * les joueurs : celui qui venait d'être éliminé s'effaçait du plateau des autres, comme s'il
+ * avait quitté la table. Il est toujours là, il ne joue plus, et son score compte encore.
  */
-private fun orderPlayers(state: RoomState, keepEliminated: Boolean, myId: String): List<Player> {
+private fun orderPlayers(state: RoomState): List<Player> {
     val ranked = state.ranking.mapNotNull { state.player(it.playerId) }
     val rest = state.players.filter { player -> ranked.none { it.id == player.id } }
         .sortedWith(compareBy({ it.isEliminated }, { it.joinedAt }))
-    val board = ranked + rest
-    return if (keepEliminated) board else board.filter { !it.isEliminated || it.id == myId }
+    return ranked + rest
 }
 
 @Composable

@@ -41,8 +41,14 @@ import kotlinx.coroutines.launch
 import kotlin.math.cos
 import kotlin.math.sin
 
-/** Durée totale d'une annonce, de l'éclair au silence. */
-private const val HOLD_MILLIS = 1_250L
+/** Temps où le carton reste posé. L'entrée et la sortie ajoutent environ 0,6 s. */
+const val ANNOUNCE_HOLD_MILLIS = 1_250L
+
+/**
+ * La fin de partie, elle, s'installe : c'est le dénouement, on le lit, on se retourne vers
+ * le vainqueur, on se plaint du sort. Dix secondes en tout, entrée et sortie comprises.
+ */
+const val ANNOUNCE_HOLD_FINAL_MILLIS = 9_400L
 
 /**
  * Le carton d'annonce : ce que le plateau crie au joueur, en plein milieu de son écran.
@@ -59,6 +65,7 @@ fun Announcement(
     text: String,
     accent: Color,
     modifier: Modifier = Modifier,
+    holdMillis: Long = ANNOUNCE_HOLD_MILLIS,
     onDone: () -> Unit,
 ) {
     val finish by rememberUpdatedState(onDone)
@@ -69,8 +76,14 @@ fun Announcement(
     val flash = remember { Animatable(0f) }
     val rays = remember { Animatable(0f) }
 
+    // Les lignes de vitesse tournent à allure constante, quelle que soit la durée : une
+    // annonce qui dure plus longtemps tourne davantage, elle ne ralentit pas. Dix secondes
+    // de carton parfaitement figé auraient l'air d'un écran bloqué.
+    val spinMillis = holdMillis + 750L
+    val spinTurns = spinMillis / 2_000f
+
     // Le texte est la clé : une annonce qui en remplace une autre rejoue toute la scène.
-    LaunchedEffect(text) {
+    LaunchedEffect(text, holdMillis) {
         scale.snapTo(0.45f)
         tilt.snapTo(-14f)
         fade.snapTo(0f)
@@ -79,12 +92,12 @@ fun Announcement(
 
         launch { flash.animateTo(0f, tween(360, easing = LinearEasing)) }
         launch { fade.animateTo(1f, tween(110, easing = LinearEasing)) }
-        launch { rays.animateTo(1f, tween(2_000, easing = LinearEasing)) }
+        launch { rays.animateTo(1f, tween(spinMillis.toInt(), easing = LinearEasing)) }
         launch { tilt.animateTo(-6f, spring(dampingRatio = 0.4f, stiffness = 300f)) }
         // Le ressort dépasse la cible puis revient : c'est ce rebond qui fait le coup de poing.
         scale.animateTo(1f, spring(dampingRatio = 0.42f, stiffness = 420f))
 
-        delay(HOLD_MILLIS)
+        delay(holdMillis)
 
         launch { fade.animateTo(0f, tween(230, easing = LinearEasing)) }
         scale.animateTo(1.32f, tween(250, easing = FastOutLinearInEasing))
@@ -107,7 +120,7 @@ fun Announcement(
 
                 // Lignes de vitesse : des coins vers le centre, largeurs inégales comme au trait.
                 val turn = rays.value
-                rotate(degrees = turn * 10f) {
+                rotate(degrees = turn * 10f * spinTurns) {
                     val outer = size.maxDimension * 0.85f
                     val inner = size.minDimension * (0.30f + 0.06f * turn)
                     val count = 46
