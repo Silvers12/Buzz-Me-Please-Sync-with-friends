@@ -26,6 +26,7 @@ import com.osala.BuzzMePlease.core.AppLanguage
 import com.osala.BuzzMePlease.core.AppLocale
 import com.osala.BuzzMePlease.ui.screens.HomeScreen
 import com.osala.BuzzMePlease.ui.screens.JoinScreen
+import com.osala.BuzzMePlease.ui.screens.JoiningScreen
 import com.osala.BuzzMePlease.ui.screens.RoomScreen
 import com.osala.BuzzMePlease.ui.screens.SettingsScreen
 import com.osala.BuzzMePlease.ui.screens.TutorialScreen
@@ -88,6 +89,16 @@ fun BuzzMeApp(viewModel: AppViewModel = viewModel()) {
                     val current = session
                     if (current == null) {
                         LaunchedEffect(Unit) { viewModel.goHome() }
+                    } else if (!current.isHost && !current.joined.collectAsStateWithLifecycle().value) {
+                        // Le salon n'a pas encore répondu : on ne montre rien du jeu, sans quoi
+                        // un code tapé au hasard ouvrirait un salon d'apparence normale.
+                        val link by current.link.collectAsStateWithLifecycle()
+                        JoiningScreen(
+                            code = current.state.value.code,
+                            phase = link.phase,
+                            detail = link.detail,
+                            onCancel = viewModel::leaveRoom,
+                        )
                     } else {
                         RoomScreen(
                             session = current,

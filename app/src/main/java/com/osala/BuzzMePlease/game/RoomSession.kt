@@ -29,6 +29,13 @@ interface RoomSession {
 
     val state: StateFlow<RoomState>
     val link: StateFlow<LinkStatus>
+
+    /**
+     * Vrai dès que le salon a répondu. Avant cela il n'y a rien à montrer du jeu : un code tapé
+     * au hasard ne doit pas ouvrir un salon d'apparence normale. Reste vrai ensuite, y compris
+     * pendant une reconnexion — on ne renvoie pas un joueur à l'écran d'attente en pleine partie.
+     */
+    val joined: StateFlow<Boolean>
     val ended: StateFlow<SessionEnded?>
 
     /** Identifiant local, stable d'une partie à l'autre. */

@@ -31,6 +31,10 @@
     <string name="join_searching">Recherche en cours… Assurez-vous que l\'hôte a créé le salon et que tous les téléphones sont sur le même réseau Wi-Fi.</string>
     <string name="join_room_host">Chez %1$s</string>
     <string name="join_room_action">REJOINDRE</string>
+    <string name="joining_title">Connexion au salon</string>
+    <string name="joining_searching">Recherche du salon…</string>
+    <string name="joining_hint">Le salon s\'ouvrira dès que l\'animateur aura répondu. Rien ne vient ? Vérifiez le code, et que tous les téléphones sont sur le même réseau Wi-Fi.</string>
+    <string name="joining_cancel">Annuler</string>
 
     <!-- Réglages -->
     <string name="settings_title">Réglages</string>
@@ -61,7 +65,7 @@
     <string name="room_leave">Quitter le salon</string>
     <string name="room_badge_host">Animateur</string>
     <string name="room_badge_player">Joueur</string>
-    <string name="room_badge_duel">Duel</string>
+    <string name="room_badge_duel">Rapide</string>
     <string name="room_badge_race">Course</string>
     <string name="room_round">Manche %1$d</string>
     <string name="room_latency">%1$d ms · ± %2$d ms</string>
@@ -129,7 +133,7 @@
 
     <!-- Règles de la partie -->
     <string name="rules_title">Règles de la partie</string>
-    <string name="rules_duel_title">Mode duel</string>
+    <string name="rules_duel_title">Mode rapide</string>
     <string name="rules_duel_subtitle">Le premier qui buzze verrouille tous les autres. Désactivé, tout le monde buzze et l\'on obtient un classement complet.</string>
     <string name="rules_countdown_title">Décompte 3 · 2 · 1</string>
     <string name="rules_countdown_subtitle">Tous les appareils s\'arment au même instant, à la milliseconde près.</string>
@@ -229,7 +233,7 @@
     <string name="tutorial_7_title">Passer l\'animation</string>
     <string name="tutorial_7_body">Depuis ce même pupitre, « Passer l\'animation » confie le rôle d\'animateur à un autre joueur. Personne ne quitte le salon : scores, statuts et manche en cours suivent, et l\'ancien animateur redevient un joueur ordinaire.</string>
     <string name="tutorial_8_title">Adapter les règles</string>
-    <string name="tutorial_8_body">Le bouton à curseurs, à droite du go, ouvre les règles de la partie. Le mode duel peut être désactivé au profit du mode course, où tout le monde buzze et où l\'on obtient un classement complet — pratique pour un tie-break ou un jeu de rapidité. « Scores masqués » garde le suspense : chaque joueur ne voit plus que le sien, vous gardez le tableau complet. Le décompte et les sons se coupent au même endroit.</string>
+    <string name="tutorial_8_body">Le bouton à curseurs, à droite du go, ouvre les règles de la partie. Le mode rapide peut être désactivé au profit du mode course, où tout le monde buzze et où l\'on obtient un classement complet — pratique pour un tie-break ou un jeu de rapidité. « Plateau masqué » garde le suspense : chaque joueur ne garde que sa propre ligne, vous gardez le tableau complet. Le décompte et les sons se coupent au même endroit.</string>
     <string name="tutorial_9_title">Préparer ses bruitages</string>
     <string name="tutorial_9_body">Le bouton « Sons », au-dessus du plateau, ouvre la sonothèque de l\'animateur : neuf touches à remplir avant la partie parmi les bruitages de l\'application. Un appui joue le son, un appui long change la touche ou la libère. Votre sélection est conservée d\'une partie à l\'autre, et le panneau se rétracte sur le plateau.</string>
     <string name="tutorial_tips_title">Pour que le buzz reste juste</string>

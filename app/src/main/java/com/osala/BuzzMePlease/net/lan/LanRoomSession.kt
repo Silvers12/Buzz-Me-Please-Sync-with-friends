@@ -86,6 +86,9 @@ class LanRoomSession(
     private val _link = MutableStateFlow(LinkStatus())
     override val link: StateFlow<LinkStatus> = _link.asStateFlow()
 
+    private val _joined = MutableStateFlow(startAsHost)
+    override val joined: StateFlow<Boolean> = _joined.asStateFlow()
+
     private val _ended = MutableStateFlow<SessionEnded?>(null)
     override val ended: StateFlow<SessionEnded?> = _ended.asStateFlow()
 
@@ -136,6 +139,7 @@ class LanRoomSession(
         created.join(myId, myName, AppClock.wallNow())
         created.setPing(myId, 0)
         engine = created
+        _joined.value = true
         clock.reset()
 
         engineJob = scope.launch {
@@ -368,6 +372,8 @@ class LanRoomSession(
             }
 
             is StateSync -> {
+                // Le salon a répondu : à partir d'ici, il y a quelque chose à montrer.
+                _joined.value = true
                 val incoming = message.state
                 _state.value = incoming
                 // La manche a changé : l'affichage optimiste local n'a plus lieu d'être.

@@ -33,6 +33,10 @@
     <string name="join_searching">Searching… Make sure the host has created the room and that every phone is on the same Wi-Fi network.</string>
     <string name="join_room_host">At %1$s\'s</string>
     <string name="join_room_action">JOIN</string>
+    <string name="joining_title">Joining the room</string>
+    <string name="joining_searching">Looking for the room…</string>
+    <string name="joining_hint">The room opens as soon as the host answers. Nothing yet? Check the code, and that every phone is on the same Wi-Fi network.</string>
+    <string name="joining_cancel">Cancel</string>
 
     <!-- Réglages -->
     <string name="settings_title">Settings</string>
@@ -63,7 +67,7 @@
     <string name="room_leave">Leave the room</string>
     <string name="room_badge_host">Host</string>
     <string name="room_badge_player">Player</string>
-    <string name="room_badge_duel">Duel</string>
+    <string name="room_badge_duel">Fast</string>
     <string name="room_badge_race">Race</string>
     <string name="room_round">Round %1$d</string>
     <string name="room_latency">%1$d ms · ± %2$d ms</string>
@@ -131,7 +135,7 @@
 
     <!-- Règles de la partie -->
     <string name="rules_title">Game rules</string>
-    <string name="rules_duel_title">Duel mode</string>
+    <string name="rules_duel_title">Fast mode</string>
     <string name="rules_duel_subtitle">The first to buzz locks everyone else out. Turn it off and everyone buzzes, for a full ranking.</string>
     <string name="rules_countdown_title">Countdown 3 · 2 · 1</string>
     <string name="rules_countdown_subtitle">Every device arms at the same instant, to the millisecond.</string>
@@ -231,7 +235,7 @@
     <string name="tutorial_7_title">Hand over hosting</string>
     <string name="tutorial_7_body">From that same desk, “Hand over hosting” gives the host role to another player. Nobody leaves the room: scores, statuses and the current round follow, and the former host becomes an ordinary player.</string>
     <string name="tutorial_8_title">Bend the rules</string>
-    <string name="tutorial_8_body">The sliders button, to the right of the go, opens the game rules. Duel mode can be turned off in favour of race mode, where everyone buzzes and you get a full ranking — handy for a tie-break or a speed round. “Hidden scores” keeps the suspense: each player only sees their own, you keep the full table. The countdown and the sounds switch off in the same place.</string>
+    <string name="tutorial_8_body">The sliders button, to the right of the go, opens the game rules. Fast mode can be turned off in favour of race mode, where everyone buzzes and you get a full ranking — handy for a tie-break or a speed round. “Hidden board” keeps the suspense: each player is left with their own line alone, you keep the full table. The countdown and the sounds switch off in the same place.</string>
     <string name="tutorial_9_title">Prepare your sound effects</string>
     <string name="tutorial_9_body">The “Sounds” button, above the board, opens the host\'s soundboard: nine pads to fill before the game from the sounds shipped with the app. A tap plays the sound, a long press changes the pad or clears it. Your selection is kept from one game to the next, and the panel folds back onto the board.</string>
     <string name="tutorial_tips_title">To keep the buzz honest</string>
