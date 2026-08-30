@@ -15,8 +15,11 @@ import kotlinx.serialization.json.Json
  *
  * 1 → 2 : les verdicts « faux » deviennent une liste, et l'animateur peut diffuser des annonces
  * (cartons, fin de partie) que les versions antérieures ignorent.
+ *
+ * 2 → 3 : l'état du salon porte la parole donnée à la main par l'animateur, et chaque joueur
+ * ses cartons jaunes et rouges.
  */
-const val PROTOCOL_VERSION = 2
+const val PROTOCOL_VERSION = 3
 
 /** Port TCP du salon. Fixe : il permet de reconstruire l'adresse de l'hôte après une passation. */
 const val GAME_PORT = 47821

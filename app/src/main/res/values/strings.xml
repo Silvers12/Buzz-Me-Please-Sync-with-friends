@@ -88,7 +88,15 @@
     <string name="announce_wrong">WRONG!</string>
     <string name="player_yellow_cards">Yellow cards: %1$d</string>
     <string name="player_red_cards">Red cards: %1$d</string>
-    <string name="alert_clear">CLEAR THE CARDS (%1$d yellow, %2$d red)</string>
+    <string name="alert_clear">CLEAR THE CARDS (%1$s)</string>
+    <plurals name="alert_clear_yellow">
+        <item quantity="one">%d yellow</item>
+        <item quantity="other">%d yellow</item>
+    </plurals>
+    <plurals name="alert_clear_red">
+        <item quantity="one">%d red</item>
+        <item quantity="other">%d red</item>
+    </plurals>
     <string name="alert_send">Send an alert…</string>
     <string name="alert_pick_title">Which alert?</string>
     <string name="alert_yellow">Yellow card</string>
@@ -277,7 +285,8 @@
     <string name="tutorial_colour_speaking">White · the floor is yours, answer</string>
     <string name="tutorial_colour_right">Bright green · right answer, the point is yours</string>
     <string name="tutorial_colour_wrong">Red · wrong answer</string>
-    <string name="tutorial_colour_lost">Blue · your buzz is in, someone else has the floor, or the round has not started</string>
+    <string name="tutorial_colour_buzzed">Bright blue · your buzz is in, the verdict is coming</string>
+    <string name="tutorial_colour_lost">Dark blue · someone else has the floor, or the round has not started</string>
     <string name="tutorial_colour_eliminated">Grey · buzzer switched off by the host</string>
     <string name="tutorial_colour_countdown">Amber · the 3 · 2 · 1 countdown, get ready</string>
     <string name="tutorial_5_title">Running the rounds</string>

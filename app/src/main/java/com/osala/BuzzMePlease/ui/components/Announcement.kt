@@ -71,6 +71,12 @@ fun Announcement(
     accent: Color,
     modifier: Modifier = Modifier,
     holdMillis: Long = ANNOUNCE_HOLD_MILLIS,
+    /**
+     * Change à chaque annonce, même quand le texte est le même. Deux cartons jaunes de suite
+     * portent la même phrase : sans ce repère, la scène ne serait pas rejouée et le second
+     * carton se ferait entendre sans se montrer.
+     */
+    replay: Long = 0L,
     onDone: () -> Unit,
 ) {
     val finish by rememberUpdatedState(onDone)
@@ -87,8 +93,9 @@ fun Announcement(
     val spinMillis = holdMillis + 750L
     val spinTurns = spinMillis / 2_000f
 
-    // Le texte est la clé : une annonce qui en remplace une autre rejoue toute la scène.
-    LaunchedEffect(text, holdMillis) {
+    // Le repère est la clé : une annonce qui en remplace une autre rejoue toute la scène,
+    // fût-elle mot pour mot la même.
+    LaunchedEffect(replay, text, holdMillis) {
         scale.snapTo(0.45f)
         tilt.snapTo(-14f)
         fade.snapTo(0f)

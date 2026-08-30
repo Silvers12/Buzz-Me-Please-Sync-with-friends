@@ -326,6 +326,7 @@ fun RoomScreen(
                 text = current.text,
                 accent = current.accent,
                 holdMillis = current.hold,
+                replay = current.id,
                 onDone = { announcement = null },
             )
         }
@@ -337,8 +338,12 @@ fun RoomScreen(
             player = target,
             isHost = state.hostId == target.id,
             isMe = target.id == session.myId,
-            // Inutile de proposer la parole à qui l'a déjà, ni à un buzzer éteint.
-            canGiveFloor = !target.isEliminated && state.speakerId != target.id,
+            // Inutile de proposer la parole à qui l'a déjà, ni à un buzzer éteint. Ni pendant
+            // le décompte ou la fenêtre d'arbitrage : la manche n'est pas encore à donner.
+            canGiveFloor = !target.isEliminated &&
+                state.speakerId != target.id &&
+                !state.provisional &&
+                state.roundState != RoundState.COUNTDOWN,
             onDismiss = { selectedPlayer = null },
             onGiveFloor = {
                 session.giveFloor(target.id)
@@ -616,11 +621,15 @@ private fun PhoneRoom(
     }
 }
 
+/** Distingue deux annonces qui se suivent, jusqu'à porter le même texte. */
+private val announceCounter = java.util.concurrent.atomic.AtomicLong()
+
 /** Une annonce en attente d'être jouée. [hold] dit combien de temps le carton reste posé. */
 internal data class Announce(
     val text: String,
     val accent: Color,
     val hold: Long = ANNOUNCE_HOLD_MILLIS,
+    val id: Long = announceCounter.incrementAndGet(),
 )
 
 /**

@@ -104,8 +104,8 @@ class SoundFx(context: Context) {
     }
 
     /**
-     * Éliminé : le verre brisé. Chez celui qui sort du jeu, et chez l'animateur qui vient de
-     * l'en sortir — comme la bonne et la mauvaise réponse, qui s'entendent des deux côtés.
+     * Éliminé : le verre brisé, chez celui qui sort du jeu et nulle part ailleurs. Un verdict
+     * ne sonne que dans la main qu'il vise ; l'animateur vient d'appuyer, il le sait déjà.
      */
     fun eliminated() {
         if (!enabled) return

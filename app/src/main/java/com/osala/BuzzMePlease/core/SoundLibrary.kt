@@ -110,8 +110,27 @@ object SoundLibrary {
     /** Le chemin du son « bonne réponse », joué chez celui qui vient de marquer. */
     fun correctPath(context: Context): String? = pathOf(context, "correct")
 
-    private fun pathOf(context: Context, id: String): String? =
-        clips(context).firstOrNull { it.id == id }?.path
+    /**
+     * Le chemin d'un son livré, sans passer par [clips] : celui-ci traduit et trie les
+     * trente-six libellés, ce qui n'a aucun intérêt pour retrouver un fichier — et se
+     * paierait sur le fil principal, à l'instant précis où l'annonce s'anime.
+     *
+     * Les fichiers livrés ne bougent pas : la table est construite une fois.
+     */
+    @Volatile
+    private var assetPaths: Map<String, String>? = null
+
+    private fun pathOf(context: Context, id: String): String? {
+        val known = assetPaths ?: runCatching { context.assets.list(FOLDER) }
+            .getOrNull().orEmpty()
+            .mapNotNull { file ->
+                val key = file.substringBeforeLast('.', missingDelimiterValue = "")
+                if (key.isBlank()) null else key to "$FOLDER/$file"
+            }
+            .toMap()
+            .also { assetPaths = it }
+        return known[id]
+    }
 
     /** Le libellé traduit du son, ou son nom de fichier rendu lisible faute de traduction. */
     private fun label(context: Context, id: String): String {

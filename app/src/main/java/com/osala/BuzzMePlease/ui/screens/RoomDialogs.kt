@@ -40,6 +40,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
@@ -150,34 +151,44 @@ fun PlayerActionsDialog(
                     modifier = Modifier.fillMaxWidth(),
                 )
 
-                if (!isMe) {
-                    // Le carton s'adresse à quelqu'un d'autre : on ne s'avertit pas soi-même.
+                // Le carton s'adresse à quelqu'un d'autre : on ne s'avertit pas soi-même.
+                // L'ardoise, elle, s'efface même sur sa propre ligne : un joueur qui a pris
+                // des cartons puis reçu l'animation les garderait sinon jusqu'à la fin.
+                val marked = player.yellowCards > 0 || player.redCards > 0
+                if (!isMe || marked) {
                     Spacer(Modifier.height(20.dp))
                     SectionLabel(stringResource(R.string.dialog_alert))
                     Spacer(Modifier.height(8.dp))
-                    GhostAction(
-                        text = stringResource(R.string.alert_send),
-                        icon = Icons.Filled.Campaign,
-                        onClick = { pickAlert = true },
-                        accent = Stage.Amber,
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                    // L'ardoise ne s'efface que s'il y a quelque chose dessus.
-                    if (player.yellowCards > 0 || player.redCards > 0) {
-                        Spacer(Modifier.height(8.dp))
+                    if (!isMe) {
                         GhostAction(
-                            text = stringResource(
-                                R.string.alert_clear,
-                                player.yellowCards,
-                                player.redCards,
-                            ),
+                            text = stringResource(R.string.alert_send),
+                            icon = Icons.Filled.Campaign,
+                            onClick = { pickAlert = true },
+                            accent = Stage.Amber,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                    }
+                    if (marked) {
+                        if (!isMe) Spacer(Modifier.height(8.dp))
+                        val tally = listOfNotNull(
+                            player.yellowCards.takeIf { it > 0 }?.let {
+                                pluralStringResource(R.plurals.alert_clear_yellow, it, it)
+                            },
+                            player.redCards.takeIf { it > 0 }?.let {
+                                pluralStringResource(R.plurals.alert_clear_red, it, it)
+                            },
+                        ).joinToString(", ")
+                        GhostAction(
+                            text = stringResource(R.string.alert_clear, tally),
                             icon = Icons.Filled.Backspace,
                             onClick = onClearCards,
                             accent = Stage.VioletSoft,
                             modifier = Modifier.fillMaxWidth(),
                         )
                     }
+                }
 
+                if (!isMe) {
                     Spacer(Modifier.height(20.dp))
                     SectionLabel(stringResource(R.string.dialog_room))
                     Spacer(Modifier.height(8.dp))

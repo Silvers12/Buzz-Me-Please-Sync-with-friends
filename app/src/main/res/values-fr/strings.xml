@@ -86,7 +86,15 @@
     <string name="announce_wrong">PERDU !</string>
     <string name="player_yellow_cards">Cartons jaunes : %1$d</string>
     <string name="player_red_cards">Cartons rouges : %1$d</string>
-    <string name="alert_clear">EFFACER LES CARTONS (%1$d jaune, %2$d rouge)</string>
+    <string name="alert_clear">EFFACER LES CARTONS (%1$s)</string>
+    <plurals name="alert_clear_yellow">
+        <item quantity="one">%d jaune</item>
+        <item quantity="other">%d jaunes</item>
+    </plurals>
+    <plurals name="alert_clear_red">
+        <item quantity="one">%d rouge</item>
+        <item quantity="other">%d rouges</item>
+    </plurals>
     <string name="alert_send">Envoyer une alerte…</string>
     <string name="alert_pick_title">Quelle alerte ?</string>
     <string name="alert_yellow">Carton jaune</string>
@@ -275,7 +283,8 @@
     <string name="tutorial_colour_speaking">Blanc · vous avez la parole, répondez</string>
     <string name="tutorial_colour_right">Vert vif · bonne réponse, le point est marqué</string>
     <string name="tutorial_colour_wrong">Rouge · mauvaise réponse</string>
-    <string name="tutorial_colour_lost">Bleu · votre buzz est parti, quelqu’un d’autre a la main, ou la manche n’est pas lancée</string>
+    <string name="tutorial_colour_buzzed">Bleu franc · votre buzz est parti, le verdict se joue</string>
+    <string name="tutorial_colour_lost">Bleu sombre · quelqu’un d’autre a la main, ou la manche n’est pas lancée</string>
     <string name="tutorial_colour_eliminated">Gris · buzzer éteint par l’animateur</string>
     <string name="tutorial_colour_countdown">Ambre · le décompte 3 · 2 · 1, tenez-vous prêt</string>
     <string name="tutorial_5_title">Enchaîner les manches</string>

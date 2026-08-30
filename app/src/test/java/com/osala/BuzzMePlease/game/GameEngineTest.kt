@@ -117,21 +117,43 @@ class GameEngineTest {
     /**
      * Le classement propose, l'animateur dispose. Il donne la parole à qui il veut, y compris
      * à quelqu'un qui n'a pas buzzé — et « suivant » la rend ensuite à la file d'attente.
+     *
+     * Celui à qui on la retire rejoint les écartés : son buzzer doit dire « suivant », le mot
+     * de celui qui a parlé, et non « trop tard », celui qui s'est fait devancer au buzz.
      */
     @Test
     fun `l'animateur donne la parole a qui il veut, meme sans buzz`() {
         armWithCountdown()
         engine.markArmed(1)
         engine.registerBuzz("p1", 1, armedAt + 320, 3)
+        engine.registerBuzz("p2", 1, armedAt + 400, 3)
         engine.closeAdjudication(1)
         assertEquals("p1", engine.snapshot.speakerId)
 
         engine.giveFloor("p3")
         assertEquals("p3", engine.snapshot.speakerId)
-        assertEquals(BuzzerVisual.SPEAKING, engine.snapshot.visualFor("p3", armedAt + 400))
+        assertEquals(BuzzerVisual.SPEAKING, engine.snapshot.visualFor("p3", armedAt + 500))
+        assertTrue("p1" in engine.snapshot.passedIds)
+        assertEquals(BuzzerVisual.LOST, engine.snapshot.visualFor("p1", armedAt + 500))
 
+        // « Suivant » écarte à son tour celui qui parlait, et rend la main à la file.
         engine.passSpeaker(1)
-        assertEquals("p1", engine.snapshot.speakerId)
+        assertEquals("p2", engine.snapshot.speakerId)
+    }
+
+    /**
+     * La parole donnée à la main ne clôt pas la manche pour les autres : celui qui buzze
+     * ensuite voit d'abord le bleu de son propre buzz, avec le son qui va avec.
+     */
+    @Test
+    fun `un buzz apres une parole donnee reste un buzz`() {
+        armWithCountdown()
+        engine.markArmed(1)
+        engine.giveFloor("p3")
+
+        engine.registerBuzz("p1", 1, armedAt + 320, 3)
+        assertEquals(BuzzerVisual.BUZZED, engine.snapshot.visualFor("p1", armedAt + 330))
+        assertEquals(BuzzerVisual.SPEAKING, engine.snapshot.visualFor("p3", armedAt + 330))
     }
 
     /** Un buzzer éteint ne parle pas : la parole n'aurait nulle part où se poser. */

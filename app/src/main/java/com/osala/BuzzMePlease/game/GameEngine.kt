@@ -273,8 +273,8 @@ class GameEngine(code: String, hostId: String, options: RoomOptions = RoomOption
 
     /**
      * Mauvaise réponse : le buzzer de celui qui a la parole passe au rouge et la sanction se
-     * fait entendre, chez lui comme chez l'animateur. La main ne bouge pas pour autant — c'est
-     * « suivant » qui la déplace, quand l'animateur le décide.
+     * fait entendre chez lui. La main ne bouge pas pour autant — c'est « suivant » qui la
+     * déplace, quand l'animateur le décide.
      */
     fun markWrong(round: Int) = mutate { current ->
         if (current.round != round || current.provisional) return@mutate current
@@ -297,12 +297,20 @@ class GameEngine(code: String, hostId: String, options: RoomOptions = RoomOption
     fun giveFloor(playerId: String) = mutate { current ->
         val target = current.player(playerId) ?: return@mutate current
         if (target.isEliminated) return@mutate current
+        // Comme « suivant », « vrai » et « faux » : rien ne se décide tant que le classement
+        // peut encore bouger.
+        if (current.provisional) return@mutate current
+        // Celui à qui on retire la parole rejoint les écartés. Sans cela son buzzer lui
+        // annoncerait « trop tard » — le mot de celui qui s'est fait devancer au buzz, injuste
+        // pour quelqu'un qui parlait et à qui l'on vient de couper la parole.
+        val displaced = current.speakerId?.takeIf { it != playerId }
         current.copy(
             floorId = playerId,
             // Il parle : il n'est plus parmi ceux à qui l'on a repris la main, et le verdict
             // qui lui était tombé dessus ne le suit pas — sans quoi son buzzer resterait rouge
             // pendant qu'on l'écoute.
-            passedIds = current.passedIds.filterNot { it == playerId },
+            passedIds = (current.passedIds + listOfNotNull(displaced))
+                .filterNot { it == playerId },
             wrongIds = current.wrongIds.filterNot { it == playerId },
             rightId = null,
         )
@@ -310,7 +318,7 @@ class GameEngine(code: String, hostId: String, options: RoomOptions = RoomOption
 
     /**
      * Bonne réponse : le buzzer de celui qui a la parole passe au vert et la récompense se fait
-     * entendre, chez lui comme chez l'animateur. La manche est jouée — les buzzers s'éteignent
+     * entendre chez lui. La manche est jouée — les buzzers s'éteignent
      * juste après, le temps que le vert et le son aient été vus et entendus.
      */
     fun markRight(round: Int) = mutate { current ->

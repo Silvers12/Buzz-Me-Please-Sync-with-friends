@@ -79,8 +79,8 @@ interface RoomSession {
     fun markWrong()
 
     /**
-     * Bonne réponse : buzzer vert et son de récompense chez le joueur comme chez l'animateur,
-     * puis extinction des buzzers — la manche est jouée.
+     * Bonne réponse : buzzer vert et son de récompense chez le joueur, puis extinction des
+     * buzzers — la manche est jouée.
      */
     fun markRight()
 

@@ -45,7 +45,7 @@ fun Context.openStorePage() {
  *
  * On n'interroge pas le système pour savoir s'il existe une application de courriel : depuis
  * Android 11 la réponse serait « non » sans une déclaration `queries`, alors que l'ouverture,
- * elle, fonctionne. On tente, et on retombe sur le lien `mailto:` nu en cas d'échec.
+ * elle, fonctionne. On tente, et l'on repasse la même adresse en simple lien en cas d'échec.
  */
 fun Context.startSupportMail() {
     val version = runCatching {

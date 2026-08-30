@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
@@ -239,8 +240,11 @@ private fun CardTally(count: Int, color: Color, description: String) {
     Box(
         modifier = Modifier
             .semantics { contentDescription = description }
-            .size(width = 16.dp, height = 21.dp)
-            .background(color.copy(alpha = 0.9f), RoundedCornerShape(3.dp)),
+            // La boîte suit son contenu : à deux chiffres, ou avec la police système
+            // agrandie, une taille figée rognerait le compte.
+            .defaultMinSize(minWidth = 16.dp, minHeight = 21.dp)
+            .background(color.copy(alpha = 0.9f), RoundedCornerShape(3.dp))
+            .padding(horizontal = 3.dp, vertical = 2.dp),
         contentAlignment = Alignment.Center,
     ) {
         Text(

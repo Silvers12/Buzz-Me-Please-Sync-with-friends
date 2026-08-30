@@ -58,6 +58,9 @@ private fun ColourLegend() {
         BuzzerVisual.SPEAKING to R.string.tutorial_colour_speaking,
         BuzzerVisual.RIGHT to R.string.tutorial_colour_right,
         BuzzerVisual.WRONG to R.string.tutorial_colour_wrong,
+        // Deux bleus, deux lignes : celui du buzz parti est franc, celui de l'attente est
+        // éteint. Une seule pastille pour les deux, et le tutoriel se contredirait à l'œil.
+        BuzzerVisual.BUZZED to R.string.tutorial_colour_buzzed,
         BuzzerVisual.OFF to R.string.tutorial_colour_lost,
         BuzzerVisual.ELIMINATED to R.string.tutorial_colour_eliminated,
         BuzzerVisual.COUNTDOWN to R.string.tutorial_colour_countdown,

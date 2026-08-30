@@ -180,7 +180,7 @@ data class RoomState(
     val passedIds: List<String> = emptyList(),
     /**
      * Ceux dont l'animateur a écarté la réponse, dans l'ordre où il l'a fait. Leur buzzer passe
-     * au rouge et la sanction se fait entendre, mais la main ne bouge pas tant qu'il n'a pas
+     * au rouge et la sanction se fait entendre chez eux, mais la main ne bouge pas tant qu'il n'a pas
      * appuyé sur « suivant » : à lui de décider quand la partie repart.
      *
      * Une liste et
@@ -190,8 +190,8 @@ data class RoomState(
     val wrongIds: List<String> = emptyList(),
     /**
      * Celui que l'animateur vient de déclarer dans le vrai. Son buzzer passe au vert et la
-     * récompense se fait entendre, chez lui comme chez l'animateur, le temps de savourer :
-     * les buzzers s'éteignent juste après, la manche étant jouée.
+     * récompense se fait entendre chez lui, le temps de savourer : les buzzers s'éteignent
+     * juste après, la manche étant jouée.
      */
     val rightId: String? = null,
     /**
@@ -299,9 +299,7 @@ fun RoomState.visualFor(
     // deux joueurs peuvent appuyer avant que le verrouillage ne les atteigne, et le classement
     // bouge encore. En course, personne ne verrouille personne — le premier buzz donne déjà la
     // main, les autres continuent de jouer pour leur place au classement.
-    // Une parole donnée à la main tranche d'elle-même : elle ne descend pas d'un classement,
-    // elle n'a donc pas à attendre que le classement soit clos.
-    val decided = floorId != null || when (options.mode) {
+    val decided = when (options.mode) {
         GameMode.DUEL -> roundState == RoundState.LOCKED && !provisional
         GameMode.COURSE -> buzzes.isNotEmpty()
     }
@@ -310,7 +308,11 @@ fun RoomState.visualFor(
         // mais ce n'est plus ce qu'il faut lui montrer.
         playerId == rightId -> BuzzerVisual.RIGHT
         playerId in wrongIds -> BuzzerVisual.WRONG
-        decided && speakerId == playerId -> BuzzerVisual.SPEAKING
+        // Une parole donnée à la main tranche d'elle-même : elle ne descend pas du classement
+        // et n'a donc pas à attendre qu'il soit clos. Le reste du plateau, lui, continue de
+        // se lire sur la manche : sans cela, celui qui buzze après coup passerait directement
+        // à « trop tard », sans le bleu de son propre buzz ni le son qui va avec.
+        (decided || floorId != null) && speakerId == playerId -> BuzzerVisual.SPEAKING
         // Il a eu la parole et l'a rendue : la manche continue sans lui.
         playerId in passedIds -> BuzzerVisual.LOST
         // Duel : celui qui s'est fait coiffer au poteau s'éteint aussi, la manche est prise.
