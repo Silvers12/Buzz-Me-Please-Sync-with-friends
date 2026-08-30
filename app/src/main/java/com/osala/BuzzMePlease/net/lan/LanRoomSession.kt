@@ -409,8 +409,14 @@ class LanRoomSession(
                 _joined.value = true
                 val incoming = message.state
                 _state.value = incoming
-                // La manche a changé : l'affichage optimiste local n'a plus lieu d'être.
-                if (_localBuzzRound.value != null && _localBuzzRound.value != incoming.round) {
+                // L'affichage optimiste ne sert qu'à devancer l'aller-retour du buzz. Il n'a
+                // plus rien à devancer dès que la manche change, ni quand elle revient au
+                // repos : l'hôte a effacé les buzz, et le buzzer resterait bleu « PRIS » sur
+                // un plateau éteint — c'est ce qui se voyait après un « vrai ».
+                val optimistic = _localBuzzRound.value
+                if (optimistic != null &&
+                    (optimistic != incoming.round || incoming.roundState == RoundState.IDLE)
+                ) {
                     _localBuzzRound.value = null
                 }
                 if (incoming.player(myId) == null) {
