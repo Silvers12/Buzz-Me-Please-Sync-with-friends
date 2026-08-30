@@ -87,6 +87,20 @@ object NsdBrowser {
     private const val TAG = "NsdBrowser"
 
     /**
+     * Le balayage est relancé à ce rythme. `discoverServices` n'annonce un service qu'une fois :
+     * si sa résolution échoue, ou si le téléphone ne signale jamais un salon ouvert après le
+     * début du balayage, la seule issue est de recommencer. Sans cela, le joueur qui ouvre
+     * « rejoindre » avant que l'animateur ne crée le salon ne le voit jamais apparaître.
+     */
+    private const val RESCAN_MILLIS = 6_000L
+
+    /** Pause entre l'arrêt d'un balayage et le suivant : NsdManager libère le sien en différé. */
+    private const val RESCAN_GAP_MILLIS = 400L
+
+    private const val MAX_RESOLVE_ATTEMPTS = 4
+    private const val RESOLVE_RETRY_MILLIS = 500L
+
+    /**
      * Flux des salons visibles sur le réseau local. Les résolutions sont sérialisées :
      * [NsdManager] n'en accepte qu'une à la fois sur la plupart des versions d'Android.
      */
@@ -110,10 +124,10 @@ object NsdBrowser {
 
         val toResolve = Channel<NsdServiceInfo>(Channel.UNLIMITED)
 
-        val discoveryListener = object : NsdManager.DiscoveryListener {
+        fun newListener() = object : NsdManager.DiscoveryListener {
+            // Un balayage qui ne démarre pas n'est plus fatal : le suivant réessaiera.
             override fun onStartDiscoveryFailed(serviceType: String, errorCode: Int) {
                 Log.w(TAG, "découverte impossible (code $errorCode)")
-                close()
             }
 
             override fun onStopDiscoveryFailed(serviceType: String, errorCode: Int) = Unit
@@ -127,31 +141,59 @@ object NsdBrowser {
             override fun onServiceLost(serviceInfo: NsdServiceInfo) = Unit
         }
 
+        // Combien de fois on a déjà buté sur ce service, par nom.
+        val attempts = mutableMapOf<String, Int>()
+
         val resolver = launch {
             for (info in toResolve) {
                 if (!isActive) break
-                val resolved = manager.resolveSuspending(info)
-                    ?: run {
-                        // FAILURE_ALREADY_ACTIVE et consorts : une seule nouvelle tentative.
-                        delay(400)
-                        manager.resolveSuspending(info)
+                val name = info.serviceName.orEmpty()
+                val room = manager.resolveSuspending(info)?.toDiscoveredRoom()
+                if (room != null) {
+                    attempts.remove(name)
+                    trySend(room)
+                    continue
+                }
+                // Une résolution ratée n'est pas rejouée par Android : le service reste « déjà
+                // trouvé » et l'écran resterait vide jusqu'à ce qu'on en sorte. On réessaie
+                // nous-mêmes, en espaçant — l'hôte finit souvent de s'annoncer une seconde après.
+                val tries = (attempts[name] ?: 0) + 1
+                attempts[name] = tries
+                if (tries <= MAX_RESOLVE_ATTEMPTS) {
+                    launch {
+                        delay(RESOLVE_RETRY_MILLIS * tries)
+                        toResolve.trySend(info)
                     }
-                val room = resolved?.toDiscoveredRoom() ?: continue
-                trySend(room)
+                }
             }
         }
 
-        runCatching {
-            manager.discoverServices(NSD_SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, discoveryListener)
-        }.onFailure {
-            Log.w(TAG, "discoverServices: ${it.message}")
-            close()
+        // Le balayage se relance en boucle tant que l'écran écoute : c'est ce qui fait
+        // apparaître un salon ouvert après coup, sans que le joueur ait à ressortir.
+        var current: NsdManager.DiscoveryListener? = null
+        val scanner = launch {
+            while (isActive) {
+                val listener = newListener()
+                val started = runCatching {
+                    manager.discoverServices(NSD_SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, listener)
+                }.onFailure { Log.w(TAG, "discoverServices: ${it.message}") }.isSuccess
+                if (!started) {
+                    delay(RESCAN_MILLIS)
+                    continue
+                }
+                current = listener
+                delay(RESCAN_MILLIS)
+                runCatching { manager.stopServiceDiscovery(listener) }
+                current = null
+                delay(RESCAN_GAP_MILLIS)
+            }
         }
 
         awaitClose {
+            scanner.cancel()
             resolver.cancel()
             toResolve.close()
-            runCatching { manager.stopServiceDiscovery(discoveryListener) }
+            current?.let { runCatching { manager.stopServiceDiscovery(it) } }
             runCatching { multicastLock?.takeIf { it.isHeld }?.release() }
         }
     }
