@@ -114,6 +114,23 @@ fun StageBackground(
 }
 
 /**
+ * Largeur à partir de laquelle une fenêtre tenue en paysage se partage en colonnes. Une tablette
+ * de 10 pouces offre 1280 dp, un téléphone n'en approche jamais : la disposition mobile ne risque
+ * rien. Tous les écrans basculent sur la même limite, pour qu'ils changent d'allure ensemble.
+ */
+val WideWindow = 720.dp
+
+/**
+ * Vrai quand la fenêtre mérite deux colonnes : assez large, et plus large que haute.
+ *
+ * On raisonne sur la place réellement mesurée — [androidx.compose.foundation.layout.BoxWithConstraints]
+ * — plutôt que sur l'écran déclaré : le résultat reste juste en écran partagé comme après une
+ * rotation, où la configuration peut avoir un instant de retard.
+ */
+fun isWideWindow(maxWidth: Dp, maxHeight: Dp): Boolean =
+    maxWidth >= WideWindow && maxWidth > maxHeight
+
+/**
  * Une colonne de lecture ne s'étale pas sur toute la largeur d'une tablette : passé une
  * certaine largeur, les lignes deviennent illisibles et les boutons démesurés. On creuse alors
  * les marges au lieu de contraindre la taille — sur un téléphone, plus étroit que la limite,

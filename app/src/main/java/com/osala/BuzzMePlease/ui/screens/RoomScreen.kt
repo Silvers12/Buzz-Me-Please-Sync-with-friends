@@ -82,6 +82,7 @@ import com.osala.BuzzMePlease.ui.components.BigBuzzer
 import com.osala.BuzzMePlease.ui.components.CodeDisplay
 import com.osala.BuzzMePlease.ui.components.GhostAction
 import com.osala.BuzzMePlease.ui.components.IconAction
+import com.osala.BuzzMePlease.ui.components.isWideWindow
 import com.osala.BuzzMePlease.ui.components.PlayerRow
 import com.osala.BuzzMePlease.ui.components.PrimaryAction
 import com.osala.BuzzMePlease.ui.components.SectionLabel
@@ -93,12 +94,6 @@ import com.osala.BuzzMePlease.ui.components.StatusDot
 import com.osala.BuzzMePlease.ui.theme.MonoDigits
 import com.osala.BuzzMePlease.ui.theme.Stage
 import kotlinx.coroutines.delay
-
-/**
- * Largeur à partir de laquelle une fenêtre tenue en paysage passe au pupitre. Une tablette de
- * 10 pouces en offre 1280 dp, un téléphone jamais autant : la disposition mobile ne risque rien.
- */
-private val CONSOLE_WIDTH = 720.dp
 
 @Composable
 fun RoomScreen(
@@ -183,7 +178,7 @@ fun RoomScreen(
     // son pupitre entier plutôt qu'à des panneaux qui se relaient. En dessous, rien ne change —
     // le téléphone garde la disposition qui a été réglée écran par écran.
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-        val console = maxWidth >= CONSOLE_WIDTH && maxWidth > maxHeight
+        val console = isWideWindow(maxWidth, maxHeight)
 
         if (console) {
             RoomConsole(

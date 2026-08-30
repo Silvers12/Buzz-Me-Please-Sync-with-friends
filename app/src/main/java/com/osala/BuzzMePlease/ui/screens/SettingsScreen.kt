@@ -9,7 +9,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,43 +24,33 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LibraryMusic
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.osala.BuzzMePlease.R
 import com.osala.BuzzMePlease.core.AppLanguage
 import com.osala.BuzzMePlease.core.SoundClip
 import com.osala.BuzzMePlease.ui.components.GhostAction
-import com.osala.BuzzMePlease.ui.components.PrimaryAction
 import com.osala.BuzzMePlease.ui.components.SectionLabel
+import com.osala.BuzzMePlease.ui.components.isWideWindow
 import com.osala.BuzzMePlease.ui.components.readableWidth
 import com.osala.BuzzMePlease.ui.components.StageBackground
-import com.osala.BuzzMePlease.ui.components.StageBadge
 import com.osala.BuzzMePlease.ui.components.StagePanel
 import com.osala.BuzzMePlease.ui.theme.Stage
 
@@ -92,171 +84,302 @@ fun SettingsScreen(
         onBuzzerSound(uri.toString())
         onPreviewSound(uri.toString())
     }
+
+    // Les panneaux sont les mêmes des deux côtés : seule leur mise en page change.
+    val languagePanel: @Composable () -> Unit = { LanguagePanel(language, onLanguage) }
+    val comfortPanel: @Composable () -> Unit = {
+        ComfortPanel(sound, keepScreenOn, onSound, onKeepScreenOn)
+    }
+    val buzzerPanel: @Composable () -> Unit = {
+        BuzzerPanel(
+            buzzerSound = buzzerSound,
+            buzzerImport = buzzerImport,
+            buzzerLibrary = buzzerLibrary,
+            onBuzzerSound = onBuzzerSound,
+            onPreviewSound = onPreviewSound,
+            onImport = { importer.launch(arrayOf("audio/*")) },
+        )
+    }
+    val howToPanel: @Composable () -> Unit = { HowToPanel(onTutorial) }
+
     StageBackground {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .systemBarsPadding()
-                .verticalScroll(rememberScrollState())
-                .readableWidth()
-                .padding(horizontal = 24.dp),
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = onBack) {
-                    Icon(
-                        Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = stringResource(R.string.action_back),
-                        tint = Stage.TextSecondary,
-                    )
-                }
-                Spacer(Modifier.width(4.dp))
-                Text(
-                    stringResource(R.string.settings_title),
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = Stage.TextPrimary,
-                )
+        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+            if (isWideWindow(maxWidth, maxHeight)) {
+                WideSettings(onBack, languagePanel, comfortPanel, buzzerPanel, howToPanel)
+            } else {
+                TallSettings(onBack, languagePanel, comfortPanel, buzzerPanel, howToPanel)
             }
-
-            Spacer(Modifier.height(20.dp))
-
-            StagePanel(modifier = Modifier.fillMaxWidth()) {
-                SectionLabel(stringResource(R.string.settings_language_label))
-                Spacer(Modifier.height(12.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    AppLanguage.entries.forEach { choice ->
-                        LanguageChoice(
-                            label = stringResource(
-                                when (choice) {
-                                    AppLanguage.SYSTEM -> R.string.settings_language_auto
-                                    AppLanguage.FRENCH -> R.string.settings_language_fr
-                                    AppLanguage.ENGLISH -> R.string.settings_language_en
-                                },
-                            ),
-                            selected = choice == language,
-                            onClick = { onLanguage(choice) },
-                            modifier = Modifier.weight(1f),
-                        )
-                    }
-                }
-            }
-
-            Spacer(Modifier.height(16.dp))
-
-            StagePanel(modifier = Modifier.fillMaxWidth()) {
-                SectionLabel(stringResource(R.string.settings_comfort_label))
-                Spacer(Modifier.height(12.dp))
-                OptionSwitch(
-                    title = stringResource(R.string.settings_sound_title),
-                    subtitle = stringResource(R.string.settings_sound_subtitle),
-                    checked = sound,
-                    onCheckedChange = onSound,
-                )
-                Spacer(Modifier.height(14.dp))
-                OptionSwitch(
-                    title = stringResource(R.string.settings_screen_title),
-                    subtitle = stringResource(R.string.settings_screen_subtitle),
-                    checked = keepScreenOn,
-                    onCheckedChange = onKeepScreenOn,
-                )
-            }
-
-            Spacer(Modifier.height(16.dp))
-
-            StagePanel(modifier = Modifier.fillMaxWidth()) {
-                SectionLabel(stringResource(R.string.settings_buzzer_label))
-                Spacer(Modifier.height(8.dp))
-                Text(
-                    stringResource(R.string.settings_buzzer_hint),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Stage.TextMuted,
-                )
-                Spacer(Modifier.height(12.dp))
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    SoundChoice(
-                        label = stringResource(R.string.settings_buzzer_default),
-                        selected = buzzerSound.isBlank(),
-                        onClick = {
-                            onBuzzerSound("")
-                            onPreviewSound("")
-                        },
-                    )
-                    buzzerLibrary.forEach { clip ->
-                        SoundChoice(
-                            label = clip.label,
-                            selected = buzzerSound == clip.path,
-                            onClick = {
-                                onBuzzerSound(clip.path)
-                                onPreviewSound(clip.path)
-                            },
-                        )
-                    }
-                    // Le son importé reste dans la liste une fois choisi, même si on lui
-                    // préfère ensuite un son du jeu : on y revient d'une touche.
-                    if (buzzerImport.isNotBlank()) {
-                        SoundChoice(
-                            label = rememberImportedName(buzzerImport),
-                            selected = buzzerSound == buzzerImport,
-                            onClick = {
-                                onBuzzerSound(buzzerImport)
-                                onPreviewSound(buzzerImport)
-                            },
-                        )
-                    }
-                }
-                Spacer(Modifier.height(12.dp))
-                GhostAction(
-                    text = stringResource(R.string.settings_buzzer_import),
-                    icon = Icons.Filled.LibraryMusic,
-                    onClick = { importer.launch(arrayOf("audio/*")) },
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            }
-
-            Spacer(Modifier.height(16.dp))
-
-            StagePanel(modifier = Modifier.fillMaxWidth()) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    SectionLabel(stringResource(R.string.settings_howto_label), modifier = Modifier.weight(1f))
-                }
-                Spacer(Modifier.height(10.dp))
-                Text(
-                    stringResource(R.string.settings_howto_body),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Stage.TextMuted,
-                )
-                Spacer(Modifier.height(12.dp))
-                GhostAction(
-                    text = stringResource(R.string.settings_open_tutorial),
-                    icon = Icons.Filled.Info,
-                    onClick = onTutorial,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            }
-
-            Spacer(Modifier.height(24.dp))
-
-            Text(
-                stringResource(R.string.settings_footer),
-                style = MaterialTheme.typography.bodyMedium,
-                color = Stage.TextMuted,
-            )
-            Spacer(Modifier.height(6.dp))
-            Text(
-                stringResource(R.string.settings_version, rememberVersionName()),
-                style = MaterialTheme.typography.bodyMedium,
-                color = Stage.TextMuted,
-            )
-            Text(
-                stringResource(R.string.settings_copyright),
-                style = MaterialTheme.typography.bodyMedium,
-                color = Stage.TextMuted,
-            )
-
-            Spacer(Modifier.height(40.dp))
         }
     }
 }
 
+/** Les réglages du téléphone : les panneaux les uns sous les autres, dans une colonne qui défile. */
+@Composable
+private fun TallSettings(
+    onBack: () -> Unit,
+    languagePanel: @Composable () -> Unit,
+    comfortPanel: @Composable () -> Unit,
+    buzzerPanel: @Composable () -> Unit,
+    howToPanel: @Composable () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .systemBarsPadding()
+            .verticalScroll(rememberScrollState())
+            .readableWidth()
+            .padding(horizontal = 24.dp),
+    ) {
+        SettingsHeader(onBack)
+
+        Spacer(Modifier.height(20.dp))
+        languagePanel()
+        Spacer(Modifier.height(16.dp))
+        comfortPanel()
+        Spacer(Modifier.height(16.dp))
+        buzzerPanel()
+        Spacer(Modifier.height(16.dp))
+        howToPanel()
+
+        Spacer(Modifier.height(24.dp))
+        Signature()
+
+        Spacer(Modifier.height(40.dp))
+    }
+}
+
+/**
+ * Les réglages d'une tablette en paysage, en deux colonnes. À gauche ce qu'on règle une fois
+ * pour toutes ; à droite le choix du son de buzzer, qui est une liste et prend la hauteur.
+ * Chaque colonne défile pour elle-même : aucune ne fait descendre l'autre.
+ */
+@Composable
+private fun WideSettings(
+    onBack: () -> Unit,
+    languagePanel: @Composable () -> Unit,
+    comfortPanel: @Composable () -> Unit,
+    buzzerPanel: @Composable () -> Unit,
+    howToPanel: @Composable () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .systemBarsPadding()
+            .padding(horizontal = 32.dp),
+    ) {
+        SettingsHeader(onBack)
+
+        Spacer(Modifier.height(16.dp))
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            horizontalArrangement = Arrangement.spacedBy(24.dp),
+        ) {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState()),
+            ) {
+                languagePanel()
+                Spacer(Modifier.height(16.dp))
+                comfortPanel()
+                Spacer(Modifier.height(16.dp))
+                howToPanel()
+                Spacer(Modifier.height(24.dp))
+                Signature()
+                Spacer(Modifier.height(24.dp))
+            }
+
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState()),
+            ) {
+                buzzerPanel()
+                Spacer(Modifier.height(24.dp))
+            }
+        }
+    }
+}
+
+/** Le retour et le titre, identiques d'un format à l'autre. */
+@Composable
+private fun SettingsHeader(onBack: () -> Unit) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        IconButton(onClick = onBack) {
+            Icon(
+                Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = stringResource(R.string.action_back),
+                tint = Stage.TextSecondary,
+            )
+        }
+        Spacer(Modifier.width(4.dp))
+        Text(
+            stringResource(R.string.settings_title),
+            style = MaterialTheme.typography.headlineMedium,
+            color = Stage.TextPrimary,
+        )
+    }
+}
+
+/** La langue de l'application : celle du téléphone, ou l'une des deux imposées. */
+@Composable
+private fun LanguagePanel(language: AppLanguage, onLanguage: (AppLanguage) -> Unit) {
+    StagePanel(modifier = Modifier.fillMaxWidth()) {
+        SectionLabel(stringResource(R.string.settings_language_label))
+        Spacer(Modifier.height(12.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            AppLanguage.entries.forEach { choice ->
+                LanguageChoice(
+                    label = stringResource(
+                        when (choice) {
+                            AppLanguage.SYSTEM -> R.string.settings_language_auto
+                            AppLanguage.FRENCH -> R.string.settings_language_fr
+                            AppLanguage.ENGLISH -> R.string.settings_language_en
+                        },
+                    ),
+                    selected = choice == language,
+                    onClick = { onLanguage(choice) },
+                    modifier = Modifier.weight(1f),
+                )
+            }
+        }
+    }
+}
+
+/** Le confort de jeu : ce que le téléphone fait entendre, et l'écran qui ne s'éteint pas. */
+@Composable
+private fun ComfortPanel(
+    sound: Boolean,
+    keepScreenOn: Boolean,
+    onSound: (Boolean) -> Unit,
+    onKeepScreenOn: (Boolean) -> Unit,
+) {
+    StagePanel(modifier = Modifier.fillMaxWidth()) {
+        SectionLabel(stringResource(R.string.settings_comfort_label))
+        Spacer(Modifier.height(12.dp))
+        OptionSwitch(
+            title = stringResource(R.string.settings_sound_title),
+            subtitle = stringResource(R.string.settings_sound_subtitle),
+            checked = sound,
+            onCheckedChange = onSound,
+        )
+        Spacer(Modifier.height(14.dp))
+        OptionSwitch(
+            title = stringResource(R.string.settings_screen_title),
+            subtitle = stringResource(R.string.settings_screen_subtitle),
+            checked = keepScreenOn,
+            onCheckedChange = onKeepScreenOn,
+        )
+    }
+}
+
+/** Le son que joue son propre téléphone quand on appuie — au choix, ou apporté de chez soi. */
+@Composable
+private fun BuzzerPanel(
+    buzzerSound: String,
+    buzzerImport: String,
+    buzzerLibrary: List<SoundClip>,
+    onBuzzerSound: (String) -> Unit,
+    onPreviewSound: (String) -> Unit,
+    onImport: () -> Unit,
+) {
+    StagePanel(modifier = Modifier.fillMaxWidth()) {
+        SectionLabel(stringResource(R.string.settings_buzzer_label))
+        Spacer(Modifier.height(8.dp))
+        Text(
+            stringResource(R.string.settings_buzzer_hint),
+            style = MaterialTheme.typography.bodyMedium,
+            color = Stage.TextMuted,
+        )
+        Spacer(Modifier.height(12.dp))
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            SoundChoice(
+                label = stringResource(R.string.settings_buzzer_default),
+                selected = buzzerSound.isBlank(),
+                onClick = {
+                    onBuzzerSound("")
+                    onPreviewSound("")
+                },
+            )
+            buzzerLibrary.forEach { clip ->
+                SoundChoice(
+                    label = clip.label,
+                    selected = buzzerSound == clip.path,
+                    onClick = {
+                        onBuzzerSound(clip.path)
+                        onPreviewSound(clip.path)
+                    },
+                )
+            }
+            // Le son importé reste dans la liste une fois choisi, même si on lui
+            // préfère ensuite un son du jeu : on y revient d'une touche.
+            if (buzzerImport.isNotBlank()) {
+                SoundChoice(
+                    label = rememberImportedName(buzzerImport),
+                    selected = buzzerSound == buzzerImport,
+                    onClick = {
+                        onBuzzerSound(buzzerImport)
+                        onPreviewSound(buzzerImport)
+                    },
+                )
+            }
+        }
+        Spacer(Modifier.height(12.dp))
+        GhostAction(
+            text = stringResource(R.string.settings_buzzer_import),
+            icon = Icons.Filled.LibraryMusic,
+            onClick = onImport,
+            modifier = Modifier.fillMaxWidth(),
+        )
+    }
+}
+
+/** Le rappel des règles, pour qui arrive en cours de soirée. */
+@Composable
+private fun HowToPanel(onTutorial: () -> Unit) {
+    StagePanel(modifier = Modifier.fillMaxWidth()) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            SectionLabel(stringResource(R.string.settings_howto_label), modifier = Modifier.weight(1f))
+        }
+        Spacer(Modifier.height(10.dp))
+        Text(
+            stringResource(R.string.settings_howto_body),
+            style = MaterialTheme.typography.bodyMedium,
+            color = Stage.TextMuted,
+        )
+        Spacer(Modifier.height(12.dp))
+        GhostAction(
+            text = stringResource(R.string.settings_open_tutorial),
+            icon = Icons.Filled.Info,
+            onClick = onTutorial,
+            modifier = Modifier.fillMaxWidth(),
+        )
+    }
+}
+
+/** La mention, la version installée et le copyright : le bas de page de l'application. */
+@Composable
+private fun ColumnScope.Signature() {
+    Text(
+        stringResource(R.string.settings_footer),
+        style = MaterialTheme.typography.bodyMedium,
+        color = Stage.TextMuted,
+    )
+    Spacer(Modifier.height(6.dp))
+    Text(
+        stringResource(R.string.settings_version, rememberVersionName()),
+        style = MaterialTheme.typography.bodyMedium,
+        color = Stage.TextMuted,
+    )
+    Text(
+        stringResource(R.string.settings_copyright),
+        style = MaterialTheme.typography.bodyMedium,
+        color = Stage.TextMuted,
+    )
+}
 
 /** Un son de buzzer au choix : on l'entend en le touchant, ce qui vaut mieux qu'un nom. */
 @Composable
