@@ -28,7 +28,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.LibraryMusic
+import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -45,6 +47,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.osala.BuzzMePlease.R
 import com.osala.BuzzMePlease.core.AppLanguage
+import com.osala.BuzzMePlease.core.Links
+import com.osala.BuzzMePlease.core.openLink
+import com.osala.BuzzMePlease.core.startSupportMail
 import com.osala.BuzzMePlease.core.SoundClip
 import com.osala.BuzzMePlease.ui.components.GhostAction
 import com.osala.BuzzMePlease.ui.components.SectionLabel
@@ -103,13 +108,19 @@ fun SettingsScreen(
         )
     }
     val howToPanel: @Composable () -> Unit = { HowToPanel(onTutorial) }
+    val supportPanel: @Composable () -> Unit = {
+        SupportPanel(
+            onContact = { context.startSupportMail() },
+            onDonate = { context.openLink(Links.DONATE) },
+        )
+    }
 
     StageBackground {
         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
             if (isWideWindow(maxWidth, maxHeight)) {
-                WideSettings(onBack, languagePanel, comfortPanel, buzzerPanel, howToPanel)
+                WideSettings(onBack, languagePanel, comfortPanel, buzzerPanel, howToPanel, supportPanel)
             } else {
-                TallSettings(onBack, languagePanel, comfortPanel, buzzerPanel, howToPanel)
+                TallSettings(onBack, languagePanel, comfortPanel, buzzerPanel, howToPanel, supportPanel)
             }
         }
     }
@@ -123,6 +134,7 @@ private fun TallSettings(
     comfortPanel: @Composable () -> Unit,
     buzzerPanel: @Composable () -> Unit,
     howToPanel: @Composable () -> Unit,
+    supportPanel: @Composable () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -142,6 +154,8 @@ private fun TallSettings(
         buzzerPanel()
         Spacer(Modifier.height(16.dp))
         howToPanel()
+        Spacer(Modifier.height(16.dp))
+        supportPanel()
 
         Spacer(Modifier.height(24.dp))
         Signature()
@@ -162,6 +176,7 @@ private fun WideSettings(
     comfortPanel: @Composable () -> Unit,
     buzzerPanel: @Composable () -> Unit,
     howToPanel: @Composable () -> Unit,
+    supportPanel: @Composable () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -200,6 +215,8 @@ private fun WideSettings(
                     .verticalScroll(rememberScrollState()),
             ) {
                 buzzerPanel()
+                Spacer(Modifier.height(16.dp))
+                supportPanel()
                 Spacer(Modifier.height(24.dp))
             }
         }
@@ -323,6 +340,49 @@ private fun BuzzerPanel(
             text = stringResource(R.string.settings_buzzer_import),
             icon = Icons.Filled.LibraryMusic,
             onClick = onImport,
+            modifier = Modifier.fillMaxWidth(),
+        )
+    }
+}
+
+/**
+ * De quoi joindre l'auteur, et de quoi le remercier.
+ *
+ * Le courriel part déjà rempli : modèle, version d'Android, version de l'application. Un rapport
+ * de bug sans ces trois lignes oblige à un aller-retour, et la personne qui l'écrit n'a en
+ * général aucune idée d'où les trouver.
+ */
+@Composable
+private fun SupportPanel(onContact: () -> Unit, onDonate: () -> Unit) {
+    StagePanel(modifier = Modifier.fillMaxWidth()) {
+        SectionLabel(stringResource(R.string.settings_support_label))
+        Spacer(Modifier.height(10.dp))
+        Text(
+            stringResource(R.string.settings_contact_hint),
+            style = MaterialTheme.typography.bodyMedium,
+            color = Stage.TextMuted,
+        )
+        Spacer(Modifier.height(12.dp))
+        GhostAction(
+            text = stringResource(R.string.settings_contact),
+            icon = Icons.Filled.MailOutline,
+            onClick = onContact,
+            accent = Stage.Cyan,
+            modifier = Modifier.fillMaxWidth(),
+        )
+
+        Spacer(Modifier.height(20.dp))
+        Text(
+            stringResource(R.string.settings_donate_hint),
+            style = MaterialTheme.typography.bodyMedium,
+            color = Stage.TextMuted,
+        )
+        Spacer(Modifier.height(12.dp))
+        GhostAction(
+            text = stringResource(R.string.settings_donate),
+            icon = Icons.Filled.Favorite,
+            onClick = onDonate,
+            accent = Stage.Gold,
             modifier = Modifier.fillMaxWidth(),
         )
     }

@@ -2,6 +2,7 @@ package com.osala.BuzzMePlease.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -23,6 +24,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Login
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.StarRate
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -38,6 +40,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.input.ImeAction
@@ -45,6 +49,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.osala.BuzzMePlease.R
 import com.osala.BuzzMePlease.ui.components.PrimaryAction
+import com.osala.BuzzMePlease.core.openStorePage
 import com.osala.BuzzMePlease.ui.components.SectionLabel
 import com.osala.BuzzMePlease.ui.components.isWideWindow
 import com.osala.BuzzMePlease.ui.components.readableWidth
@@ -310,6 +315,32 @@ private fun ColumnScope.StartActions(ready: Boolean, onCreate: () -> Unit, onJoi
             color = Stage.TextMuted,
             textAlign = TextAlign.Center,
             modifier = Modifier.align(Alignment.CenterHorizontally),
+        )
+    }
+
+    // Noter le jeu : discret, sous les deux boutons qui comptent. Une étoile et un mot, pas un
+    // troisième bouton plein qui viendrait leur disputer le regard.
+    val context = LocalContext.current
+    Spacer(Modifier.height(16.dp))
+    Row(
+        modifier = Modifier
+            .align(Alignment.CenterHorizontally)
+            .clip(RoundedCornerShape(12.dp))
+            .clickable { context.openStorePage() }
+            .padding(horizontal = 12.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            Icons.Filled.StarRate,
+            contentDescription = null,
+            tint = Stage.GoldSoft,
+            modifier = Modifier.size(18.dp),
+        )
+        Spacer(Modifier.width(8.dp))
+        Text(
+            text = stringResource(R.string.home_rate),
+            style = MaterialTheme.typography.labelLarge,
+            color = Stage.GoldSoft,
         )
     }
 }
