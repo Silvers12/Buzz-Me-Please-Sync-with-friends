@@ -148,7 +148,6 @@ fun RoomScreen(
         visual = myVisual,
         remaining = remaining,
         myId = session.myId,
-        amHost = amHost,
         soundFx = soundFx,
     )
 
@@ -1120,7 +1119,6 @@ private fun PlayFeedback(
     visual: BuzzerVisual,
     remaining: Long?,
     myId: String,
-    amHost: Boolean,
     soundFx: SoundFx,
 ) {
     var lastTick by remember { mutableIntStateOf(-1) }
@@ -1153,21 +1151,22 @@ private fun PlayFeedback(
         }
     }
 
-    // La sanction s'entend des deux côtés : chez celui qui s'est trompé, et chez l'animateur
-    // qui vient de la prononcer.
+    // La sanction ne s'entend que chez celui qui la prend. L'animateur vient de l'appuyer :
+    // il n'a pas besoin qu'on la lui répète, et son pupitre sonnerait à chaque verdict du
+    // salon entier.
     LaunchedEffect(state.wrongIds, state.round) {
         // Le dernier ajouté est celui que l'animateur vient d'écarter : la sanction ne se
         // rejoue pas chez les précédents quand un nouveau se trompe.
         val wrong = state.wrongIds.lastOrNull() ?: return@LaunchedEffect
         if (!roomSound) return@LaunchedEffect
-        if (wrong == myId || amHost) soundFx.wrong()
+        if (wrong == myId) soundFx.wrong()
     }
 
-    // La récompense aussi : chez celui qui vient de marquer, et chez l'animateur qui l'a validé.
+    // La récompense de même : elle est pour celui qui vient de marquer.
     LaunchedEffect(state.rightId, state.round) {
         val right = state.rightId ?: return@LaunchedEffect
         if (!roomSound) return@LaunchedEffect
-        if (right == myId || amHost) soundFx.correct()
+        if (right == myId) soundFx.correct()
     }
 
     // L'élimination ne se rattache à aucune manche : on suit la liste des éliminés elle-même,
@@ -1181,6 +1180,6 @@ private fun PlayFeedback(
         if (previous == null) return@LaunchedEffect
         val fresh = eliminated - previous
         if (fresh.isEmpty() || !roomSound) return@LaunchedEffect
-        if (amHost || myId in fresh) soundFx.eliminated()
+        if (myId in fresh) soundFx.eliminated()
     }
 }
