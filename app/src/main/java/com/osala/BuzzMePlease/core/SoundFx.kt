@@ -95,6 +95,18 @@ class SoundFx(context: Context) {
     }
 
     /**
+     * Éliminé : le verre brisé. Chez celui qui sort du jeu, et chez l'animateur qui vient de
+     * l'en sortir — comme la bonne et la mauvaise réponse, qui s'entendent des deux côtés.
+     */
+    fun eliminated() {
+        if (!enabled) return
+        vibrate(150)
+        val path = SoundLibrary.glassPath(appContext)
+        if (path != null && playClip(path)) return
+        runCatching { tones?.startTone(ToneGenerator.TONE_SUP_ERROR, 500) }
+    }
+
+    /**
      * La partie est finie : le feu d'artifice part sur tous les téléphones à la fois.
      *
      * Il a droit à plus que les quatre secondes d'un buzzer — c'est le dénouement, et le

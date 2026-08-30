@@ -1137,4 +1137,18 @@ private fun PlayFeedback(
         if (!roomSound) return@LaunchedEffect
         if (right == myId || amHost) soundFx.correct()
     }
+
+    // L'élimination ne se rattache à aucune manche : on suit la liste des éliminés elle-même,
+    // et l'on ne sonne que pour ceux qui viennent d'y entrer. Arriver dans un salon où
+    // quelqu'un est déjà sorti ne casse aucun verre.
+    val eliminated = state.players.filter { it.isEliminated }.map { it.id }.toSet()
+    var knownOut by remember { mutableStateOf<Set<String>?>(null) }
+    LaunchedEffect(eliminated) {
+        val previous = knownOut
+        knownOut = eliminated
+        if (previous == null) return@LaunchedEffect
+        val fresh = eliminated - previous
+        if (fresh.isEmpty() || !roomSound) return@LaunchedEffect
+        if (amHost || myId in fresh) soundFx.eliminated()
+    }
 }

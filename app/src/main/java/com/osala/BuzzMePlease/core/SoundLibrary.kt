@@ -95,6 +95,9 @@ object SoundLibrary {
         else -> source
     }
 
+    /** Le chemin du verre brisé, joué quand un joueur est éliminé. */
+    fun glassPath(context: Context): String? = pathOf(context, "glass_breaking")
+
     /** Le chemin du feu d'artifice, tiré à la fin de la partie. */
     fun fireworksPath(context: Context): String? = pathOf(context, "fireworks")
 
