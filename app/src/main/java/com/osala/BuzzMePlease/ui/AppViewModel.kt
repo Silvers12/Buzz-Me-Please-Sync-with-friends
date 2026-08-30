@@ -208,11 +208,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
             hostAddress = hostAddress,
             // L'animateur retrouve les réglages de sa dernière partie. Le joueur, lui, recevra
             // ceux du salon dès la première synchronisation : les siens n'ont pas cours ici.
-            initialOptions = if (asHost) {
-                current.roomOptions.copy(sound = current.sound)
-            } else {
-                RoomOptions(sound = current.sound)
-            },
+            initialOptions = if (asHost) current.roomOptions else RoomOptions(sound = current.sound),
         )
 
         _session.value = created
@@ -229,6 +225,12 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                 if (snapshot.options == saved) return@collect
                 saved = snapshot.options
                 prefs.setRoomOptions(snapshot.options)
+                // « Sons et vibrations » est la même case des deux côtés : dans les règles de la
+                // partie et dans les réglages de l'application. Les tenir d'accord évite qu'au
+                // salon suivant l'une rallume ce que l'autre venait de couper.
+                if (snapshot.options.sound != _settings.value.sound) {
+                    prefs.setSound(snapshot.options.sound)
+                }
             }
         }
 
