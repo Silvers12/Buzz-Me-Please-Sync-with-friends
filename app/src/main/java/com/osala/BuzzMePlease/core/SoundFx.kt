@@ -94,6 +94,20 @@ class SoundFx(context: Context) {
         runCatching { tones?.startTone(ToneGenerator.TONE_PROP_ACK, 350) }
     }
 
+    /**
+     * La partie est finie : le feu d'artifice part sur tous les téléphones à la fois.
+     *
+     * Il a droit à plus que les quatre secondes d'un buzzer — c'est le dénouement, et le
+     * carton reste dix secondes à l'écran. La borne est là pour qu'il ne lui survive pas.
+     */
+    fun celebrate() {
+        if (!enabled) return
+        vibrate(220)
+        val path = SoundLibrary.fireworksPath(appContext)
+        if (path != null && playClip(path, CELEBRATION_MILLIS)) return
+        runCatching { tones?.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, 500) }
+    }
+
     /** Fait écouter un son sans passer par le jeu : l'aperçu des réglages. */
     fun preview(source: String) {
         if (source.isBlank()) {
@@ -160,5 +174,8 @@ class SoundFx(context: Context) {
          * pas la manche.
          */
         const val MAX_CLIP_MILLIS = 4_000L
+
+        /** Le feu d'artifice de la fin de partie, borné à la durée du carton qu'il habille. */
+        const val CELEBRATION_MILLIS = 10_000L
     }
 }

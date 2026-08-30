@@ -50,6 +50,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -228,6 +229,9 @@ fun RoomScreen(
     val yellowYou = stringResource(R.string.announce_yellow_you)
     val redYou = stringResource(R.string.announce_red_you)
     val tieText = stringResource(R.string.announce_game_over_tie)
+    // Lu au moment de l'alerte et non à l'ouverture de l'écran : l'animateur peut avoir
+    // coupé l'habillage entre-temps.
+    val roomSound by rememberUpdatedState(state.options.sound)
     LaunchedEffect(session) {
         session.alerts.collect { alert ->
             announcement = when (alert.kind) {
@@ -251,6 +255,8 @@ fun RoomScreen(
                     hold = ANNOUNCE_HOLD_FINAL_MILLIS,
                 )
             }
+            // Le feu d'artifice part avec le carton, et sur tous les téléphones à la fois.
+            if (alert.kind == AlertKind.GAME_OVER && roomSound) soundFx.celebrate()
         }
     }
 

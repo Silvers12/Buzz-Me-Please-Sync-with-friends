@@ -95,6 +95,9 @@ object SoundLibrary {
         else -> source
     }
 
+    /** Le chemin du feu d'artifice, tiré à la fin de la partie. */
+    fun fireworksPath(context: Context): String? = pathOf(context, "fireworks")
+
     /** Le chemin du son « mauvaise réponse », joué chez celui qui perd la parole. */
     fun wrongPath(context: Context): String? = pathOf(context, "wrong")
 
