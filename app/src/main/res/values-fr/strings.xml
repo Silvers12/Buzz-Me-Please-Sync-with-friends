@@ -217,7 +217,7 @@
 
     <!-- Tutoriel -->
     <string name="tutorial_title">Comment ça marche</string>
-    <string name="tutorial_intro">Neuf étapes, de la création du salon à la sonothèque de l\'animateur.</string>
+    <string name="tutorial_intro">Dix étapes, de la création du salon à la sonothèque de l\'animateur.</string>
     <string name="tutorial_start">C\'est parti</string>
     <string name="tutorial_1_title">Choisir son pseudo</string>
     <string name="tutorial_1_body">Sur l\'accueil, saisissez le pseudo qui s\'affichera sur le plateau — il reste modifiable à tout moment. La partie se joue en Wi-Fi local : tous les téléphones sur le même réseau, sans Internet, et la mesure au plus juste.</string>
@@ -227,6 +227,15 @@
     <string name="tutorial_3_body">L\'animateur appuie sur « GO ! ». Un décompte 3 · 2 · 1 se déclenche sur tous les téléphones en même temps, puis chaque buzzer passe au vert à la milliseconde près. Chez les joueurs, le reste de l\'écran s\'efface le temps de la manche : il ne reste que le buzzer, en grand, au milieu. L\'animateur garde son pupitre entier — c\'est son tableau de bord — et participe comme les autres.</string>
     <string name="tutorial_4_title">Buzzer</string>
     <string name="tutorial_4_body">Le premier qui appuie voit son buzzer virer au rouge, tous les autres se verrouillent aussitôt. L\'heure exacte du buzz est envoyée — heure, minute, seconde et milliseconde — et l\'animateur voit le classement, l\'écart avec le meilleur temps et la marge d\'incertitude de la mesure. Une fois le classement arrêté, un seul buzzer reste vert : celui qui a la parole.</string>
+    <string name="tutorial_colours_title">Les couleurs du buzzer</string>
+    <string name="tutorial_colours_body">Le buzzer dit tout par sa couleur : inutile de lire le plateau pour savoir où l’on en est.</string>
+    <string name="tutorial_colour_armed">Vert · les buzzers sont ouverts, appuyez</string>
+    <string name="tutorial_colour_speaking">Blanc · vous avez la parole, répondez</string>
+    <string name="tutorial_colour_right">Vert vif · bonne réponse, le point est marqué</string>
+    <string name="tutorial_colour_wrong">Rouge · mauvaise réponse</string>
+    <string name="tutorial_colour_lost">Bleu · quelqu’un d’autre a la main, ou la manche n’est pas lancée</string>
+    <string name="tutorial_colour_eliminated">Gris · buzzer éteint par l’animateur</string>
+    <string name="tutorial_colour_countdown">Ambre · le décompte 3 · 2 · 1, tenez-vous prêt</string>
     <string name="tutorial_5_title">Enchaîner les manches</string>
     <string name="tutorial_5_body">Sous le bandeau, trois verdicts. « Vrai » met le point, fait passer le buzzer du joueur au vert avec le son de la bonne réponse — que l\'animateur entend aussi — puis éteint les buzzers. « Faux » passe son buzzer au rouge et fait entendre la sanction des deux côtés, sans que la main ne bouge ; le bouton devient alors « Éliminer », de quoi relancer la même question aux seuls joueurs qui n\'ont pas encore répondu. « Suivant » descend la main au buzz d\'après. « Relancer » ouvre une nouvelle manche, la flèche circulaire remet le plateau à neuf : buzz effacés, tous les buzzers rallumés, scores intacts.</string>
     <string name="tutorial_6_title">Éliminer, réactiver, compter</string>

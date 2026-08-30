@@ -45,6 +45,49 @@ import androidx.compose.material3.Text
 import com.osala.BuzzMePlease.model.BuzzerVisual
 import com.osala.BuzzMePlease.ui.theme.Stage
 
+/**
+ * Le buzzer en miniature, sans texte ni geste : de quoi montrer une couleur pour ce qu'elle est.
+ *
+ * Le tutoriel s'en sert pour sa légende — expliquer « le vert veut dire ceci » sans le vert sous
+ * les yeux demanderait au joueur de croire sur parole. Mêmes teintes, même dôme, même socle que
+ * le vrai bouton : ce sont les mêmes [BuzzerSkin] qui servent aux deux.
+ */
+@Composable
+fun BuzzerSample(visual: BuzzerVisual, modifier: Modifier = Modifier) {
+    val skin = skinFor(visual)
+    Canvas(modifier = modifier.aspectRatio(1f)) {
+        val radius = size.minDimension / 2f
+        val c = center
+
+        drawCircle(
+            brush = Brush.verticalGradient(
+                colors = listOf(Color(0xFF3A3A55), Color(0xFF15151F)),
+                startY = c.y - radius,
+                endY = c.y + radius,
+            ),
+            radius = radius,
+            center = c,
+        )
+        drawCircle(
+            color = skin.ring.copy(alpha = 0.6f),
+            radius = radius,
+            center = c,
+            style = Stroke(width = radius * 0.07f),
+        )
+
+        val domeRadius = radius * 0.78f
+        drawCircle(
+            brush = Brush.radialGradient(
+                colors = listOf(skin.highlight, skin.body, skin.shadow),
+                center = Offset(c.x - domeRadius * 0.32f, c.y - domeRadius * 0.36f),
+                radius = domeRadius * 1.45f,
+            ),
+            radius = domeRadius,
+            center = c,
+        )
+    }
+}
+
 private data class BuzzerSkin(
     val highlight: Color,
     val body: Color,

@@ -32,6 +32,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.osala.BuzzMePlease.R
+import com.osala.BuzzMePlease.model.BuzzerVisual
+import com.osala.BuzzMePlease.ui.components.BuzzerSample
 import com.osala.BuzzMePlease.ui.components.PrimaryAction
 import com.osala.BuzzMePlease.ui.components.SectionLabel
 import com.osala.BuzzMePlease.ui.components.StageBackground
@@ -43,18 +45,55 @@ private data class TutorialStep(
     @StringRes val title: Int,
     @StringRes val body: Int,
     val accent: Color,
+    /** Ce qui ne se raconte pas avec des mots seuls — la légende des couleurs, par exemple. */
+    val extra: (@Composable () -> Unit)? = null,
 )
+
+/** Une couleur de buzzer et ce qu'elle veut dire, le dôme à l'appui. */
+@Composable
+private fun ColourLegend() {
+    val entries = listOf(
+        BuzzerVisual.ARMED to R.string.tutorial_colour_armed,
+        BuzzerVisual.SPEAKING to R.string.tutorial_colour_speaking,
+        BuzzerVisual.RIGHT to R.string.tutorial_colour_right,
+        BuzzerVisual.WRONG to R.string.tutorial_colour_wrong,
+        BuzzerVisual.OFF to R.string.tutorial_colour_lost,
+        BuzzerVisual.ELIMINATED to R.string.tutorial_colour_eliminated,
+        BuzzerVisual.COUNTDOWN to R.string.tutorial_colour_countdown,
+    )
+    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        entries.forEach { (visual, label) ->
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                BuzzerSample(visual = visual, modifier = Modifier.size(34.dp))
+                Spacer(Modifier.width(12.dp))
+                Text(
+                    text = stringResource(label),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Stage.TextSecondary,
+                )
+            }
+        }
+    }
+}
 
 private val steps = listOf(
     TutorialStep("1", R.string.tutorial_1_title, R.string.tutorial_1_body, Stage.Violet),
     TutorialStep("2", R.string.tutorial_2_title, R.string.tutorial_2_body, Stage.Gold),
     TutorialStep("3", R.string.tutorial_3_title, R.string.tutorial_3_body, Stage.Green),
     TutorialStep("4", R.string.tutorial_4_title, R.string.tutorial_4_body, Stage.Red),
-    TutorialStep("5", R.string.tutorial_5_title, R.string.tutorial_5_body, Stage.Cyan),
-    TutorialStep("6", R.string.tutorial_6_title, R.string.tutorial_6_body, Stage.Amber),
-    TutorialStep("7", R.string.tutorial_7_title, R.string.tutorial_7_body, Stage.GoldSoft),
-    TutorialStep("8", R.string.tutorial_8_title, R.string.tutorial_8_body, Stage.VioletSoft),
-    TutorialStep("9", R.string.tutorial_9_title, R.string.tutorial_9_body, Stage.Cyan),
+    // Juste après le buzz : c'est là que la question « pourquoi mon buzzer est-il bleu ? » se pose.
+    TutorialStep(
+        number = "5",
+        title = R.string.tutorial_colours_title,
+        body = R.string.tutorial_colours_body,
+        accent = Color(0xFFF1F3FF),
+        extra = { ColourLegend() },
+    ),
+    TutorialStep("6", R.string.tutorial_5_title, R.string.tutorial_5_body, Stage.Cyan),
+    TutorialStep("7", R.string.tutorial_6_title, R.string.tutorial_6_body, Stage.Amber),
+    TutorialStep("8", R.string.tutorial_7_title, R.string.tutorial_7_body, Stage.GoldSoft),
+    TutorialStep("9", R.string.tutorial_8_title, R.string.tutorial_8_body, Stage.VioletSoft),
+    TutorialStep("10", R.string.tutorial_9_title, R.string.tutorial_9_body, Stage.Cyan),
 )
 
 @Composable
@@ -150,6 +189,10 @@ private fun StepCard(step: TutorialStep) {
                     style = MaterialTheme.typography.bodyLarge,
                     color = Stage.TextSecondary,
                 )
+                step.extra?.let {
+                    Spacer(Modifier.height(14.dp))
+                    it()
+                }
             }
         }
     }
