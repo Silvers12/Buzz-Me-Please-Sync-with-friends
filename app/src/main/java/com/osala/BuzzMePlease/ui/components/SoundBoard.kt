@@ -61,6 +61,7 @@ fun SoundBoard(
     library: List<SoundClip>,
     playingId: String?,
     onPlay: (SoundClip) -> Unit,
+    onStop: () -> Unit,
     onEdit: (index: Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -78,10 +79,20 @@ fun SoundBoard(
     ) {
         items(slots.size) { index ->
             val clip = slots[index]
+            val playing = clip != null && clip.id == playingId
             SoundPad(
                 clip = clip,
-                playing = clip != null && clip.id == playingId,
-                onClick = { if (clip == null) onEdit(index) else onPlay(clip) },
+                playing = playing,
+                // La touche allumée est un interrupteur : un second appui coupe le son au lieu
+                // de le reprendre au début. C'est la seule façon d'arrêter un jingle trop long
+                // sans en lancer un autre par-dessus.
+                onClick = {
+                    when {
+                        clip == null -> onEdit(index)
+                        playing -> onStop()
+                        else -> onPlay(clip)
+                    }
+                },
                 onLongClick = { onEdit(index) },
             )
         }

@@ -163,6 +163,7 @@ internal fun RoomConsole(
                             library = sounds.library,
                             playingId = sounds.playingId,
                             onPlay = sounds.onPlay,
+                            onStop = sounds.onStop,
                             onEdit = sounds.onEdit,
                             modifier = Modifier.weight(1f),
                         )

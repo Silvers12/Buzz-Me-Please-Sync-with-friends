@@ -108,6 +108,7 @@ fun RoomScreen(
     soundboard: List<String> = emptyList(),
     playingClipId: String? = null,
     onPlayClip: (SoundClip) -> Unit = {},
+    onStopClip: () -> Unit = {},
     onPickClip: (index: Int, clipId: String?) -> Unit = { _, _ -> },
     onImportSound: (String) -> Unit = {},
 ) {
@@ -174,6 +175,7 @@ fun RoomScreen(
         slots = soundboard,
         playingId = playingClipId,
         onPlay = onPlayClip,
+        onStop = onStopClip,
         onEdit = { index -> editedSlot = index },
     )
 
@@ -549,6 +551,7 @@ private fun PhoneRoom(
                                 library = sounds.library,
                                 playingId = sounds.playingId,
                                 onPlay = sounds.onPlay,
+                                onStop = sounds.onStop,
                                 onEdit = sounds.onEdit,
                                 modifier = Modifier.weight(1f),
                             )
@@ -601,6 +604,7 @@ internal data class SoundDesk(
     val slots: List<String>,
     val playingId: String?,
     val onPlay: (SoundClip) -> Unit,
+    val onStop: () -> Unit,
     val onEdit: (index: Int) -> Unit,
 )
 

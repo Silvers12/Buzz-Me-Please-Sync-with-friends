@@ -107,6 +107,7 @@ fun BuzzMeApp(viewModel: AppViewModel = viewModel()) {
                             soundboard = settings.soundboard,
                             playingClipId = playingClip,
                             onPlayClip = viewModel::playClip,
+                            onStopClip = viewModel::stopClip,
                             onPickClip = viewModel::setSoundSlot,
                             onImportSound = viewModel::importSound,
                         )
