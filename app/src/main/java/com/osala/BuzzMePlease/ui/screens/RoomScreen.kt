@@ -78,6 +78,7 @@ import com.osala.BuzzMePlease.model.PlayerStatus
 import com.osala.BuzzMePlease.model.RoomState
 import com.osala.BuzzMePlease.model.RoundState
 import com.osala.BuzzMePlease.model.visualFor
+import com.osala.BuzzMePlease.ui.components.Announcement
 import com.osala.BuzzMePlease.ui.components.BigBuzzer
 import com.osala.BuzzMePlease.ui.components.CodeDisplay
 import com.osala.BuzzMePlease.ui.components.GhostAction
@@ -172,33 +173,56 @@ fun RoomScreen(
         onEdit = { index -> editedSlot = index },
     )
 
-    // La place réellement disponible décide de la disposition : on mesure la fenêtre plutôt que
-    // d'interroger l'écran, ce qui reste juste en écran partagé comme après une rotation. Assez
-    // large et plus large que haute, c'est une tablette posée en paysage : l'animateur a droit à
-    // son pupitre entier plutôt qu'à des panneaux qui se relaient. En dessous, rien ne change —
-    // le téléphone garde la disposition qui a été réglée écran par écran.
-    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-        val console = isWideWindow(maxWidth, maxHeight)
+    // Ce que le plateau annonce en grand, au milieu de l'écran. Une seule à la fois : la
+    // dernière chasse la précédente, comme un carton d'émission.
+    var announcement by remember { mutableStateOf<Announce?>(null) }
+    val floorText = stringResource(R.string.announce_floor)
+    // La clé porte la manche : la parole prise deux fois de suite se rejoue à chaque fois.
+    LaunchedEffect(state.round, myVisual) {
+        if (myVisual == BuzzerVisual.SPEAKING) {
+            announcement = Announce(floorText, Stage.GoldSoft)
+        }
+    }
 
-        if (console) {
-            RoomConsole(
-                session = session,
-                view = view,
-                sounds = sounds,
-                onSelectPlayer = { selectedPlayer = it },
-                onOptions = { showOptions = true },
-                onLeave = onLeave,
-            )
-        } else {
-            PhoneRoom(
-                session = session,
-                view = view,
-                sounds = sounds,
-                showSounds = showSounds,
-                onToggleSounds = { showSounds = !showSounds },
-                onSelectPlayer = { selectedPlayer = it },
-                onOptions = { showOptions = true },
-                onLeave = onLeave,
+    Box(modifier = Modifier.fillMaxSize()) {
+        // La place réellement disponible décide de la disposition : on mesure la fenêtre plutôt que
+        // d'interroger l'écran, ce qui reste juste en écran partagé comme après une rotation. Assez
+        // large et plus large que haute, c'est une tablette posée en paysage : l'animateur a droit à
+        // son pupitre entier plutôt qu'à des panneaux qui se relaient. En dessous, rien ne change —
+        // le téléphone garde la disposition qui a été réglée écran par écran.
+        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+            val console = isWideWindow(maxWidth, maxHeight)
+
+            if (console) {
+                RoomConsole(
+                    session = session,
+                    view = view,
+                    sounds = sounds,
+                    onSelectPlayer = { selectedPlayer = it },
+                    onOptions = { showOptions = true },
+                    onLeave = onLeave,
+                )
+            } else {
+                PhoneRoom(
+                    session = session,
+                    view = view,
+                    sounds = sounds,
+                    showSounds = showSounds,
+                    onToggleSounds = { showSounds = !showSounds },
+                    onSelectPlayer = { selectedPlayer = it },
+                    onOptions = { showOptions = true },
+                    onLeave = onLeave,
+                )
+            }
+        }
+
+        // Par-dessus les deux dispositions, et sans capter d'appui : le buzzer reste utilisable
+        // pendant que le carton passe.
+        announcement?.let { current ->
+            Announcement(
+                text = current.text,
+                accent = current.accent,
+                onDone = { announcement = null },
             )
         }
     }
@@ -465,6 +489,9 @@ private fun PhoneRoom(
         }
     }
 }
+
+/** Un carton d'annonce en attente d'être crié : son texte et sa couleur. */
+internal data class Announce(val text: String, val accent: Color)
 
 /**
  * Ce que les deux dispositions — le téléphone et le pupitre — lisent de la manche en cours.
