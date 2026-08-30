@@ -26,7 +26,7 @@ enum class AlertKind { YELLOW_CARD, RED_CARD, GAME_OVER }
 
 /**
  * Une alerte en route vers tous les téléphones. C'est un événement, pas un état : elle traverse
- * le salon une fois, s'affiche deux secondes, et ne laisse aucune trace dans [RoomState] — un
+ * le salon une fois, s'affiche le temps de son carton, et ne laisse aucune trace dans [RoomState] : un
  * joueur qui arrive après coup n'a pas à recevoir le carton de la manche précédente.
  *
  * Le nom et le score voyagent avec elle plutôt que d'être relus à l'arrivée : l'annonce reste

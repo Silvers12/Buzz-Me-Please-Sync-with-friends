@@ -41,8 +41,13 @@ import kotlinx.coroutines.launch
 import kotlin.math.cos
 import kotlin.math.sin
 
-/** Temps où le carton reste posé. L'entrée et la sortie ajoutent environ 0,6 s. */
-const val ANNOUNCE_HOLD_MILLIS = 1_250L
+/**
+ * Temps où le carton reste posé. L'entrée — l'éclair et le ressort — et la sortie ajoutent
+ * ensemble un peu plus de sept dixièmes de seconde : l'annonce tient donc cinq secondes à
+ * l'écran. Assez pour être lue par-dessus l'épaule du voisin, ce que deux secondes ne
+ * permettaient pas.
+ */
+const val ANNOUNCE_HOLD_MILLIS = 4_300L
 
 /**
  * La fin de partie, elle, s'installe : c'est le dénouement, on le lit, on se retourne vers
@@ -56,7 +61,7 @@ const val ANNOUNCE_HOLD_FINAL_MILLIS = 9_400L
  * Un buzz se joue en une demi-seconde et se lit sur une couleur ; le reste — la parole qui
  * arrive, le point qui tombe, l'élimination — se ratait facilement, faute d'être annoncé. D'où
  * ce carton de jeu télévisé : lignes de vitesse convergentes, bandeau incliné, texte cerné de
- * noir, entrée en ressort et sortie qui s'échappe vers l'avant. Deux secondes, puis plus rien.
+ * noir, entrée en ressort et sortie qui s'échappe vers l'avant. Cinq secondes, puis plus rien.
  *
  * Il ne capte aucun appui : le buzzer reste utilisable pendant qu'il passe.
  */
