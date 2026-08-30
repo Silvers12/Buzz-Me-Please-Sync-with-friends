@@ -78,6 +78,19 @@
     <string name="announce_floor">THE FLOOR IS YOURS!</string>
     <string name="announce_right">WELL PLAYED!</string>
     <string name="announce_wrong">WRONG!</string>
+    <string name="alert_send">Send an alert…</string>
+    <string name="alert_pick_title">Which alert?</string>
+    <string name="alert_yellow">Yellow card</string>
+    <string name="alert_red">Red card</string>
+    <string name="announce_yellow_you">YELLOW CARD</string>
+    <string name="announce_yellow_other">YELLOW CARD\n%1$s</string>
+    <string name="announce_red_you">RED CARD</string>
+    <string name="announce_red_other">RED CARD\n%1$s</string>
+    <string name="announce_game_over">GAME OVER\nWinner: %1$s</string>
+    <string name="announce_game_over_tie">GAME OVER\nIt is a tie!</string>
+    <string name="rules_end_game">End the game</string>
+    <string name="rules_end_game_title">End the game?</string>
+    <string name="rules_end_game_body">The winner and their score are announced on every phone. Nothing is erased: you can carry on playing afterwards.</string>
     <string name="announce_late">TOO LATE</string>
     <string name="announce_out">YOU ARE OUT</string>
     <string name="announce_host_you">YOU ARE THE HOST</string>
@@ -134,6 +147,7 @@
     <!-- Pupitre du joueur -->
     <string name="dialog_score">Score</string>
     <string name="dialog_buzzer">Buzzer</string>
+    <string name="dialog_alert">Alert</string>
     <string name="dialog_room">Room</string>
     <string name="dialog_eliminate">Knock out (grey buzzer)</string>
     <string name="dialog_revive">Bring the buzzer back</string>

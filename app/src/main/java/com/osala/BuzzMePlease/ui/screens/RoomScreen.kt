@@ -57,6 +57,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -70,11 +71,13 @@ import com.osala.BuzzMePlease.core.SoundFx
 import com.osala.BuzzMePlease.game.LinkPhase
 import com.osala.BuzzMePlease.game.LinkStatus
 import com.osala.BuzzMePlease.game.RoomSession
+import com.osala.BuzzMePlease.model.AlertKind
 import com.osala.BuzzMePlease.model.Buzz
 import com.osala.BuzzMePlease.model.BuzzerVisual
 import com.osala.BuzzMePlease.model.GameMode
 import com.osala.BuzzMePlease.model.Player
 import com.osala.BuzzMePlease.model.PlayerStatus
+import com.osala.BuzzMePlease.model.RoomAlert
 import com.osala.BuzzMePlease.model.RoomState
 import com.osala.BuzzMePlease.model.RoundState
 import com.osala.BuzzMePlease.model.visualFor
@@ -203,6 +206,37 @@ fun RoomScreen(
         if (amEliminated) announcement = Announce(outText, Stage.TextSecondary)
     }
 
+    // Les annonces de l'animateur arrivent par le réseau : ce sont des événements, pas un état,
+    // et elles s'écrivent dans la langue de l'appareil qui les reçoit — d'où le contexte
+    // localisé plutôt qu'un texte préparé par l'expéditeur.
+    val resources = LocalContext.current
+    val yellowYou = stringResource(R.string.announce_yellow_you)
+    val redYou = stringResource(R.string.announce_red_you)
+    val tieText = stringResource(R.string.announce_game_over_tie)
+    LaunchedEffect(session) {
+        session.alerts.collect { alert ->
+            announcement = when (alert.kind) {
+                AlertKind.YELLOW_CARD -> Announce(
+                    if (alert.playerId == session.myId) yellowYou
+                    else resources.getString(R.string.announce_yellow_other, alert.playerName),
+                    Stage.Gold,
+                )
+
+                AlertKind.RED_CARD -> Announce(
+                    if (alert.playerId == session.myId) redYou
+                    else resources.getString(R.string.announce_red_other, alert.playerName),
+                    Stage.Red,
+                )
+
+                AlertKind.GAME_OVER -> Announce(
+                    if (alert.tied) tieText
+                    else resources.getString(R.string.announce_game_over, alert.playerName),
+                    Stage.Gold,
+                )
+            }
+        }
+    }
+
     // Le passage de relais regarde tout le salon, pas seulement celui qui le reçoit : chacun
     // doit savoir à qui parler. On ne l'annonce qu'au changement — arriver dans un salon
     // qui a déjà son animateur n'est pas une passation.
@@ -278,6 +312,12 @@ fun RoomScreen(
                 selectedPlayer = null
             },
             onPoints = { delta -> session.addPoints(target.id, delta) },
+            // Le carton part tout de suite et la fiche se referme : on ne reste pas devant un
+            // dialogue pendant que le salon entier regarde l'annonce.
+            onAlert = { kind ->
+                session.sendAlert(RoomAlert(kind = kind, playerId = target.id))
+                selectedPlayer = null
+            },
             onTransferHost = {
                 session.transferHost(target.id)
                 selectedPlayer = null
@@ -310,6 +350,10 @@ fun RoomScreen(
             onDismiss = { showOptions = false },
             onOptions = session::setOptions,
             onResetScores = session::resetScores,
+            onEndGame = {
+                session.sendAlert(RoomAlert(AlertKind.GAME_OVER))
+                showOptions = false
+            },
         )
     }
 }

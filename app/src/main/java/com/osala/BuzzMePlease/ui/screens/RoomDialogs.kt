@@ -17,6 +17,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Block
+import androidx.compose.material.icons.filled.Campaign
+import androidx.compose.material.icons.filled.Dangerous
+import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.PersonRemove
@@ -41,6 +45,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.osala.BuzzMePlease.R
+import com.osala.BuzzMePlease.model.AlertKind
 import com.osala.BuzzMePlease.model.GameMode
 import com.osala.BuzzMePlease.model.Player
 import com.osala.BuzzMePlease.model.RoomOptions
@@ -58,12 +63,14 @@ fun PlayerActionsDialog(
     onDismiss: () -> Unit,
     onToggleStatus: () -> Unit,
     onPoints: (Int) -> Unit,
+    onAlert: (AlertKind) -> Unit,
     onTransferHost: () -> Unit,
     onKick: () -> Unit,
 ) {
     // Passer l'animation change de main le pupitre entier et ne se rattrape que si le nouvel
     // animateur veut bien vous le rendre : jamais sur un appui isolé, au milieu d'une partie.
     var confirmTransfer by remember(player.id) { mutableStateOf(false) }
+    var pickAlert by remember(player.id) { mutableStateOf(false) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -123,6 +130,18 @@ fun PlayerActionsDialog(
                 )
 
                 if (!isMe) {
+                    // Le carton s'adresse à quelqu'un d'autre : on ne s'avertit pas soi-même.
+                    Spacer(Modifier.height(20.dp))
+                    SectionLabel(stringResource(R.string.dialog_alert))
+                    Spacer(Modifier.height(8.dp))
+                    GhostAction(
+                        text = stringResource(R.string.alert_send),
+                        icon = Icons.Filled.Campaign,
+                        onClick = { pickAlert = true },
+                        accent = Stage.Amber,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+
                     Spacer(Modifier.height(20.dp))
                     SectionLabel(stringResource(R.string.dialog_room))
                     Spacer(Modifier.height(8.dp))
@@ -150,6 +169,16 @@ Text(stringResource(R.string.action_close), color = Stage.VioletSoft)
             }
         },
     )
+
+    if (pickAlert) {
+        AlertPickerDialog(
+            onPick = { kind ->
+                pickAlert = false
+                onAlert(kind)
+            },
+            onDismiss = { pickAlert = false },
+        )
+    }
 
     if (confirmTransfer) {
         ConfirmDialog(
@@ -199,6 +228,50 @@ private fun ConfirmDialog(
     )
 }
 
+/**
+ * Le choix de l'alerte à envoyer. Une liste plutôt que deux boutons posés dans la fiche du
+ * joueur : d'autres cartons viendront, et ils s'ajouteront ici sans la surcharger.
+ */
+@Composable
+private fun AlertPickerDialog(onPick: (AlertKind) -> Unit, onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = Stage.Panel,
+        shape = RoundedCornerShape(24.dp),
+        title = {
+            Text(
+                stringResource(R.string.alert_pick_title),
+                style = MaterialTheme.typography.headlineMedium,
+                color = Stage.TextPrimary,
+            )
+        },
+        text = {
+            Column {
+                GhostAction(
+                    text = stringResource(R.string.alert_yellow),
+                    icon = Icons.Filled.Warning,
+                    onClick = { onPick(AlertKind.YELLOW_CARD) },
+                    accent = Stage.Amber,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                Spacer(Modifier.height(10.dp))
+                GhostAction(
+                    text = stringResource(R.string.alert_red),
+                    icon = Icons.Filled.Dangerous,
+                    onClick = { onPick(AlertKind.RED_CARD) },
+                    accent = Stage.Red,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.action_cancel), color = Stage.TextSecondary)
+            }
+        },
+    )
+}
+
 @Composable
 private fun ScoreButton(label: String, color: Color, onClick: () -> Unit) {
     TextButton(
@@ -219,8 +292,12 @@ fun RoomOptionsDialog(
     onDismiss: () -> Unit,
     onOptions: (RoomOptions) -> Unit,
     onResetScores: () -> Unit,
+    onEndGame: () -> Unit,
 ) {
     val options = state.options
+    // Le résultat part sur tous les téléphones d'un coup : on demande avant, comme pour la
+    // passation. Un appui de trop ne doit pas proclamer un vainqueur au milieu d'une manche.
+    var confirmEnd by remember { mutableStateOf(false) }
     AlertDialog(
         onDismissRequest = onDismiss,
         containerColor = Stage.Panel,
@@ -273,6 +350,14 @@ fun RoomOptionsDialog(
                 if (amHost) {
                     Spacer(Modifier.height(20.dp))
                     GhostAction(
+                        text = stringResource(R.string.rules_end_game),
+                        icon = Icons.Filled.EmojiEvents,
+                        onClick = { confirmEnd = true },
+                        accent = Stage.Gold,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                    Spacer(Modifier.height(10.dp))
+                    GhostAction(
                         text = stringResource(R.string.rules_reset_scores),
                         onClick = onResetScores,
                         accent = Stage.Red,
@@ -287,6 +372,20 @@ Text(stringResource(R.string.action_close), color = Stage.VioletSoft)
             }
         },
     )
+
+    if (confirmEnd) {
+        ConfirmDialog(
+            title = stringResource(R.string.rules_end_game_title),
+            message = stringResource(R.string.rules_end_game_body),
+            confirmLabel = stringResource(R.string.rules_end_game),
+            accent = Stage.Gold,
+            onConfirm = {
+                confirmEnd = false
+                onEndGame()
+            },
+            onDismiss = { confirmEnd = false },
+        )
+    }
 }
 
 @Composable

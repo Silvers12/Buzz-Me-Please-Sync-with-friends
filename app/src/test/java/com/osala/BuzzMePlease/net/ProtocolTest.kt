@@ -1,6 +1,8 @@
 package com.osala.BuzzMePlease.net
 
 import com.osala.BuzzMePlease.game.GameEngine
+import com.osala.BuzzMePlease.model.AlertKind
+import com.osala.BuzzMePlease.model.RoomAlert
 import com.osala.BuzzMePlease.model.RoomOptions
 import kotlinx.serialization.encodeToString
 import org.junit.Assert.assertEquals
@@ -31,6 +33,8 @@ class ProtocolTest {
             BuzzRequest(round = 4, clientWall = 1_700_000_000_123L, offset = -37, rtt = 6),
             RenameRequest("Chloé"),
             Bye(ByeCause.KICKED, kicked = true),
+            AlertBroadcast(RoomAlert(AlertKind.YELLOW_CARD, playerId = "p1", playerName = "Alice", score = 3)),
+            AlertBroadcast(RoomAlert(AlertKind.GAME_OVER, tied = true)),
         )
         messages.forEach { assertEquals(it, roundTrip(it)) }
     }

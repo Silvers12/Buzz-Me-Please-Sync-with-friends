@@ -1,6 +1,7 @@
 package com.osala.BuzzMePlease.net
 
 import com.osala.BuzzMePlease.R
+import com.osala.BuzzMePlease.model.RoomAlert
 import com.osala.BuzzMePlease.model.RoomState
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -83,6 +84,11 @@ data class HostTransfer(
     val port: Int = GAME_PORT,
     val state: RoomState,
 ) : NetMessage
+
+/** Une annonce de l'animateur pour tout le salon : carton, ou fin de partie. */
+@Serializable
+@SerialName("alert")
+data class AlertBroadcast(val alert: RoomAlert) : NetMessage
 
 @Serializable
 @SerialName("bye")

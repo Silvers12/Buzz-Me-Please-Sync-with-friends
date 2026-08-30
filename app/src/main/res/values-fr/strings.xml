@@ -76,6 +76,19 @@
     <string name="announce_floor">À VOUS LA PAROLE !</string>
     <string name="announce_right">BIEN JOUÉ !</string>
     <string name="announce_wrong">PERDU !</string>
+    <string name="alert_send">Envoyer une alerte…</string>
+    <string name="alert_pick_title">Quelle alerte ?</string>
+    <string name="alert_yellow">Carton jaune</string>
+    <string name="alert_red">Carton rouge</string>
+    <string name="announce_yellow_you">CARTON JAUNE</string>
+    <string name="announce_yellow_other">CARTON JAUNE\n%1$s</string>
+    <string name="announce_red_you">CARTON ROUGE</string>
+    <string name="announce_red_other">CARTON ROUGE\n%1$s</string>
+    <string name="announce_game_over">FIN DE PARTIE\nVainqueur : %1$s</string>
+    <string name="announce_game_over_tie">FIN DE PARTIE\nÉgalité !</string>
+    <string name="rules_end_game">Terminer la partie</string>
+    <string name="rules_end_game_title">Terminer la partie ?</string>
+    <string name="rules_end_game_body">Le vainqueur et son score sont annoncés sur tous les téléphones. Rien n\'est effacé : vous pouvez continuer à jouer ensuite.</string>
     <string name="announce_late">TROP TARD</string>
     <string name="announce_out">VOUS ÊTES ÉLIMINÉ</string>
     <string name="announce_host_you">VOUS ÊTES ANIMATEUR</string>
@@ -132,6 +145,7 @@
     <!-- Pupitre du joueur -->
     <string name="dialog_score">Score</string>
     <string name="dialog_buzzer">Buzzer</string>
+    <string name="dialog_alert">Alerte</string>
     <string name="dialog_room">Salon</string>
     <string name="dialog_eliminate">Éliminer (buzzer gris)</string>
     <string name="dialog_revive">Réactiver le buzzer</string>

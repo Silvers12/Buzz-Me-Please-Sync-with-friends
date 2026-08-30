@@ -1,8 +1,10 @@
 package com.osala.BuzzMePlease.game
 
 import com.osala.BuzzMePlease.model.PlayerStatus
+import com.osala.BuzzMePlease.model.RoomAlert
 import com.osala.BuzzMePlease.model.RoomOptions
 import com.osala.BuzzMePlease.model.RoomState
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
 enum class LinkPhase { STARTING, SEARCHING, CONNECTING, CONNECTED, RECONNECTING, CLOSED, ERROR }
@@ -37,6 +39,13 @@ interface RoomSession {
      */
     val joined: StateFlow<Boolean>
     val ended: StateFlow<SessionEnded?>
+
+    /**
+     * Les annonces de l'animateur — cartons, fin de partie. Un flux d'événements et non un état :
+     * chaque alerte passe une fois, sur tous les appareils, et ne se rejoue pas pour qui arrive
+     * après coup.
+     */
+    val alerts: Flow<RoomAlert>
 
     /** Identifiant local, stable d'une partie à l'autre. */
     val myId: String
@@ -88,6 +97,9 @@ interface RoomSession {
     fun resetScores()
     fun transferHost(playerId: String)
     fun setOptions(options: RoomOptions)
+
+    /** Annonce à tout le salon. Le nom et le score du joueur visé sont complétés par l'hôte. */
+    fun sendAlert(alert: RoomAlert)
 
     fun close()
 }

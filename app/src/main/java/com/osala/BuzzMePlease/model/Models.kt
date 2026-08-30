@@ -15,6 +15,33 @@ enum class PlayerStatus {
     ELIMINATED,
 }
 
+/**
+ * Ce que l'animateur peut annoncer à la cantonade : une sanction pour quelqu'un, ou la fin.
+ *
+ * Un motif, jamais une phrase toute faite — comme [com.osala.BuzzMePlease.net.ByeCause]. Chaque
+ * appareil l'écrit dans sa propre langue, même si l'animateur joue dans une autre.
+ */
+@Serializable
+enum class AlertKind { YELLOW_CARD, RED_CARD, GAME_OVER }
+
+/**
+ * Une alerte en route vers tous les téléphones. C'est un événement, pas un état : elle traverse
+ * le salon une fois, s'affiche deux secondes, et ne laisse aucune trace dans [RoomState] — un
+ * joueur qui arrive après coup n'a pas à recevoir le carton de la manche précédente.
+ *
+ * Le nom et le score voyagent avec elle plutôt que d'être relus à l'arrivée : l'annonce reste
+ * juste même si le joueur quitte le salon dans la seconde.
+ */
+@Serializable
+data class RoomAlert(
+    val kind: AlertKind,
+    val playerId: String = "",
+    val playerName: String = "",
+    val score: Int = 0,
+    /** Vrai quand la partie s'achève sans vainqueur net : personne n'a marqué, ou égalité. */
+    val tied: Boolean = false,
+)
+
 /** Où en est la manche en cours. */
 @Serializable
 enum class RoundState {

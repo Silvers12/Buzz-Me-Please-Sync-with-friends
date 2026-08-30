@@ -12,9 +12,12 @@ import com.osala.BuzzMePlease.game.LinkStatus
 import com.osala.BuzzMePlease.game.RoomSession
 import com.osala.BuzzMePlease.game.SessionEnded
 import com.osala.BuzzMePlease.model.PlayerStatus
+import com.osala.BuzzMePlease.model.AlertKind
+import com.osala.BuzzMePlease.model.RoomAlert
 import com.osala.BuzzMePlease.model.RoomOptions
 import com.osala.BuzzMePlease.model.RoomState
 import com.osala.BuzzMePlease.model.RoundState
+import com.osala.BuzzMePlease.net.AlertBroadcast
 import com.osala.BuzzMePlease.net.Bye
 import com.osala.BuzzMePlease.net.ByeCause
 import com.osala.BuzzMePlease.net.BuzzRequest
@@ -36,8 +39,11 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -94,6 +100,11 @@ class LanRoomSession(
 
     private val _localBuzzRound = MutableStateFlow<Int?>(null)
     override val localBuzzRound: StateFlow<Int?> = _localBuzzRound.asStateFlow()
+
+    // Un événement, donc aucune valeur conservée : qui arrive après l'annonce ne la reçoit pas.
+    // Le tampon évite qu'une alerte se perde si l'écran n'écoute pas encore.
+    private val _alerts = MutableSharedFlow<RoomAlert>(extraBufferCapacity = 4)
+    override val alerts: SharedFlow<RoomAlert> = _alerts.asSharedFlow()
 
     // -- rôle hôte
     @Volatile
@@ -394,6 +405,9 @@ class LanRoomSession(
 
             is Welcome -> Unit
 
+            // Une annonce de l'animateur : elle traverse et s'affiche, sans toucher à l'état.
+            is AlertBroadcast -> scope.launch { _alerts.emit(message.alert) }
+
             is HostTransfer -> onHostTransfer(message)
 
             is Bye -> {
@@ -573,6 +587,39 @@ class LanRoomSession(
 
     override fun setOptions(options: RoomOptions) {
         engine?.setOptions(options)
+    }
+
+    /**
+     * L'annonce part telle quelle sur le réseau, complétée par ce que l'hôte sait du salon : le
+     * nom du joueur visé, ou celui du vainqueur. Elle est aussi jouée sur place — l'animateur
+     * voit ce qu'il vient d'envoyer.
+     */
+    override fun sendAlert(alert: RoomAlert) {
+        val host = engine ?: return
+        val snapshot = host.snapshot
+        val filled = when (alert.kind) {
+            AlertKind.GAME_OVER -> {
+                val ranking = snapshot.leaderboard
+                val best = ranking.firstOrNull()
+                // Personne n'a marqué, ou deux joueurs à égalité en tête : pas de vainqueur à
+                // proclamer. Mieux vaut le dire que de désigner quelqu'un au hasard du tri.
+                val tied = best == null || best.score == 0 ||
+                    ranking.count { it.score == best.score } > 1
+                alert.copy(
+                    playerId = if (tied) "" else best?.id.orEmpty(),
+                    playerName = if (tied) "" else best?.name.orEmpty(),
+                    score = best?.score ?: 0,
+                    tied = tied,
+                )
+            }
+
+            else -> {
+                val target = snapshot.player(alert.playerId) ?: return
+                alert.copy(playerName = target.name, score = target.score)
+            }
+        }
+        server?.broadcast(AlertBroadcast(filled))
+        scope.launch { _alerts.emit(filled) }
     }
 
     override fun close() {
