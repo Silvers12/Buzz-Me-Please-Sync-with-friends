@@ -255,12 +255,15 @@ fun RoomScreen(
                     hold = ANNOUNCE_HOLD_FINAL_MILLIS,
                 )
             }
-            // Le son part avec le carton, sur tous les téléphones à la fois : le feu
-            // d'artifice pour le dénouement, la sanction pour les avertissements.
             if (roomSound) {
                 when (alert.kind) {
+                    // La fin de partie s'adresse à tout le monde : elle sonne partout.
                     AlertKind.GAME_OVER -> soundFx.celebrate()
-                    AlertKind.YELLOW_CARD, AlertKind.RED_CARD -> soundFx.wrong()
+                    // Le carton, lui, ne sonne que dans la main qui le prend. Il s'affiche
+                    // chez les autres, cela suffit : un salon entier qui sursaute pour une
+                    // faute qui n'est pas la sienne ne dit plus qui est sanctionné.
+                    AlertKind.YELLOW_CARD, AlertKind.RED_CARD ->
+                        if (alert.playerId == session.myId) soundFx.wrong()
                 }
             }
         }
