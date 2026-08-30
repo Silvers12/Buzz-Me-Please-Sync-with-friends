@@ -68,7 +68,7 @@ class GameEngine(code: String, hostId: String, options: RoomOptions = RoomOption
             next = next.copy(
                 buzzes = next.buzzes.filterNot { it.playerId == id },
                 passedIds = next.passedIds.filterNot { it == id },
-                wrongId = next.wrongId?.takeIf { it != id },
+                wrongIds = next.wrongIds.filterNot { it == id },
                 rightId = next.rightId?.takeIf { it != id },
             )
             if (next.winnerId == id) next = next.recomputeWinner()
@@ -82,7 +82,7 @@ class GameEngine(code: String, hostId: String, options: RoomOptions = RoomOption
             players = current.players.filterNot { it.id == id },
             buzzes = current.buzzes.filterNot { it.playerId == id },
             passedIds = current.passedIds.filterNot { it == id },
-            wrongId = current.wrongId?.takeIf { it != id },
+            wrongIds = current.wrongIds.filterNot { it == id },
             rightId = current.rightId?.takeIf { it != id },
         ).let { if (it.winnerId == id) it.recomputeWinner() else it }
     }
@@ -123,7 +123,7 @@ class GameEngine(code: String, hostId: String, options: RoomOptions = RoomOption
             winnerId = null,
             provisional = false,
             passedIds = emptyList(),
-            wrongId = null,
+            wrongIds = emptyList(),
             rightId = null,
         )
     }
@@ -150,7 +150,7 @@ class GameEngine(code: String, hostId: String, options: RoomOptions = RoomOption
             winnerId = null,
             provisional = false,
             passedIds = emptyList(),
-            wrongId = null,
+            wrongIds = emptyList(),
             players = current.players.map {
                 if (it.isEliminated) it.copy(status = PlayerStatus.ACTIVE) else it
             },
@@ -166,7 +166,7 @@ class GameEngine(code: String, hostId: String, options: RoomOptions = RoomOption
             winnerId = null,
             provisional = false,
             passedIds = emptyList(),
-            wrongId = null,
+            wrongIds = emptyList(),
             rightId = null,
         )
     }
@@ -238,7 +238,8 @@ class GameEngine(code: String, hostId: String, options: RoomOptions = RoomOption
     fun passSpeaker(round: Int) = mutate { current ->
         if (current.round != round || current.provisional) return@mutate current
         val speaker = current.speakerId ?: return@mutate current
-        current.copy(passedIds = current.passedIds + speaker, wrongId = null, rightId = null)
+        // Le rouge de celui qui vient de se tromper reste : la main passe, la faute demeure.
+        current.copy(passedIds = current.passedIds + speaker, rightId = null)
     }
 
     /**
@@ -249,7 +250,11 @@ class GameEngine(code: String, hostId: String, options: RoomOptions = RoomOption
     fun markWrong(round: Int) = mutate { current ->
         if (current.round != round || current.provisional) return@mutate current
         val speaker = current.speakerId ?: return@mutate current
-        if (current.wrongId == speaker) current else current.copy(wrongId = speaker, rightId = null)
+        if (speaker in current.wrongIds) {
+            current
+        } else {
+            current.copy(wrongIds = current.wrongIds + speaker, rightId = null)
+        }
     }
 
     /**
@@ -260,7 +265,12 @@ class GameEngine(code: String, hostId: String, options: RoomOptions = RoomOption
     fun markRight(round: Int) = mutate { current ->
         if (current.round != round || current.provisional) return@mutate current
         val speaker = current.speakerId ?: return@mutate current
-        if (current.rightId == speaker) current else current.copy(rightId = speaker, wrongId = null)
+        // « Vrai » après un « faux » : l'animateur se reprend, le rouge de ce joueur s'efface.
+        if (current.rightId == speaker) {
+            current
+        } else {
+            current.copy(rightId = speaker, wrongIds = current.wrongIds - speaker)
+        }
     }
 
     // ------------------------------------------------------------------ utils

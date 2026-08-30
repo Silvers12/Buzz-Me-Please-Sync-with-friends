@@ -209,7 +209,7 @@ private fun DeskColumn(
             },
             onWrongAnswer = session::markWrong,
             onKnockOut = {
-                state.wrongId?.let { session.setStatus(it, PlayerStatus.ELIMINATED) }
+                state.speakerId?.let { session.setStatus(it, PlayerStatus.ELIMINATED) }
             },
             onNextPlayer = session::passSpeaker,
         )

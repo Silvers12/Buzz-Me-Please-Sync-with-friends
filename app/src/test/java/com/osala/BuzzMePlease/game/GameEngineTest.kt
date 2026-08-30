@@ -285,16 +285,17 @@ class GameEngineTest {
 
         engine.markWrong(1)
         val wrong = engine.snapshot
-        assertEquals("p1", wrong.wrongId)
+        assertEquals(listOf("p1"), wrong.wrongIds)
         assertEquals("p1", wrong.speakerId)
         assertEquals(BuzzerVisual.WRONG, wrong.visualFor("p1", armedAt + 900))
         assertEquals(BuzzerVisual.LOST, wrong.visualFor("p2", armedAt + 900))
 
         engine.passSpeaker(1)
         val next = engine.snapshot
-        assertNull(next.wrongId)
+        // La main passe, mais le rouge reste : « perdu » n'est pas un état qu'on rend.
+        assertEquals(listOf("p1"), next.wrongIds)
         assertEquals("p2", next.speakerId)
-        assertEquals(BuzzerVisual.LOST, next.visualFor("p1", armedAt + 900))
+        assertEquals(BuzzerVisual.WRONG, next.visualFor("p1", armedAt + 900))
         assertEquals(BuzzerVisual.SPEAKING, next.visualFor("p2", armedAt + 900))
     }
 
@@ -313,7 +314,7 @@ class GameEngineTest {
         engine.markRight(1)
         val right = engine.snapshot
         assertEquals("p1", right.rightId)
-        assertNull(right.wrongId)
+        assertTrue(right.wrongIds.isEmpty())
         assertEquals(BuzzerVisual.RIGHT, right.visualFor("p1", armedAt + 900))
         assertEquals(BuzzerVisual.LOST, right.visualFor("p2", armedAt + 900))
 
@@ -335,10 +336,10 @@ class GameEngineTest {
         engine.markRight(1)
         engine.markWrong(1)
         assertNull(engine.snapshot.rightId)
-        assertEquals("p1", engine.snapshot.wrongId)
+        assertEquals(listOf("p1"), engine.snapshot.wrongIds)
 
         engine.markRight(1)
-        assertNull(engine.snapshot.wrongId)
+        assertTrue(engine.snapshot.wrongIds.isEmpty())
         assertEquals("p1", engine.snapshot.rightId)
     }
 
@@ -414,5 +415,29 @@ class GameEngineTest {
 
         assertEquals(1, engine.snapshot.round)
         assertEquals(RoundState.COUNTDOWN, engine.snapshot.roundState)
+    }
+
+    /**
+     * Deux joueurs écartés dans la même manche gardent tous les deux leur rouge : le verdict
+     * du premier ne s'efface pas quand le second se trompe à son tour.
+     */
+    @Test
+    fun `plusieurs joueurs peuvent etre declares dans l erreur`() {
+        armWithCountdown()
+        engine.markArmed(1)
+        engine.registerBuzz("p1", 1, armedAt + 200, 2)
+        engine.registerBuzz("p2", 1, armedAt + 260, 2)
+        engine.registerBuzz("p3", 1, armedAt + 320, 2)
+        engine.closeAdjudication(1)
+
+        engine.markWrong(1)
+        engine.passSpeaker(1)
+        engine.markWrong(1)
+
+        val state = engine.snapshot
+        assertEquals(listOf("p1", "p2"), state.wrongIds)
+        assertEquals(BuzzerVisual.WRONG, state.visualFor("p1", armedAt + 900))
+        assertEquals(BuzzerVisual.WRONG, state.visualFor("p2", armedAt + 900))
+        assertEquals("p2", state.speakerId)
     }
 }

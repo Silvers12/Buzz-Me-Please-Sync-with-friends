@@ -172,11 +172,15 @@ data class RoomState(
      */
     val passedIds: List<String> = emptyList(),
     /**
-     * Celui que l'animateur vient de déclarer dans l'erreur. Son buzzer passe au rouge et la
-     * sanction se fait entendre, mais la main ne bouge pas tant qu'il n'a pas appuyé sur
-     * « suivant » : à lui de décider quand la partie repart.
+     * Ceux dont l'animateur a écarté la réponse, dans l'ordre où il l'a fait. Leur buzzer passe
+     * au rouge et la sanction se fait entendre, mais la main ne bouge pas tant qu'il n'a pas
+     * appuyé sur « suivant » : à lui de décider quand la partie repart.
+     *
+     * Une liste et
+     * non un joueur unique : la main passée au suivant, celui qui s'est trompé garde son
+     * buzzer rouge jusqu'au bout de la manche. On ne se déclare pas perdant à moitié.
      */
-    val wrongId: String? = null,
+    val wrongIds: List<String> = emptyList(),
     /**
      * Celui que l'animateur vient de déclarer dans le vrai. Son buzzer passe au vert et la
      * récompense se fait entendre, chez lui comme chez l'animateur, le temps de savourer :
@@ -286,7 +290,7 @@ fun RoomState.visualFor(
         // Le verdict passe avant tout le reste : celui qui vient d'être jugé a encore la main,
         // mais ce n'est plus ce qu'il faut lui montrer.
         playerId == rightId -> BuzzerVisual.RIGHT
-        playerId == wrongId -> BuzzerVisual.WRONG
+        playerId in wrongIds -> BuzzerVisual.WRONG
         decided && speakerId == playerId -> BuzzerVisual.SPEAKING
         // Il a eu la parole et l'a rendue : la manche continue sans lui.
         playerId in passedIds -> BuzzerVisual.LOST

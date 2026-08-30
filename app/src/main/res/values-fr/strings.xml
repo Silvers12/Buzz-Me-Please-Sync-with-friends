@@ -118,6 +118,7 @@
     <string name="buzzer_correct">BRAVO</string>
     <string name="buzzer_missed">RATÉ</string>
     <string name="buzzer_too_late">TROP TARD</string>
+    <string name="buzzer_passed">SUIVANT</string>
     <string name="buzzer_out">ÉLIMINÉ</string>
     <string name="buzzer_ready">PRÊT ?</string>
     <string name="buzzer_get_ready">Préparez-vous</string>

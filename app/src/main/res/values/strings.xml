@@ -120,6 +120,7 @@
     <string name="buzzer_correct">CORRECT</string>
     <string name="buzzer_missed">MISSED</string>
     <string name="buzzer_too_late">TOO LATE</string>
+    <string name="buzzer_passed">NEXT PLAYER</string>
     <string name="buzzer_out">OUT</string>
     <string name="buzzer_ready">READY?</string>
     <string name="buzzer_get_ready">Get ready</string>

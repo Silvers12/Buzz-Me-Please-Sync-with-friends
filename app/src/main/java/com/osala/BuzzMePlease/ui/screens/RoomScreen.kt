@@ -186,6 +186,7 @@ fun RoomScreen(
     val rightText = stringResource(R.string.announce_right)
     val wrongText = stringResource(R.string.announce_wrong)
     val lateText = stringResource(R.string.announce_late)
+    val passedText = stringResource(R.string.buzzer_passed)
     val outText = stringResource(R.string.announce_out)
 
     // Ce qui arrive à son propre buzzer, et à lui seul : on n'annonce pas le sort des autres.
@@ -195,11 +196,22 @@ fun RoomScreen(
             BuzzerVisual.SPEAKING -> announcement = Announce(floorText, Stage.GoldSoft)
             BuzzerVisual.RIGHT -> announcement = Announce(rightText, Stage.Green)
             BuzzerVisual.WRONG -> announcement = Announce(wrongText, Stage.Red)
-            // Devancé, ou passé par « suivant » : dans les deux cas on avait appuyé.
-            // Celui qui n'a pas touché son buzzer ne reçoit rien.
-            BuzzerVisual.LOST -> announcement = Announce(lateText, Stage.Blue)
+            // « Trop tard » ne s'adresse qu'à celui qui s'est fait devancer au buzz. Celui à qui
+            // l'animateur retire la parole est annoncé plus bas, sur un autre mot : il n'a rien
+            // raté, on lui a repris la main.
+            BuzzerVisual.LOST -> if (session.myId !in state.passedIds) {
+                announcement = Announce(lateText, Stage.Blue)
+            }
             else -> Unit
         }
+    }
+
+    // La main qu'on nous reprend. Elle ne se lit pas sur la couleur du buzzer — celui qui s'est
+    // trompé garde son rouge — d'où une annonce à part, déclenchée par le passage de main
+    // lui-même, pendant que le suivant reçoit son « à vous la parole ».
+    val iAmPassed = session.myId in state.passedIds
+    LaunchedEffect(iAmPassed, state.round) {
+        if (iAmPassed) announcement = Announce(passedText, Stage.VioletSoft)
     }
 
     // L'élimination ne se rattache à aucune manche : elle dure jusqu'à ce qu'on soit réactivé.
@@ -502,7 +514,7 @@ private fun PhoneRoom(
                         // Éliminer celui qui vient de se tromper : la manche peut alors
                         // repartir sans lui, aux seuls joueurs qui n'ont pas encore répondu.
                         onKnockOut = {
-                            state.wrongId?.let { session.setStatus(it, PlayerStatus.ELIMINATED) }
+                            state.speakerId?.let { session.setStatus(it, PlayerStatus.ELIMINATED) }
                         },
                         onNextPlayer = session::passSpeaker,
                     )
@@ -702,7 +714,12 @@ internal fun buzzerTitle(
         ?: stringResource(R.string.buzzer_taken)
     BuzzerVisual.RIGHT -> stringResource(R.string.buzzer_correct)
     BuzzerVisual.WRONG -> stringResource(R.string.buzzer_missed)
-    BuzzerVisual.LOST -> stringResource(R.string.buzzer_too_late)
+    // Deux façons de perdre la manche, deux mots différents : on s'est fait devancer au buzz,
+    // ou l'animateur a passé la main. « Trop tard » serait injuste dans le second cas — la
+    // personne avait la parole, elle ne l'a pas ratée.
+    BuzzerVisual.LOST -> stringResource(
+        if (myId in state.passedIds) R.string.buzzer_passed else R.string.buzzer_too_late,
+    )
     BuzzerVisual.ELIMINATED -> stringResource(R.string.buzzer_out)
     BuzzerVisual.OFF -> stringResource(R.string.buzzer_ready)
 }
@@ -993,7 +1010,7 @@ internal fun ResultBanner(
                 // Une fois la réponse déclarée fausse, « faux » n'a plus rien à dire : la place
                 // revient à l'élimination. En mode rapide, c'est ce qui permet de relancer la
                 // même question aux seuls joueurs qui n'ont pas encore répondu.
-                val marked = state.wrongId == speaker.id
+                val marked = speaker.id in state.wrongIds
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     GhostAction(
                         text = stringResource(R.string.banner_right),
@@ -1088,8 +1105,10 @@ private fun PlayFeedback(
 
     // La sanction s'entend des deux côtés : chez celui qui s'est trompé, et chez l'animateur
     // qui vient de la prononcer.
-    LaunchedEffect(state.wrongId, state.round) {
-        val wrong = state.wrongId ?: return@LaunchedEffect
+    LaunchedEffect(state.wrongIds, state.round) {
+        // Le dernier ajouté est celui que l'animateur vient d'écarter : la sanction ne se
+        // rejoue pas chez les précédents quand un nouveau se trompe.
+        val wrong = state.wrongIds.lastOrNull() ?: return@LaunchedEffect
         if (!roomSound) return@LaunchedEffect
         if (wrong == myId || amHost) soundFx.wrong()
     }
