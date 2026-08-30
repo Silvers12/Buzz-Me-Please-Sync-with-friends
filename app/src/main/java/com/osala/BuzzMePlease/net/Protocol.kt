@@ -7,7 +7,16 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
-const val PROTOCOL_VERSION = 1
+/**
+ * Version du dialogue entre appareils. **À incrémenter dès qu'un message ou l'état du salon
+ * change de forme**, même quand le changement paraît anodin : deux versions qui se comprennent
+ * à moitié donnent un salon incohérent, où l'un voit un buzzer rouge que l'autre voit bleu.
+ * Mieux vaut refuser la liaison et le dire.
+ *
+ * 1 → 2 : les verdicts « faux » deviennent une liste, et l'animateur peut diffuser des annonces
+ * (cartons, fin de partie) que les versions antérieures ignorent.
+ */
+const val PROTOCOL_VERSION = 2
 
 /** Port TCP du salon. Fixe : il permet de reconstruire l'adresse de l'hôte après une passation. */
 const val GAME_PORT = 47821
@@ -17,6 +26,9 @@ const val NSD_SERVICE_TYPE = "_buzzme._tcp."
 const val NSD_ATTR_CODE = "code"
 const val NSD_ATTR_HOST = "host"
 const val NSD_ATTR_PROTOCOL = "proto"
+
+/** Version du jeu chez l'animateur, lisible dans la liste des salons avant de s'y connecter. */
+const val NSD_ATTR_VERSION = "ver"
 
 val ProtocolJson: Json = Json {
     ignoreUnknownKeys = true
@@ -36,6 +48,12 @@ data class Hello(
     val playerId: String,
     val name: String,
     val protocol: Int = PROTOCOL_VERSION,
+    /**
+     * Version du jeu installée chez celui qui frappe à la porte. C'est elle qui fait foi :
+     * même version, même protocole et mêmes règles. Zéro pour une version antérieure à ce
+     * contrôle — qui n'a donc pas la bonne.
+     */
+    val appVersion: Long = 0,
 ) : NetMessage
 
 @Serializable
@@ -62,7 +80,13 @@ data class RenameRequest(val name: String) : NetMessage
 
 @Serializable
 @SerialName("welcome")
-data class Welcome(val code: String, val hostId: String, val protocol: Int = PROTOCOL_VERSION) : NetMessage
+data class Welcome(
+    val code: String,
+    val hostId: String,
+    val protocol: Int = PROTOCOL_VERSION,
+    /** Version du jeu chez l'animateur : le joueur vérifie de son côté aussi. */
+    val appVersion: Long = 0,
+) : NetMessage
 
 @Serializable
 @SerialName("pong")

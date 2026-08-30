@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.osala.BuzzMePlease.R
 import com.osala.BuzzMePlease.core.Codes
+import com.osala.BuzzMePlease.core.appVersionName
 import com.osala.BuzzMePlease.net.lan.DiscoveredRoom
 import com.osala.BuzzMePlease.net.lan.NsdBrowser
 import com.osala.BuzzMePlease.ui.components.PrimaryAction
@@ -207,10 +208,22 @@ private fun DiscoveredRoomRow(room: DiscoveredRoom, onClick: () -> Unit) {
                 color = Stage.GoldSoft,
                 fontWeight = FontWeight.Black,
             )
+            // La version de l'animateur se lit avant de frapper à la porte : un salon d'une
+            // autre version se signale en ambre, plutôt que de se refuser une fois dedans.
+            val sameVersion = room.version.isBlank() ||
+                room.version == LocalContext.current.appVersionName()
             Text(
-                text = if (room.hostName.isBlank()) room.address else stringResource(R.string.join_room_host, room.hostName),
+                text = when {
+                    room.hostName.isBlank() -> room.address
+                    room.version.isBlank() -> stringResource(R.string.join_room_host, room.hostName)
+                    else -> stringResource(
+                        R.string.join_room_host_version,
+                        room.hostName,
+                        room.version,
+                    )
+                },
                 style = MaterialTheme.typography.bodyMedium,
-                color = Stage.TextMuted,
+                color = if (sameVersion) Stage.TextMuted else Stage.Amber,
             )
         }
         Text(stringResource(R.string.join_room_action), style = MaterialTheme.typography.labelMedium, color = Stage.VioletSoft)

@@ -9,6 +9,7 @@ import com.osala.BuzzMePlease.net.GAME_PORT
 import com.osala.BuzzMePlease.net.NSD_ATTR_CODE
 import com.osala.BuzzMePlease.net.NSD_ATTR_HOST
 import com.osala.BuzzMePlease.net.NSD_ATTR_PROTOCOL
+import com.osala.BuzzMePlease.net.NSD_ATTR_VERSION
 import com.osala.BuzzMePlease.net.NSD_SERVICE_TYPE
 import com.osala.BuzzMePlease.net.PROTOCOL_VERSION
 import kotlinx.coroutines.CancellationException
@@ -29,6 +30,8 @@ data class DiscoveredRoom(
     val hostName: String,
     val address: String,
     val port: Int,
+    /** Version du jeu chez l'animateur, vide si son annonce ne la porte pas. */
+    val version: String = "",
 )
 
 /**
@@ -41,7 +44,7 @@ class NsdAdvertiser(context: Context) {
     private val nsdManager = appContext.getSystemService(Context.NSD_SERVICE) as? NsdManager
     private var listener: NsdManager.RegistrationListener? = null
 
-    fun register(code: String, hostName: String) {
+    fun register(code: String, hostName: String, version: String = "") {
         val manager = nsdManager ?: return
         unregister()
         val info = NsdServiceInfo().apply {
@@ -51,6 +54,7 @@ class NsdAdvertiser(context: Context) {
             setAttribute(NSD_ATTR_CODE, code)
             setAttribute(NSD_ATTR_HOST, hostName.take(32))
             setAttribute(NSD_ATTR_PROTOCOL, PROTOCOL_VERSION.toString())
+            setAttribute(NSD_ATTR_VERSION, version)
         }
         val registration = object : NsdManager.RegistrationListener {
             override fun onRegistrationFailed(serviceInfo: NsdServiceInfo, errorCode: Int) {
@@ -235,9 +239,11 @@ object NsdBrowser {
             ?: serviceName?.substringAfter('-', "")?.takeIf { it.isNotBlank() }
             ?: return null
         val hostName = attributes[NSD_ATTR_HOST]?.toString(Charsets.UTF_8).orEmpty()
+        val version = attributes[NSD_ATTR_VERSION]?.toString(Charsets.UTF_8).orEmpty()
         return DiscoveredRoom(
             code = code.trim().uppercase(),
             hostName = hostName,
+            version = version,
             address = address,
             port = if (port > 0) port else GAME_PORT,
         )

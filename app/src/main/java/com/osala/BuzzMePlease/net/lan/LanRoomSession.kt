@@ -4,6 +4,8 @@ import android.content.Context
 import android.util.Log
 import com.osala.BuzzMePlease.R
 import com.osala.BuzzMePlease.core.AppClock
+import com.osala.BuzzMePlease.core.appVersionCode
+import com.osala.BuzzMePlease.core.appVersionName
 import com.osala.BuzzMePlease.core.AppLocale
 import com.osala.BuzzMePlease.game.BuzzOutcome
 import com.osala.BuzzMePlease.game.GameEngine
@@ -79,6 +81,15 @@ class LanRoomSession(
      */
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private val advertiser = NsdAdvertiser(appContext)
+
+    /**
+     * La version installée sur cet appareil. Tout le salon doit avoir la même : c'est le
+     * seul contrat qui garantisse que chacun voit le même plateau et joue aux mêmes règles.
+     */
+    private val appVersion = appContext.appVersionCode()
+
+    /** La même version, telle qu'elle se lit : « 1.06 ». Annoncée avec le salon. */
+    private val appVersionLabel = appContext.appVersionName()
     private val clock = ClockSync()
 
     @Volatile
@@ -163,7 +174,7 @@ class LanRoomSession(
         val lan = LanServer(appContext, scope, hostCallbacks())
         server = lan
         lan.start()
-        advertiser.register(code, myName)
+        advertiser.register(code, myName, appVersionLabel)
         _link.value = LinkStatus(LinkPhase.CONNECTED, text(R.string.link_hosting))
     }
 
@@ -180,14 +191,19 @@ class LanRoomSession(
         }
 
         override fun onHello(peer: PeerLink, hello: Hello) {
-            if (hello.protocol != PROTOCOL_VERSION) {
+            // On se présente d'abord, même à qui va être refusé : c'est ainsi qu'il apprend
+            // notre version, et qu'il peut dire à son porteur laquelle mettre à jour.
+            peer.send(Welcome(code, myId, appVersion = appVersion))
+            // Une version différente, c'est un salon incohérent : un buzzer rouge ici et bleu
+            // là-bas, une annonce qui n'arrive jamais. On refuse la porte plutôt que de
+            // laisser la partie se dérégler en silence.
+            if (hello.appVersion != appVersion) {
                 peer.send(Bye(ByeCause.VERSION_MISMATCH))
                 scope.launch { delay(200); server?.disconnect(hello.playerId) }
                 return
             }
             val current = engine ?: return
             current.join(hello.playerId, hello.name, AppClock.wallNow())
-            peer.send(Welcome(code, myId))
             peer.send(StateSync(current.snapshot))
         }
 
@@ -325,7 +341,7 @@ class LanRoomSession(
         }
         clientLink = peer
         clock.reset()
-        peer.send(Hello(myId, myName))
+        peer.send(Hello(myId, myName, appVersion = appVersion))
         _link.value = LinkStatus(LinkPhase.CONNECTED, text(R.string.link_connected))
 
         pingJob?.cancel()
@@ -403,7 +419,21 @@ class LanRoomSession(
                 }
             }
 
-            is Welcome -> Unit
+            is Welcome -> {
+                // Le contrôle vaut dans les deux sens, et il se fait ici plutôt qu'à la porte :
+                // seul le joueur connaît les deux versions, donc seul lui peut dire laquelle
+                // des deux doit être mise à jour.
+                if (message.appVersion != appVersion) {
+                    val advice = if (message.appVersion > appVersion) {
+                        R.string.end_version_update
+                    } else {
+                        R.string.end_version_host_old
+                    }
+                    _ended.value = SessionEnded(text(advice))
+                    closing = true
+                    clientLink?.close()
+                }
+            }
 
             // Une annonce de l'animateur : elle traverse et s'affiche, sans toucher à l'état.
             is AlertBroadcast -> scope.launch { _alerts.emit(message.alert) }
@@ -411,7 +441,11 @@ class LanRoomSession(
             is HostTransfer -> onHostTransfer(message)
 
             is Bye -> {
-                _ended.value = SessionEnded(text(message.cause.messageRes()), message.kicked)
+                // Un message déjà posé — la version, que nous seuls savons formuler — ne se
+                // fait pas écraser par le motif générique de l'hôte.
+                if (_ended.value == null) {
+                    _ended.value = SessionEnded(text(message.cause.messageRes()), message.kicked)
+                }
                 closing = true
                 clientLink?.close()
             }

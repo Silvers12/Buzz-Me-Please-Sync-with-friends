@@ -58,8 +58,11 @@ class ProtocolTest {
 
     @Test
     fun `un champ inconnu venant d une version plus recente est ignore`() {
-        val line = """{"t":"hello","playerId":"p9","name":"Zoé","protocol":1,"nouveauChamp":42}"""
+        val line =
+            """{"t":"hello","playerId":"p9","name":"Zoé","protocol":1,"appVersion":104,"nouveauChamp":42}"""
         val message = ProtocolJson.decodeFromString<NetMessage>(line)
-        assertEquals(Hello("p9", "Zoé"), message)
+        // Les champs connus sont lus tels quels — la version de l'autre appareil comprise, sur
+        // laquelle se joue le refus — et l'inconnu est ignoré au lieu de rompre la liaison.
+        assertEquals(Hello("p9", "Zoé", protocol = 1, appVersion = 104), message)
     }
 }

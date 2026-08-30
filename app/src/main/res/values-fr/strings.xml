@@ -239,7 +239,10 @@
     <!-- Fins de session -->
     <string name="end_host_closed">L\'hôte a fermé le salon.</string>
     <string name="end_kicked">L\'hôte vous a retiré du salon.</string>
-    <string name="end_version">L\'autre téléphone utilise une version différente de l\'application.</string>
+    <string name="end_version_update">L\'animateur joue avec une version plus récente de Buzz Me Please. Mettez la vôtre à jour depuis le Play Store pour le rejoindre.</string>
+    <string name="end_version_host_old">L\'animateur joue avec une version plus ancienne de Buzz Me Please. Demandez-lui de mettre la sienne à jour.</string>
+    <string name="join_room_host_version">Chez %1$s · v%2$s</string>
+    <string name="end_version">L\'autre téléphone n\'a pas la même version de Buzz Me Please. Mettez les deux à jour depuis le Play Store pour jouer ensemble.</string>
     <string name="end_left">Départ du joueur</string>
 
     <!-- Messages -->
