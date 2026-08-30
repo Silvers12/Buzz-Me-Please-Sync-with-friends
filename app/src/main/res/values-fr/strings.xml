@@ -268,14 +268,14 @@
     <string name="tutorial_3_title">Lancer le go</string>
     <string name="tutorial_3_body">L\'animateur appuie sur « GO ! ». Un décompte 3 · 2 · 1 se déclenche sur tous les téléphones en même temps, puis chaque buzzer passe au vert à la milliseconde près. Chez les joueurs, le reste de l\'écran s\'efface le temps de la manche : il ne reste que le buzzer, en grand, au milieu. L\'animateur garde son pupitre entier — c\'est son tableau de bord — et participe comme les autres. Sur une tablette tenue en paysage, il a tout d\'un coup sous les yeux : pupitre, plateau et sonothèque côte à côte.</string>
     <string name="tutorial_4_title">Buzzer</string>
-    <string name="tutorial_4_body">Le premier qui appuie voit son buzzer virer au rouge, tous les autres se verrouillent aussitôt. L\'heure exacte du buzz est envoyée — heure, minute, seconde et milliseconde — et l\'animateur voit le classement, l\'écart avec le meilleur temps et la marge d\'incertitude de la mesure. Une fois le classement arrêté, un seul buzzer reste vert : celui qui a la parole.</string>
+    <string name="tutorial_4_body">Le premier qui appuie voit son buzzer virer au bleu — le buzz est parti, le verdict se joue — et tous les autres se verrouillent aussitôt. L\'heure exacte du buzz est envoyée — heure, minute, seconde et milliseconde — et l\'animateur voit le classement, l\'écart avec le meilleur temps et la marge d\'incertitude de la mesure. Une fois le classement arrêté, un seul buzzer passe au blanc : celui qui a la parole.</string>
     <string name="tutorial_colours_title">Les couleurs du buzzer</string>
     <string name="tutorial_colours_body">Le buzzer dit tout par sa couleur : inutile de lire le plateau pour savoir où l’on en est.</string>
     <string name="tutorial_colour_armed">Vert · les buzzers sont ouverts, appuyez</string>
     <string name="tutorial_colour_speaking">Blanc · vous avez la parole, répondez</string>
     <string name="tutorial_colour_right">Vert vif · bonne réponse, le point est marqué</string>
     <string name="tutorial_colour_wrong">Rouge · mauvaise réponse</string>
-    <string name="tutorial_colour_lost">Bleu · quelqu’un d’autre a la main, ou la manche n’est pas lancée</string>
+    <string name="tutorial_colour_lost">Bleu · votre buzz est parti, quelqu’un d’autre a la main, ou la manche n’est pas lancée</string>
     <string name="tutorial_colour_eliminated">Gris · buzzer éteint par l’animateur</string>
     <string name="tutorial_colour_countdown">Ambre · le décompte 3 · 2 · 1, tenez-vous prêt</string>
     <string name="tutorial_5_title">Enchaîner les manches</string>

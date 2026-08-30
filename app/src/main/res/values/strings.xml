@@ -270,14 +270,14 @@
     <string name="tutorial_3_title">Call the go</string>
     <string name="tutorial_3_body">The host taps “Go!”. A 3 · 2 · 1 countdown fires on every phone at once, then each buzzer turns green to the millisecond. On the players\' phones the rest of the screen clears for the round: only the buzzer remains, large, in the middle. The host keeps the full desk — it is their dashboard — and plays along. On a tablet held in landscape they get everything at once: desk, board and soundboard side by side.</string>
     <string name="tutorial_4_title">Buzzing</string>
-    <string name="tutorial_4_body">The first to press turns red, everyone else locks out instantly. The exact time of the buzz is sent — hour, minute, second and millisecond — and the host sees the ranking, the gap to the best time and the measurement uncertainty. Once the ranking settles, a single buzzer stays green: the one with the floor.</string>
+    <string name="tutorial_4_body">The first to press sees their buzzer turn blue — the buzz is in, the verdict is coming — and everyone else locks out instantly. The exact time of the buzz is sent — hour, minute, second and millisecond — and the host sees the ranking, the gap to the best time and the measurement uncertainty. Once the ranking settles, a single buzzer turns white: the one with the floor.</string>
     <string name="tutorial_colours_title">The buzzer colours</string>
     <string name="tutorial_colours_body">The buzzer says it all by its colour: no need to read the board to know where you stand.</string>
     <string name="tutorial_colour_armed">Green · buzzers are open, press</string>
     <string name="tutorial_colour_speaking">White · the floor is yours, answer</string>
     <string name="tutorial_colour_right">Bright green · right answer, the point is yours</string>
     <string name="tutorial_colour_wrong">Red · wrong answer</string>
-    <string name="tutorial_colour_lost">Blue · someone else has the floor, or the round has not started</string>
+    <string name="tutorial_colour_lost">Blue · your buzz is in, someone else has the floor, or the round has not started</string>
     <string name="tutorial_colour_eliminated">Grey · buzzer switched off by the host</string>
     <string name="tutorial_colour_countdown">Amber · the 3 · 2 · 1 countdown, get ready</string>
     <string name="tutorial_5_title">Running the rounds</string>
