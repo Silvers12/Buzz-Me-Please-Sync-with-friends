@@ -25,6 +25,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -44,6 +45,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.material3.Text
 import com.osala.BuzzMePlease.model.BuzzerVisual
 import com.osala.BuzzMePlease.ui.theme.Stage
+import kotlinx.coroutines.launch
 
 /**
  * Le buzzer en miniature, sans texte ni geste : de quoi montrer une couleur pour ce qu'elle est.
@@ -197,13 +199,16 @@ private fun skinFor(visual: BuzzerVisual): BuzzerSkin = when (visual) {
  * l'événement tactile lui-même ([androidx.compose.ui.input.pointer.PointerInputChange.uptimeMillis]).
  * Le temps de recomposition, de rendu et d'ordonnancement ne se retrouve donc pas dans le
  * chrono du joueur : on mesure l'appui, pas la charge du téléphone.
+ *
+ * @param onPress vrai si l'appui a été pris, faux s'il tombe sur un buzzer fermé. C'est ce qui
+ *   décide de l'onde de choc : elle appartient au geste, comme le son.
  */
 @Composable
 fun BigBuzzer(
     visual: BuzzerVisual,
     title: String,
     subtitle: String,
-    onPress: (uptimeMillis: Long) -> Unit,
+    onPress: (uptimeMillis: Long) -> Boolean,
     modifier: Modifier = Modifier,
 ) {
     val skin = skinFor(visual)
@@ -231,15 +236,32 @@ fun BigBuzzer(
         visual == BuzzerVisual.RIGHT
     val haloBoost = if (alive) 0.55f + breathing * 0.45f else 0.35f
 
-    // Onde de choc au moment du buzz.
+    // Onde de choc. Comme le son, elle part de l'appui lui-même et non du bleu qui s'ensuit :
+    // cette couleur n'est pas toujours traversée, et quand elle l'est, pas toujours assez
+    // longtemps. En course, le premier qui appuie prend la parole dans la foulée — le buzzer
+    // passe du vert au blanc sans s'arrêter au bleu, sur-le-champ chez l'animateur, dont
+    // l'appui met à jour l'état dans la même image. L'onde ne partait pas, ou se faisait couper
+    // net au changement de couleur : elle n'allait au bout que pour qui n'était pas le premier,
+    // exactement l'inverse de ce qu'elle souligne.
     val shockwave = remember { Animatable(0f) }
-    LaunchedEffect(visual) {
-        if (visual == BuzzerVisual.BUZZED || visual == BuzzerVisual.RIGHT) {
-            shockwave.snapTo(0f)
-            shockwave.animateTo(1f, tween(520, easing = LinearEasing))
-        } else {
-            shockwave.snapTo(0f)
+    val waves = rememberCoroutineScope()
+    // Le détecteur de geste ne relance jamais son bloc : le départ de l'onde doit donc rester
+    // le même d'une image à l'autre. L'onde s'éteint d'elle-même en fin de course — elle finit
+    // à 1, où elle est transparente — et n'a rien à faire effacer derrière elle.
+    val strike: () -> Unit = remember(waves, shockwave) {
+        {
+            waves.launch {
+                shockwave.snapTo(0f)
+                shockwave.animateTo(1f, tween(520, easing = LinearEasing))
+            }
         }
+    }
+
+    // La bonne réponse garde la sienne : ce vert-là tient le temps qu'on le savoure, il peut
+    // donc encore se lire sur la couleur. Elle emprunte le même départ, et non la coroutine de
+    // l'effet : celle-ci serait annulée à la couleur suivante, laissant l'anneau figé en route.
+    LaunchedEffect(visual) {
+        if (visual == BuzzerVisual.RIGHT) strike()
     }
 
     BoxWithConstraints(
@@ -249,7 +271,7 @@ fun BigBuzzer(
                 awaitEachGesture {
                     val down = awaitFirstDown(requireUnconsumed = false)
                     pressed = true
-                    currentOnPress(down.uptimeMillis)
+                    if (currentOnPress(down.uptimeMillis)) strike()
                     waitForUpOrCancellation()
                     pressed = false
                 }

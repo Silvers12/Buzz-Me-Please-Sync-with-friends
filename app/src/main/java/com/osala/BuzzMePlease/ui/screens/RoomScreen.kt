@@ -162,7 +162,12 @@ fun RoomScreen(
     // l'avoir coupé entre-temps. Le réglage propre à l'appareil est déjà dans `soundFx.enabled`.
     val soundOn by rememberUpdatedState(state.options.sound)
     val onBuzz = remember(session, soundFx) {
-        { uptime: Long -> if (session.buzz(uptime) && soundOn) soundFx.buzz() }
+        { uptime: Long ->
+            val taken = session.buzz(uptime)
+            if (taken && soundOn) soundFx.buzz()
+            // Rendu au buzzer, dont l'onde de choc part du même geste et pour la même raison.
+            taken
+        }
     }
 
     val board = remember(state) { orderPlayers(state) }
@@ -443,7 +448,7 @@ private fun PhoneRoom(
     session: RoomSession,
     view: RoomView,
     sounds: SoundDesk,
-    onBuzz: (uptimeMillis: Long) -> Unit,
+    onBuzz: (uptimeMillis: Long) -> Boolean,
     showSounds: Boolean,
     onToggleSounds: () -> Unit,
     onSelectPlayer: (String) -> Unit,
