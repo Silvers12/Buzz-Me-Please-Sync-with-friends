@@ -151,6 +151,20 @@ fun RoomScreen(
         soundFx = soundFx,
     )
 
+    // Le son du buzzer part de l'appui lui-même, et non de la couleur qui s'ensuit. Le bleu du
+    // buzz ne dure pas toujours assez longtemps pour être observé : en course, le premier qui
+    // appuie prend la parole dans la foulée — sur-le-champ chez l'animateur, le temps d'un
+    // aller-retour chez le joueur — et son buzzer passe du vert au blanc sans jamais s'arrêter
+    // au bleu. Le son se perdait alors la manche où l'on était le plus rapide, et se faisait
+    // entendre celle d'après, quand un autre avait devancé : une manche sur deux.
+    //
+    // L'habillage du salon est lu à l'appui et non à l'ouverture de l'écran — l'animateur peut
+    // l'avoir coupé entre-temps. Le réglage propre à l'appareil est déjà dans `soundFx.enabled`.
+    val soundOn by rememberUpdatedState(state.options.sound)
+    val onBuzz = remember(session, soundFx) {
+        { uptime: Long -> if (session.buzz(uptime) && soundOn) soundFx.buzz() }
+    }
+
     val board = remember(state) { orderPlayers(state) }
     // Le plateau du salon, dont on retire sa propre ligne : elle est épinglée au bas de
     // l'écran, sous les yeux en permanence, plateau ou pas.
@@ -310,6 +324,7 @@ fun RoomScreen(
                     session = session,
                     view = view,
                     sounds = sounds,
+                    onBuzz = onBuzz,
                     onSelectPlayer = { selectedPlayer = it },
                     onOptions = { showOptions = true },
                     onLeave = onLeave,
@@ -319,6 +334,7 @@ fun RoomScreen(
                     session = session,
                     view = view,
                     sounds = sounds,
+                    onBuzz = onBuzz,
                     showSounds = showSounds,
                     onToggleSounds = { showSounds = !showSounds },
                     onSelectPlayer = { selectedPlayer = it },
@@ -427,6 +443,7 @@ private fun PhoneRoom(
     session: RoomSession,
     view: RoomView,
     sounds: SoundDesk,
+    onBuzz: (uptimeMillis: Long) -> Unit,
     showSounds: Boolean,
     onToggleSounds: () -> Unit,
     onSelectPlayer: (String) -> Unit,
@@ -516,7 +533,7 @@ private fun PhoneRoom(
                     visual = myVisual,
                     title = buzzerTitle(myVisual, remaining, state, session.myId),
                     subtitle = buzzerSubtitle(myVisual, state, session.myId),
-                    onPress = { uptime -> session.buzz(uptime) },
+                    onPress = onBuzz,
                     modifier = Modifier.fillMaxHeight(),
                 )
             }
@@ -1156,13 +1173,13 @@ private fun PlayFeedback(
         }
     }
 
-    // Chaque couleur a son son : le vert de la main, le rouge de la mauvaise réponse, le bleu
-    // de la manche perdue.
+    // Chaque couleur a son son : le vert de la main, le blanc de la parole, le bleu de la
+    // manche perdue. Le bleu de son propre buzz fait exception : il tient à un geste, et son
+    // son part avec le geste — une couleur qu'on ne garde qu'un instant ne se voit pas passer.
     LaunchedEffect(visual, state.round) {
         if (!roomSound) return@LaunchedEffect
         when (visual) {
             BuzzerVisual.ARMED -> soundFx.go()
-            BuzzerVisual.BUZZED -> soundFx.buzz()
             BuzzerVisual.SPEAKING -> soundFx.yourTurn()
             BuzzerVisual.LOST -> soundFx.locked()
             else -> Unit

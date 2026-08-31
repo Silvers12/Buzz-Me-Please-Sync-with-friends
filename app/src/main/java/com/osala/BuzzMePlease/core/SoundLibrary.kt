@@ -188,21 +188,28 @@ class ClipPlayer(context: Context) {
  * Prépare un lecteur sur la source demandée, prêt à démarrer, ou null si elle est illisible —
  * un fichier importé peut avoir été supprimé ou déplacé depuis, et le jeu doit continuer.
  */
-internal fun open(context: Context, source: String): MediaPlayer? = runCatching<MediaPlayer> {
+internal fun open(context: Context, source: String): MediaPlayer? {
     val player = MediaPlayer()
-    player.setAudioAttributes(
-        AudioAttributes.Builder()
-            .setUsage(AudioAttributes.USAGE_MEDIA)
-            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-            .build(),
-    )
-    if (source.startsWith("content://") || source.startsWith("file://")) {
-        player.setDataSource(context, Uri.parse(source))
-    } else {
-        context.assets.openFd(source).use { fd ->
-            player.setDataSource(fd.fileDescriptor, fd.startOffset, fd.length)
+    return runCatching<MediaPlayer> {
+        player.setAudioAttributes(
+            AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_MEDIA)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .build(),
+        )
+        if (source.startsWith("content://") || source.startsWith("file://")) {
+            player.setDataSource(context, Uri.parse(source))
+        } else {
+            context.assets.openFd(source).use { fd ->
+                player.setDataSource(fd.fileDescriptor, fd.startOffset, fd.length)
+            }
         }
-    }
-    player.prepare()
-    player
-}.onFailure { Log.w("SoundLibrary", "son illisible : $source", it) }.getOrNull()
+        player.prepare()
+        player
+    }.onFailure {
+        Log.w("SoundLibrary", "son illisible : $source", it)
+        // Un lecteur abandonné en chemin garde son décodeur : le système n'en prête qu'un
+        // petit nombre, et les sons suivants se verraient refuser le leur à leur tour.
+        runCatching { player.release() }
+    }.getOrNull()
+}

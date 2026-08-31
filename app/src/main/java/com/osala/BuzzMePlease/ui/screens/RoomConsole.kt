@@ -52,6 +52,7 @@ internal fun RoomConsole(
     session: RoomSession,
     view: RoomView,
     sounds: SoundDesk,
+    onBuzz: (uptimeMillis: Long) -> Unit,
     onSelectPlayer: (String) -> Unit,
     onOptions: () -> Unit,
     onLeave: () -> Unit,
@@ -100,6 +101,7 @@ internal fun RoomConsole(
                 DeskColumn(
                     session = session,
                     view = view,
+                    onBuzz = onBuzz,
                     onSelectPlayer = onSelectPlayer,
                     onOptions = onOptions,
                     modifier = Modifier
@@ -183,6 +185,7 @@ internal fun RoomConsole(
 private fun DeskColumn(
     session: RoomSession,
     view: RoomView,
+    onBuzz: (uptimeMillis: Long) -> Unit,
     onSelectPlayer: (String) -> Unit,
     onOptions: () -> Unit,
     modifier: Modifier = Modifier,
@@ -228,7 +231,7 @@ private fun DeskColumn(
                 visual = view.myVisual,
                 title = buzzerTitle(view.myVisual, view.remaining, state, view.myId),
                 subtitle = buzzerSubtitle(view.myVisual, state, view.myId),
-                onPress = { uptime -> session.buzz(uptime) },
+                onPress = onBuzz,
                 modifier = Modifier.size(minOf(maxWidth, maxHeight)),
             )
         }

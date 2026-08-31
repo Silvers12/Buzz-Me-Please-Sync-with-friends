@@ -484,9 +484,9 @@ class LanRoomSession(
 
     // =================================================================== commandes
 
-    override fun buzz(atUptimeMillis: Long) {
+    override fun buzz(atUptimeMillis: Long): Boolean {
         val current = _state.value
-        if (!current.canBuzz(myId, nowHostMillis())) return
+        if (!current.canBuzz(myId, nowHostMillis())) return false
         // Retour visuel immédiat : le buzzer vire au bleu sans attendre l'aller-retour réseau.
         _localBuzzRound.value = current.round
 
@@ -512,6 +512,7 @@ class LanRoomSession(
                 ),
             )
         }
+        return true
     }
 
     override fun rename(name: String) {

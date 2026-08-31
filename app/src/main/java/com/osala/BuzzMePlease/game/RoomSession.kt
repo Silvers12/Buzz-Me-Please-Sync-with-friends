@@ -66,8 +66,12 @@ interface RoomSession {
      * @param atUptimeMillis horodatage brut de l'événement tactile. La session le ramène
      *   elle-même sur l'horloge du salon : chez l'hôte par son heure murale, chez le joueur par
      *   sa base monotone, qu'aucun réglage d'heure ne déplace.
+     * @return vrai si l'appui a été pris, faux s'il tombe sur des buzzers fermés ou sur une
+     *   manche déjà buzzée. C'est ce que l'écran attend pour lancer le son du buzzer : le son
+     *   appartient au geste, pas à la couleur qui s'ensuit — celle-ci ne dure pas toujours
+     *   assez longtemps pour être observée.
      */
-    fun buzz(atUptimeMillis: Long)
+    fun buzz(atUptimeMillis: Long): Boolean
 
     fun rename(name: String)
 
