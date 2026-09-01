@@ -28,10 +28,12 @@ android {
             versionNameSuffix = "-debug"
         }
         release {
-            // Shrinking is off so that a fresh clone always produces a working APK.
-            // Turn it on together with the rules in proguard-rules.pro if you ship on the Play Store.
-            isMinifyEnabled = false
-            isShrinkResources = false
+            // Élagage et obscurcissement : le Play Console mesure ce dernier, et une part de
+            // zéro pèse sur la visibilité de la fiche. Les règles de proguard-rules.pro gardent
+            // ce que R8 ne peut pas deviner — les sérialiseurs du protocole et les noms
+            // d'énumération qui voyagent en clair dans le JSON.
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             // Lets `./gradlew assembleRelease` produce an installable APK without a keystore.
             signingConfig = signingConfigs.getByName("debug")

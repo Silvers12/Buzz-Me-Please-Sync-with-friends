@@ -234,7 +234,12 @@ fun BigBuzzer(
     val alive = visual == BuzzerVisual.ARMED ||
         visual == BuzzerVisual.SPEAKING ||
         visual == BuzzerVisual.RIGHT
-    val haloBoost = if (alive) 0.55f + breathing * 0.45f else 0.35f
+    // Une seule lecture de l'animation, et seulement quand elle sert à quelque chose. Lue
+    // sans condition, elle faisait repeindre le buzzer soixante fois par seconde du début à
+    // la fin de la partie — dégradés et listes de couleurs alloués à chaque image — alors
+    // qu'il est immobile la plupart du temps.
+    val breath = if (alive) breathing else 0f
+    val haloBoost = if (alive) 0.55f + breath * 0.45f else 0.35f
 
     // Onde de choc. Comme le son, elle part de l'appui lui-même et non du bleu qui s'ensuit :
     // cette couleur n'est pas toujours traversée, et quand elle l'est, pas toujours assez
@@ -286,7 +291,7 @@ fun BigBuzzer(
             val c = center
 
             // Halo lumineux
-            val haloRadius = radius * (0.98f + 0.02f * breathing)
+            val haloRadius = radius * (0.98f + 0.02f * breath)
             drawCircle(
                 brush = Brush.radialGradient(
                     colors = listOf(

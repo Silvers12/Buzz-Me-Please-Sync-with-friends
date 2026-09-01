@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Les libellés des sons sont retrouvés par leur nom, à l'exécution : « sound_ » suivi du nom du
+  fichier. Aucun code ne les cite, l'élagueur de ressources les croirait donc inutiles et les
+  supprimerait — la sonothèque afficherait des noms de fichiers.
+-->
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@string/sound_*" />

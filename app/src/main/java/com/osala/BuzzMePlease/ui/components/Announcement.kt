@@ -90,6 +90,10 @@ fun Announcement(
     // Les lignes de vitesse tournent à allure constante, quelle que soit la durée : une
     // annonce qui dure plus longtemps tourne davantage, elle ne ralentit pas. Dix secondes
     // de carton parfaitement figé auraient l'air d'un écran bloqué.
+    // Un seul chemin, réutilisé d'une ligne à l'autre et d'une image à l'autre : quarante-six
+    // objets par image tenaient le ramasse-miettes éveillé pendant toute l'annonce.
+    val ray = remember { Path() }
+
     val spinMillis = holdMillis + 750L
     val spinTurns = spinMillis / 2_000f
 
@@ -141,22 +145,21 @@ fun Announcement(
                         // Largeur pseudo-aléatoire mais stable : sans cela les traits clignotent.
                         // Des traits fins et nombreux, comme au feutre — pas des faisceaux.
                         val spread = (0.0016f + 0.0052f * ((i * 37) % 11) / 10f)
-                        val path = Path().apply {
-                            moveTo(
-                                center.x + cos(angle) * inner,
-                                center.y + sin(angle) * inner,
-                            )
-                            lineTo(
-                                center.x + cos(angle - spread) * outer,
-                                center.y + sin(angle - spread) * outer,
-                            )
-                            lineTo(
-                                center.x + cos(angle + spread) * outer,
-                                center.y + sin(angle + spread) * outer,
-                            )
-                            close()
-                        }
-                        drawPath(path, color = accent, alpha = 0.34f * veil)
+                        ray.rewind()
+                        ray.moveTo(
+                            center.x + cos(angle) * inner,
+                            center.y + sin(angle) * inner,
+                        )
+                        ray.lineTo(
+                            center.x + cos(angle - spread) * outer,
+                            center.y + sin(angle - spread) * outer,
+                        )
+                        ray.lineTo(
+                            center.x + cos(angle + spread) * outer,
+                            center.y + sin(angle + spread) * outer,
+                        )
+                        ray.close()
+                        drawPath(ray, color = accent, alpha = 0.34f * veil)
                     }
                 }
 
