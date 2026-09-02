@@ -61,10 +61,10 @@ fun BuzzMeApp(viewModel: AppViewModel = viewModel()) {
     // La navigation étant centralisée ici, un seul effet suffit à étiqueter tous
     // les rapports d'erreur avec l'écran affiché. C'est la première information
     // regardée pour reproduire un incident, et elle donne aussi le fil d'Ariane du
-    // parcours suivi avant un crash : Home → Join → Joining → Room.
+    // parcours suivi avant un crash : Home → Join → Room.
     // Le nom de la route ne contient ni code de salon ni nom de joueur.
     LaunchedEffect(route) {
-        CrashReporter.setCurrentScreen(route::class.simpleName ?: "Unknown")
+        CrashReporter.setCurrentScreen(route.diagnosticName())
     }
 
     // Langue de l'application : celle du téléphone par défaut, celle qu'on a choisie sinon. On
@@ -181,4 +181,25 @@ private fun rememberLocalizedContext(language: AppLanguage): Context {
     // rotation — et de choisir la disposition qui allait avec.
     val configuration = LocalConfiguration.current
     return remember(base, language, configuration) { AppLocale.wrap(base) }
+}
+
+/**
+ * Nom d'ecran STABLE pour la cle `screen` des rapports Crashlytics.
+ *
+ * Ecrit en clair, et non derive de `route::class.simpleName` : [Route] et ses
+ * objets sont des classes du projet, que R8 renomme en release. La cle afficherait
+ * alors « a » ou « b1 » — c'est-a-dire la premiere information regardee pour
+ * reproduire un incident rendue inutilisable, et seulement dans les builds ou
+ * elle sert. Meme piege que le filtre d'annulation fonde sur les noms de classes.
+ *
+ * Le `when` est exhaustif sur une interface scellee : ajouter une route sans
+ * l'etiqueter ici ne compile pas.
+ */
+private fun Route.diagnosticName(): String = when (this) {
+    Route.Loading -> "Loading"
+    Route.Home -> "Home"
+    Route.Join -> "Join"
+    Route.Room -> "Room"
+    Route.Settings -> "Settings"
+    Route.Tutorial -> "Tutorial"
 }
