@@ -56,15 +56,12 @@ object CrashReporter {
     private val alreadyReported = ConcurrentHashMap.newKeySet<String>()
 
     /**
-     * Exceptions qui signalent une annulation, jamais un défaut. Une coroutine
-     * annulée parce que le joueur quitte le salon est le fonctionnement normal.
+     * Forme du message de `JobCancellationException` : « <NomDeCoroutine> was
+     * cancelled ». Le nom de la coroutine étant obfusqué en release, seul le
+     * suffixe est stable. Ne sert que de filet pour une annulation *emballée*
+     * dans une autre exception, [shouldReport] traitant le cas direct par type.
      */
-    private val nonReportable = setOf(
-        CancellationException::class.java.name,
-        "kotlinx.coroutines.JobCancellationException",
-        "kotlinx.coroutines.TimeoutCancellationException",
-        InterruptedException::class.java.name,
-    )
+    private const val CANCELLED_MESSAGE_SUFFIX = " was cancelled"
 
     /**
      * Remonte une exception non fatale.
@@ -170,8 +167,27 @@ object CrashReporter {
     fun didCrashOnPreviousExecution(): Boolean =
         runCatching { crashlytics.didCrashOnPreviousExecution() }.getOrDefault(false)
 
-    private fun shouldReport(throwable: Throwable): Boolean =
-        throwable::class.java.name !in nonReportable
+    /**
+     * Une annulation de coroutine n'est jamais un défaut : elle survient dès que
+     * le joueur quitte un salon, que l'écran de recherche se ferme ou qu'une
+     * liaison se termine — c'est-à-dire en permanence dans cette application.
+     *
+     * Le test porte sur le TYPE, et non sur le nom de la classe. Une comparaison
+     * de nom ne fonctionne qu'en debug : R8 renomme
+     * `kotlinx.coroutines.JobCancellationException` en `ia1`, et le message
+     * `"StandaloneCoroutine was cancelled"` devient `"ht2 was cancelled"`. Le
+     * filtre échouait donc précisément en release, là où la collecte est active.
+     *
+     * `CancellationException` appartient à `java.util.concurrent` : R8 ne la
+     * renomme jamais, et `JobCancellationException` comme
+     * `TimeoutCancellationException` en héritent. Le `is` reste donc valide quel
+     * que soit le niveau d'obfuscation.
+     */
+    private fun shouldReport(throwable: Throwable): Boolean {
+        if (throwable is CancellationException) return false
+        if (throwable is InterruptedException) return false
+        return throwable.message?.endsWith(CANCELLED_MESSAGE_SUFFIX) != true
+    }
 
     private inline fun guarded(block: () -> Unit) {
         try {
@@ -200,6 +216,11 @@ class AppAnomalyException(message: String) : Exception(message)
 inline fun runReported(operation: String, block: () -> Unit) {
     try {
         block()
+    } catch (e: CancellationException) {
+        // `CancellationException` étant une `Exception`, le catch ci-dessous
+        // l'absorberait et romprait la coopération à l'annulation de la coroutine
+        // appelante. Elle doit toujours poursuivre son chemin.
+        throw e
     } catch (e: Exception) {
         CrashReporter.record(e, operation)
     }
