@@ -309,4 +309,16 @@
     <string name="tutorial_tip_2">Turn on “Keep the screen on” in the settings before you start.</string>
     <string name="tutorial_tip_3">The gap shown accounts for network latency: what is compared is the moment of the press, not the order in which messages arrive.</string>
     <string name="tutorial_tip_4">Below the uncertainty shown (± a few ms locally), two reflexes are tied: the host decides.</string>
+
+    <!-- Crashlytics diagnostics (debug builds only) -->
+    <string name="diagnostics_label">Diagnostics</string>
+    <string name="diagnostics_hint">Debug builds only. Checks that error reporting to Crashlytics works — both paths, since a non-fatal and a crash travel differently.</string>
+    <string name="diagnostics_collection_title">Crashlytics collection</string>
+    <string name="diagnostics_collection_subtitle">Off by default in debug builds, to keep the console clean</string>
+    <string name="diagnostics_collection_off">Collection is off: the buttons below will send nothing.</string>
+    <string name="diagnostics_send_non_fatal">Send a non-fatal</string>
+    <string name="diagnostics_force_crash">Force a crash</string>
+    <string name="diagnostics_flush">Upload pending reports</string>
+    <string name="diagnostics_previous_crash_yes">Previous session ended with a crash</string>
+    <string name="diagnostics_previous_crash_no">No crash in the previous session</string>
 </resources>

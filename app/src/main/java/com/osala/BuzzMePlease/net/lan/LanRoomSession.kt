@@ -4,9 +4,11 @@ import android.content.Context
 import android.util.Log
 import com.osala.BuzzMePlease.R
 import com.osala.BuzzMePlease.core.AppClock
+import com.osala.BuzzMePlease.core.CrashReporter
 import com.osala.BuzzMePlease.core.appVersionCode
 import com.osala.BuzzMePlease.core.appVersionName
 import com.osala.BuzzMePlease.core.AppLocale
+import com.osala.BuzzMePlease.core.crashReportingHandler
 import com.osala.BuzzMePlease.game.BuzzOutcome
 import com.osala.BuzzMePlease.game.GameEngine
 import com.osala.BuzzMePlease.game.LinkPhase
@@ -79,7 +81,16 @@ class LanRoomSession(
      * La session possède son propre périmètre de coroutines : la fermeture du salon
      * (dernier message, libération des sockets) doit aboutir même si l'écran est déjà détruit.
      */
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    private val scope = CoroutineScope(
+        SupervisorJob() +
+            Dispatchers.Default +
+            // Ce périmètre survit volontairement à l'écran. Sans handler, une
+            // exception levée hors des `try` internes atteint le gestionnaire par
+            // défaut du thread, donc un crash fatal — et si c'est l'appareil hôte,
+            // le salon disparaît pour tous les joueurs connectés en même temps.
+            // Avec lui, l'incident devient une non-fatale et la partie continue.
+            crashReportingHandler("LanRoomSession.scope"),
+    )
     private val advertiser = NsdAdvertiser(appContext)
 
     /**
@@ -176,6 +187,12 @@ class LanRoomSession(
         lan.start()
         advertiser.register(code, myName, appVersionLabel, appVersion)
         _link.value = LinkStatus(LinkPhase.CONNECTED, text(R.string.link_hosting))
+
+        // Le rôle change tout à la lecture d'un rapport : hôte et invité n'exécutent
+        // pas le même code. Ni le code du salon ni le nom de l'animateur ne sont
+        // transmis — le rôle et la version du protocole suffisent.
+        CrashReporter.setCustomKey("lan_role", "host")
+        CrashReporter.setCustomKey("protocol_version", PROTOCOL_VERSION)
     }
 
     // Fabriqué à la demande, et non stocké dans une propriété : le bloc `init` ci-dessus prend
@@ -198,6 +215,15 @@ class LanRoomSession(
             // là-bas, une annonce qui n'arrive jamais. On refuse la porte plutôt que de
             // laisser la partie se dérégler en silence.
             if (hello.appVersion != appVersion) {
+                // Refus volontaire, donc pas un incident : seulement un fil
+                // d'Ariane. Il explique en revanche le motif d'appel le plus
+                // probable — « mon ami n'arrive pas à rejoindre » — sans qu'on ait
+                // à demander à chacun sa version.
+                CrashReporter.log(
+                    "LanRoomSession: joueur refusé pour version incompatible " +
+                        "(hôte=$appVersion, joueur=${hello.appVersion})"
+                )
+                CrashReporter.setCustomKey("version_mismatch_seen", true)
                 peer.send(Bye(ByeCause.VERSION_MISMATCH))
                 scope.launch { delay(200); server?.disconnect(hello.playerId) }
                 return
@@ -285,6 +311,14 @@ class LanRoomSession(
         clock.reset()
         _link.value = LinkStatus(LinkPhase.SEARCHING, text(R.string.link_searching, code))
         clientJob = scope.launch { guestLoop() }
+
+        // `has_host_address` distingue les deux façons de rejoindre : adresse déjà
+        // connue, ou découverte mDNS à faire. C'est la première question à trancher
+        // quand un joueur signale qu'il n'arrive pas à entrer dans un salon.
+        // L'adresse elle-même n'est pas transmise.
+        CrashReporter.setCustomKey("lan_role", "guest")
+        CrashReporter.setCustomKey("protocol_version", PROTOCOL_VERSION)
+        CrashReporter.setCustomKey("has_host_address", address != null)
     }
 
     private suspend fun guestLoop() {

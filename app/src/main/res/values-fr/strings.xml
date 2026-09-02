@@ -307,4 +307,16 @@
     <string name="tutorial_tip_2">Activez « Garder l\'écran allumé » dans les réglages avant de commencer.</string>
     <string name="tutorial_tip_3">L\'écart affiché tient compte de la latence réseau : c\'est bien l\'instant de l\'appui qui est comparé, pas l\'ordre d\'arrivée des messages.</string>
     <string name="tutorial_tip_4">Sous la marge d\'incertitude affichée (± quelques ms en local), deux réflexes sont à égalité : à l\'animateur de trancher.</string>
+
+    <!-- Diagnostic Crashlytics (builds debug uniquement) -->
+    <string name="diagnostics_label">Diagnostic</string>
+    <string name="diagnostics_hint">Builds debug uniquement. Vérifie que la remontée d\'erreurs vers Crashlytics fonctionne — les deux chemins, une non-fatale et un crash ne voyageant pas de la même façon.</string>
+    <string name="diagnostics_collection_title">Collecte Crashlytics</string>
+    <string name="diagnostics_collection_subtitle">Coupée par défaut en debug, pour garder la console propre</string>
+    <string name="diagnostics_collection_off">Collecte coupée : les boutons ci-dessous n\'enverront rien.</string>
+    <string name="diagnostics_send_non_fatal">Envoyer une non-fatale</string>
+    <string name="diagnostics_force_crash">Provoquer un crash</string>
+    <string name="diagnostics_flush">Envoyer les rapports en attente</string>
+    <string name="diagnostics_previous_crash_yes">Session précédente terminée par un crash</string>
+    <string name="diagnostics_previous_crash_no">Aucun crash lors de la session précédente</string>
 </resources>

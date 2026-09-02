@@ -5,6 +5,7 @@ import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
 import android.net.wifi.WifiManager
 import android.util.Log
+import com.osala.BuzzMePlease.core.CrashReporter
 import com.osala.BuzzMePlease.net.GAME_PORT
 import com.osala.BuzzMePlease.net.NSD_ATTR_CODE
 import com.osala.BuzzMePlease.net.NSD_ATTR_HOST
@@ -52,7 +53,17 @@ class NsdAdvertiser(context: Context) {
     private var listener: NsdManager.RegistrationListener? = null
 
     fun register(code: String, hostName: String, version: String = "", versionCode: Long = 0) {
-        val manager = nsdManager ?: return
+        val manager = nsdManager ?: run {
+            // Aucun service NSD sur cet appareil : le salon existe et accepte les
+            // connexions, mais reste introuvable par son code. Le joueur voit un
+            // écran de recherche qui n'aboutit jamais, sans message.
+            CrashReporter.recordAnomalyOnce(
+                key = "nsd-service-absent",
+                message = "NsdManager indisponible : le salon ne peut pas être annoncé sur le réseau",
+                context = "NsdAdvertiser.register",
+            )
+            return
+        }
         unregister()
         val info = NsdServiceInfo().apply {
             serviceName = "$SERVICE_PREFIX$code"
@@ -67,6 +78,17 @@ class NsdAdvertiser(context: Context) {
         val registration = object : NsdManager.RegistrationListener {
             override fun onRegistrationFailed(serviceInfo: NsdServiceInfo, errorCode: Int) {
                 Log.w(TAG, "annonce impossible (code $errorCode)")
+                // Rappel asynchrone : aucun try/catch ne peut voir cet échec. Le
+                // salon tourne, mais « rejoindre avec le code » ne le trouvera
+                // jamais — c'est le mode d'entrée principal du jeu qui tombe, en
+                // silence complet. Le code d'erreur du framework est la seule
+                // information exploitable ; ni le code du salon ni le nom de
+                // l'animateur ne sont transmis.
+                CrashReporter.recordAnomalyOnce(
+                    key = "nsd-register-$errorCode",
+                    message = "Annonce mDNS du salon refusée (${nsdErrorName(errorCode)})",
+                    context = "NsdAdvertiser.onRegistrationFailed",
+                )
             }
 
             override fun onUnregistrationFailed(serviceInfo: NsdServiceInfo, errorCode: Int) = Unit
@@ -79,7 +101,14 @@ class NsdAdvertiser(context: Context) {
         }
         listener = registration
         runCatching { manager.registerService(info, NsdManager.PROTOCOL_DNS_SD, registration) }
-            .onFailure { Log.w(TAG, "registerService: ${it.message}") }
+            .onFailure { failure ->
+                Log.w(TAG, "registerService: ${failure.message}")
+                CrashReporter.recordOnce(
+                    key = "nsd-register-throw",
+                    throwable = failure,
+                    context = "NsdAdvertiser.registerService",
+                )
+            }
     }
 
     fun unregister() {
@@ -92,6 +121,17 @@ class NsdAdvertiser(context: Context) {
         const val TAG = "NsdAdvertiser"
         const val SERVICE_PREFIX = "BuzzMe-"
     }
+}
+
+/**
+ * Nomme un code d'erreur [NsdManager], pour que le rapport soit lisible sans
+ * aller chercher la constante correspondante dans la documentation.
+ */
+internal fun nsdErrorName(errorCode: Int): String = when (errorCode) {
+    NsdManager.FAILURE_INTERNAL_ERROR -> "FAILURE_INTERNAL_ERROR"
+    NsdManager.FAILURE_ALREADY_ACTIVE -> "FAILURE_ALREADY_ACTIVE"
+    NsdManager.FAILURE_MAX_LIMIT -> "FAILURE_MAX_LIMIT"
+    else -> "code $errorCode"
 }
 
 object NsdBrowser {
@@ -132,6 +172,15 @@ object NsdBrowser {
                 setReferenceCounted(true)
                 acquire()
             }
+        }.onFailure { failure ->
+            // Sans ce verrou, plusieurs constructeurs filtrent le multicast et la
+            // découverte reste vide sans erreur : c'est précisément le symptôme
+            // « je ne vois aucun salon » impossible à reproduire au bureau.
+            CrashReporter.recordOnce(
+                key = "nsd-multicast-lock",
+                throwable = failure,
+                context = "NsdBrowser.multicastLock",
+            )
         }.getOrNull()
 
         val toResolve = Channel<NsdServiceInfo>(Channel.UNLIMITED)
@@ -140,6 +189,15 @@ object NsdBrowser {
             // Un balayage qui ne démarre pas n'est plus fatal : le suivant réessaiera.
             override fun onStartDiscoveryFailed(serviceType: String, errorCode: Int) {
                 Log.w(TAG, "découverte impossible (code $errorCode)")
+                // Le repli par relance masque une panne durable : l'écran
+                // « rejoindre » reste vide indéfiniment, et rien ne le signale.
+                // `recordAnomalyOnce` est indispensable ici — le balayage repart
+                // toutes les six secondes, ce serait dix rapports par minute.
+                CrashReporter.recordAnomalyOnce(
+                    key = "nsd-discover-$errorCode",
+                    message = "Balayage mDNS refusé (${nsdErrorName(errorCode)}) : aucun salon ne sera trouvé",
+                    context = "NsdBrowser.onStartDiscoveryFailed",
+                )
             }
 
             override fun onStopDiscoveryFailed(serviceType: String, errorCode: Int) = Unit
@@ -188,7 +246,14 @@ object NsdBrowser {
                 val listener = newListener()
                 val started = runCatching {
                     manager.discoverServices(NSD_SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, listener)
-                }.onFailure { Log.w(TAG, "discoverServices: ${it.message}") }.isSuccess
+                }.onFailure { failure ->
+                    Log.w(TAG, "discoverServices: ${failure.message}")
+                    CrashReporter.recordOnce(
+                        key = "nsd-discover-throw",
+                        throwable = failure,
+                        context = "NsdBrowser.discoverServices",
+                    )
+                }.isSuccess
                 if (!started) {
                     delay(RESCAN_MILLIS)
                     continue
@@ -219,7 +284,17 @@ object NsdBrowser {
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
+            // Un salon introuvable n'arrive pas ici : `withTimeoutOrNull` rend
+            // `null` sans lever. Une exception à ce niveau est donc un vrai défaut
+            // de la découverte, pas une recherche infructueuse.
+            // Le code du salon reste hors du rapport : c'est le secret qui permet
+            // de rejoindre une partie.
             Log.w(TAG, "recherche du salon $code: ${e.message}")
+            CrashReporter.recordOnce(
+                key = "nsd-find-room",
+                throwable = e,
+                context = "NsdBrowser.findRoom",
+            )
             null
         }
 

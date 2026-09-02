@@ -46,8 +46,24 @@ class SoundFx(context: Context) {
     /** La minuterie qui borne la durée d'un son choisi par le joueur. */
     private val cutter = Handler(Looper.getMainLooper())
 
+    /**
+     * Le générateur de bips. Son échec de construction est la panne la plus large
+     * de cette classe : le décompte, le go, les verdicts et le buzzer de secours
+     * passent tous par lui. Un joueur se retrouve alors à jouer en silence complet
+     * — dans un jeu de buzzer, où le son *est* le signal — sans qu'aucun message ne
+     * l'explique. La cause habituelle est l'épuisement des décodeurs matériels par
+     * une autre application.
+     */
     private val tones: ToneGenerator? =
-        runCatching { ToneGenerator(AudioManager.STREAM_MUSIC, VOLUME) }.getOrNull()
+        runCatching { ToneGenerator(AudioManager.STREAM_MUSIC, VOLUME) }
+            .onFailure { failure ->
+                CrashReporter.recordOnce(
+                    key = "tonegenerator-init",
+                    throwable = failure,
+                    context = "SoundFx.toneGenerator",
+                )
+            }
+            .getOrNull()
 
     /** Bip sec du décompte 3 · 2 · 1. */
     fun tick() = play(ToneGenerator.TONE_PROP_BEEP, 90, vibrate = 12)

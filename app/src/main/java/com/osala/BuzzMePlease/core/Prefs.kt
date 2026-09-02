@@ -2,13 +2,16 @@ package com.osala.BuzzMePlease.core
 
 import android.content.Context
 import androidx.datastore.core.DataStore
+import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.osala.BuzzMePlease.model.RoomOptions
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
 
@@ -60,7 +63,20 @@ enum class AppLanguage(val tag: String?) {
     }
 }
 
-private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "buzzme")
+/**
+ * Un fichier de préférences corrompu (coupure pendant une écriture, restauration
+ * partielle) fait lever `CorruptionException` à la PREMIÈRE lecture. Sans
+ * gestionnaire, l'exception traverse le flux [Prefs.settings], que le ViewModel
+ * collecte au démarrage : l'application crasherait alors à chaque ouverture, de
+ * façon définitive.
+ *
+ * On repart d'un jeu vide : le joueur retrouve les réglages d'origine et un
+ * nouvel identifiant, ce qui est récupérable, au lieu d'un jeu mort.
+ */
+private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
+    name = "buzzme",
+    corruptionHandler = ReplaceFileCorruptionHandler { emptyPreferences() },
+)
 
 /** Réglages persistants. L'identifiant du joueur est stable : il survit à une coupure réseau,
  * ce qui permet de retrouver son score et son statut en se reconnectant. */
@@ -68,7 +84,17 @@ class Prefs(context: Context) {
 
     private val store = context.applicationContext.dataStore
 
-    val settings: Flow<Settings> = store.data.map { prefs ->
+    val settings: Flow<Settings> = store.data
+        // Le `catch` est placé AVANT le `map` pour intercepter l'amont, et réinjecte
+        // un jeu vide pour que la transformation produise les valeurs par défaut.
+        // Sans lui, une erreur de lecture (stockage plein, fichier illisible)
+        // remonterait jusqu'au collecteur et ferait tomber l'écran, là où des
+        // réglages par défaut suffisent à continuer de jouer.
+        .catch { failure ->
+            CrashReporter.record(failure, "Prefs.settings")
+            emit(emptyPreferences())
+        }
+        .map { prefs ->
         Settings(
             playerId = prefs[KEY_PLAYER_ID].orEmpty(),
             name = prefs[KEY_NAME].orEmpty(),
@@ -135,10 +161,27 @@ class Prefs(context: Context) {
         it[KEY_SOUNDBOARD] = slots.take(SoundLibrary.SLOTS).joinToString(SEPARATOR)
     }
 
-    /** Un réglage inconnu ou illisible ne bloque rien : on repart des valeurs d'origine. */
+    /**
+     * Un réglage inconnu ou illisible ne bloque rien : on repart des valeurs d'origine.
+     *
+     * Le repli reste silencieux pour l'utilisateur, mais il est signalé : le JSON
+     * est écrit par cette même application, avec `ignoreUnknownKeys` déjà actif
+     * pour absorber les champs ajoutés plus tard. Un échec de lecture signe donc un
+     * changement de format incompatible entre deux versions, et l'animateur
+     * retrouve tous ses réglages de partie remis à zéro sans comprendre pourquoi.
+     */
     private fun decodeOptions(raw: String?): RoomOptions =
-        raw?.let { runCatching { optionsJson.decodeFromString(RoomOptions.serializer(), it) }.getOrNull() }
-            ?: RoomOptions()
+        raw?.let { stored ->
+            runCatching { optionsJson.decodeFromString(RoomOptions.serializer(), stored) }
+                .onFailure { failure ->
+                    CrashReporter.recordOnce(
+                        key = "prefs-room-options",
+                        throwable = failure,
+                        context = "Prefs.decodeOptions",
+                    )
+                }
+                .getOrNull()
+        } ?: RoomOptions()
 
     /**
      * Les sons importés. Une version antérieure n'en gardait qu'un, celui du buzzer : il ouvre

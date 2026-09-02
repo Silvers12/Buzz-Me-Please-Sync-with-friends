@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Manifeste specifique au build debug.
+
+    Crashlytics ne collecte RIEN en debug : les sessions de developpement et les
+    crashs de test volontaires pollueraient la console et faussseraient la
+    metrique « utilisateurs sans crash » du build publie.
+
+    Ce reglage n'est qu'un DEFAUT. La section « Diagnostic » des reglages
+    (visible en debug uniquement) permet de rebasculer la collecte a true via
+    FirebaseCrashlytics.setCrashlyticsCollectionEnabled(). Ce choix est persiste
+    par le SDK et prend le pas sur cette meta-data, ce qui est indispensable
+    pour valider l'integration : un crash fatal n'est transmis qu'au lancement
+    SUIVANT, il faut donc que la collecte soit encore active a ce moment-la.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <meta-data
+            android:name="firebase_crashlytics_collection_enabled"
+            android:value="false" />
+    </application>
+
+</manifest>

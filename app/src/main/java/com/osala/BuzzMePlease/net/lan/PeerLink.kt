@@ -2,8 +2,10 @@ package com.osala.BuzzMePlease.net.lan
 
 import android.os.SystemClock
 import android.util.Log
+import com.osala.BuzzMePlease.core.CrashReporter
 import com.osala.BuzzMePlease.net.NetMessage
 import com.osala.BuzzMePlease.net.ProtocolJson
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -91,10 +93,45 @@ class PeerLink(private val socket: Socket) {
                 lastHeardAt = SystemClock.elapsedRealtime()
                 if (line.isBlank()) continue
                 val message = runCatching { ProtocolJson.decodeFromString<NetMessage>(line) }
-                    .onFailure { Log.w(TAG, "message illisible: ${it.message}") }
+                    .onFailure { failure ->
+                        Log.w(TAG, "message illisible: ${failure.message}")
+                        // Une trame illisible n'est jamais normale : les deux bouts
+                        // parlent le même protocole, généré par le même code. Cela
+                        // signe donc soit deux versions incompatibles autour de la
+                        // table, soit un défaut d'encodage — et dans les deux cas le
+                        // message est perdu en silence, ce qui se traduit par un
+                        // plateau désynchronisé sans explication.
+                        // `recordOnce` : sur un décalage de protocole, CHAQUE trame
+                        // échoue, et le flux en produit plusieurs par seconde.
+                        CrashReporter.recordOnce(
+                            key = "peer-decode",
+                            throwable = failure,
+                            context = "PeerLink.decode",
+                        )
+                    }
                     .getOrNull() ?: continue
-                onMessage(message)
+
+                // Traitement isolé de la lecture.
+                //
+                // `onMessage` exécute la logique de jeu (GameEngine, mise à jour
+                // d'état, diffusion). Sans ce try, une exception venue de là était
+                // rattrapée par le catch de la boucle et journalisée « lecture
+                // interrompue » : un bug de logique se déguisait en coupure réseau,
+                // la boucle rendait la main et le joueur était silencieusement
+                // déconnecté. On remonte la vraie cause et on garde la connexion.
+                try {
+                    onMessage(message)
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    CrashReporter.record(e, "PeerLink.onMessage")
+                }
             }
+        } catch (e: CancellationException) {
+            // Le salon se ferme ou l'écran est détruit : annulation normale, qu'il
+            // faut relancer. Le `catch (Exception)` ci-dessous l'avalait, ce qui
+            // rompait la coopération à l'annulation de tout le périmètre appelant.
+            throw e
         } catch (e: Exception) {
             Log.d(TAG, "lecture interrompue: ${e.message}")
         }

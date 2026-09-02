@@ -24,3 +24,22 @@
     public static **[] values();
     public static ** valueOf(java.lang.String);
 }
+
+# Firebase Crashlytics -------------------------------------------------------
+# Les regles ci-dessus laissent R8 renommer tout ce qui n'est pas le protocole,
+# ce qui est voulu. Encore faut-il pouvoir relire les traces : sans ces deux
+# attributs, R8 retire le nom du fichier source et les numeros de ligne, et un
+# rapport arrive sans le « at Foo.kt:42 » qui le rend exploitable, meme avec le
+# mapping envoye. `proguard-android-optimize.txt` les conserve deja ; on les
+# redeclare pour que la garantie ne depende pas du fichier fourni par l'AGP.
+-keepattributes SourceFile,LineNumberTable
+
+# Masque l'arborescence reelle dans l'APK tout en gardant la correspondance
+# dans le mapping envoye : traces lisibles en console, structure du projet non
+# exposee dans le binaire.
+-renamesourcefileattribute SourceFile
+
+# Crashlytics regroupe les non-fatales par type d'exception. Obfusquee en
+# `a.a.b`, l'exception maison qui porte les anomalies applicatives serait
+# impossible a distinguer dans la console.
+-keep class com.osala.BuzzMePlease.core.AppAnomalyException { *; }

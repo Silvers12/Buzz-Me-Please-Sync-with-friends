@@ -206,8 +206,29 @@ internal fun open(context: Context, source: String): MediaPlayer? {
         }
         player.prepare()
         player
-    }.onFailure {
-        Log.w("SoundLibrary", "son illisible : $source", it)
+    }.onFailure { failure ->
+        Log.w("SoundLibrary", "son illisible : $source", failure)
+        // Deux cas très différents derrière le même échec.
+        //
+        // Un son APPORTÉ par le joueur (`content://`) devient illisible dès qu'il
+        // supprime le fichier ou que l'autorisation d'accès expire : c'est banal,
+        // et le repli sur le bip est prévu. On n'ouvre pas d'incident.
+        //
+        // Un son LIVRÉ avec le jeu (chemin d'asset) est censé être toujours là :
+        // son échec signe un APK mal assemblé — un `noCompress` oublié rendrait
+        // par exemple tous les mp3 illisibles par descripteur de fichier — ou un
+        // décodeur épuisé. Cela mérite un rapport, et le nom de l'asset y est utile
+        // sans être une donnée personnelle.
+        val isUserImport = source.startsWith("content://") || source.startsWith("file://")
+        if (isUserImport) {
+            CrashReporter.log("SoundLibrary: son importé illisible (${redactUri(source)}), repli sur le bip")
+        } else {
+            CrashReporter.recordOnce(
+                key = "asset-sound-$source",
+                throwable = failure,
+                context = "SoundLibrary.openAsset",
+            )
+        }
         // Un lecteur abandonné en chemin garde son décodeur : le système n'en prête qu'un
         // petit nombre, et les sons suivants se verraient refuser le leur à leur tour.
         runCatching { player.release() }

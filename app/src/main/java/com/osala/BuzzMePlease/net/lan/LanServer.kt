@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import com.osala.BuzzMePlease.R
 import com.osala.BuzzMePlease.core.AppLocale
+import com.osala.BuzzMePlease.core.CrashReporter
 import com.osala.BuzzMePlease.net.GAME_PORT
 import com.osala.BuzzMePlease.net.Hello
 import com.osala.BuzzMePlease.net.NetMessage
@@ -69,16 +70,39 @@ class LanServer(
     }
 
     private suspend fun bind(port: Int): ServerSocket? {
+        var lastFailure: Throwable? = null
         repeat(BIND_ATTEMPTS) { attempt ->
             val socket = runCatching {
                 ServerSocket().apply {
                     reuseAddress = true
                     bind(InetSocketAddress(port), BACKLOG)
                 }
-            }.getOrNull()
+            }.onFailure { lastFailure = it }.getOrNull()
             if (socket != null) return socket
             Log.d(TAG, "port $port occupé, nouvelle tentative (${attempt + 1})")
             delay(BIND_RETRY_MILLIS)
+        }
+
+        // Douze tentatives épuisées : plus aucun salon ne peut être ouvert sur cet
+        // appareil. L'utilisateur voit « port occupé », mais la vraie cause était
+        // jusqu'ici perdue — l'exception de chaque tentative disparaissait dans le
+        // `runCatching`. Or ce n'est pas toujours un port pris : ce peut être une
+        // restriction réseau du constructeur, un profil professionnel, un VPN.
+        // C'est la panne complète de la fonction principale du jeu.
+        CrashReporter.setCustomKey("bind_attempts", BIND_ATTEMPTS)
+        val failure = lastFailure
+        if (failure != null) {
+            CrashReporter.recordOnce(
+                key = "lan-bind",
+                throwable = failure,
+                context = "LanServer.bind",
+            )
+        } else {
+            CrashReporter.recordAnomalyOnce(
+                key = "lan-bind",
+                message = "Impossible d'ouvrir le port $port après $BIND_ATTEMPTS tentatives, sans exception",
+                context = "LanServer.bind",
+            )
         }
         return null
     }

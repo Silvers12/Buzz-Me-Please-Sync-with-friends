@@ -27,17 +27,23 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.BugReport
+import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.LibraryMusic
 import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -45,8 +51,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.osala.BuzzMePlease.BuildConfig
 import com.osala.BuzzMePlease.R
 import com.osala.BuzzMePlease.core.AppLanguage
+import com.osala.BuzzMePlease.core.AppAnomalyException
+import com.osala.BuzzMePlease.core.CrashReporter
 import com.osala.BuzzMePlease.core.Links
 import com.osala.BuzzMePlease.core.openLink
 import com.osala.BuzzMePlease.core.startSupportMail
@@ -157,6 +166,15 @@ private fun TallSettings(
         Spacer(Modifier.height(16.dp))
         supportPanel()
 
+        // `BuildConfig.DEBUG` est une constante de compilation : en release la
+        // condition vaut `false`, le bloc est éliminé par le compilateur et
+        // DiagnosticsPanel devient du code mort que R8 retire du dex. Le bouton de
+        // crash volontaire est donc absent du binaire publié, pas seulement caché.
+        if (BuildConfig.DEBUG) {
+            Spacer(Modifier.height(16.dp))
+            DiagnosticsPanel()
+        }
+
         Spacer(Modifier.height(24.dp))
         Signature()
 
@@ -217,6 +235,10 @@ private fun WideSettings(
                 buzzerPanel()
                 Spacer(Modifier.height(16.dp))
                 supportPanel()
+                if (BuildConfig.DEBUG) {
+                    Spacer(Modifier.height(16.dp))
+                    DiagnosticsPanel()
+                }
                 Spacer(Modifier.height(24.dp))
             }
         }
@@ -407,6 +429,115 @@ private fun HowToPanel(onTutorial: () -> Unit) {
             icon = Icons.Filled.Info,
             onClick = onTutorial,
             modifier = Modifier.fillMaxWidth(),
+        )
+    }
+}
+
+/**
+ * Panneau de validation de l'intégration Crashlytics, réservé aux builds debug.
+ *
+ * Il couvre les deux chemins de remontée, qui n'ont rien en commun techniquement :
+ * la non-fatale part tout de suite par `recordException` et le jeu continue ; le
+ * crash fatal passe par le gestionnaire d'exceptions non interceptées et n'est
+ * transmis qu'au lancement suivant. Tester l'un ne prouve rien sur l'autre.
+ *
+ * L'interrupteur vient en premier parce qu'il conditionne les deux : la collecte
+ * est coupée par défaut en debug, sinon les parties de développement fausseraient
+ * la métrique « utilisateurs sans crash » du build publié.
+ *
+ * Le panneau ne prend aucun paramètre : il ne lit ni ne modifie l'état du jeu, il
+ * parle directement à [CrashReporter]. Rien à câbler dans [SettingsScreen], donc,
+ * et rien à retirer de sa signature quand ce panneau disparaîtra.
+ */
+@Composable
+private fun DiagnosticsPanel() {
+    var collectionEnabled by remember { mutableStateOf(CrashReporter.isCollectionEnabled()) }
+    // Lu une seule fois : la réponse porte sur le lancement précédent et ne peut
+    // pas changer pendant que l'écran est ouvert.
+    val crashedBefore = remember { CrashReporter.didCrashOnPreviousExecution() }
+
+    StagePanel(modifier = Modifier.fillMaxWidth()) {
+        SectionLabel(stringResource(R.string.diagnostics_label))
+        Spacer(Modifier.height(10.dp))
+        Text(
+            stringResource(R.string.diagnostics_hint),
+            style = MaterialTheme.typography.bodyMedium,
+            color = Stage.TextMuted,
+        )
+
+        Spacer(Modifier.height(12.dp))
+        OptionSwitch(
+            title = stringResource(R.string.diagnostics_collection_title),
+            subtitle = stringResource(R.string.diagnostics_collection_subtitle),
+            checked = collectionEnabled,
+            onCheckedChange = { wanted ->
+                CrashReporter.setCollectionEnabled(wanted)
+                // On relit l'état réel plutôt que d'assumer : si le SDK refuse le
+                // changement, l'interrupteur doit revenir en arrière et non mentir.
+                collectionEnabled = CrashReporter.isCollectionEnabled()
+            },
+        )
+
+        if (!collectionEnabled) {
+            Spacer(Modifier.height(8.dp))
+            Text(
+                stringResource(R.string.diagnostics_collection_off),
+                style = MaterialTheme.typography.bodyMedium,
+                color = Stage.Amber,
+            )
+        }
+
+        Spacer(Modifier.height(14.dp))
+        GhostAction(
+            text = stringResource(R.string.diagnostics_send_non_fatal),
+            icon = Icons.Filled.BugReport,
+            accent = Stage.Amber,
+            modifier = Modifier.fillMaxWidth(),
+            onClick = {
+                CrashReporter.setCustomKey("diagnostic_test", true)
+                CrashReporter.log("Diagnostic : envoi d'une non-fatale volontaire")
+                // `record` et non `recordOnce` : un test doit pouvoir être rejoué
+                // autant de fois que nécessaire dans la même session.
+                CrashReporter.record(
+                    AppAnomalyException("Test Crashlytics — non-fatale volontaire"),
+                    "DiagnosticsPanel.nonFatal",
+                )
+            },
+        )
+
+        Spacer(Modifier.height(10.dp))
+        GhostAction(
+            text = stringResource(R.string.diagnostics_force_crash),
+            icon = Icons.Filled.Warning,
+            accent = Stage.Red,
+            modifier = Modifier.fillMaxWidth(),
+            onClick = {
+                CrashReporter.setCustomKey("diagnostic_test", true)
+                CrashReporter.log("Diagnostic : crash fatal volontaire")
+                // L'exception traverse le gestionnaire de clic Compose puis le
+                // thread principal : c'est exactement le trajet d'un vrai crash,
+                // donc le test valide bien le handler installé par Crashlytics.
+                throw RuntimeException("Test Crashlytics — crash fatal volontaire")
+            },
+        )
+
+        Spacer(Modifier.height(10.dp))
+        GhostAction(
+            text = stringResource(R.string.diagnostics_flush),
+            icon = Icons.Filled.CloudUpload,
+            accent = Stage.Green,
+            modifier = Modifier.fillMaxWidth(),
+            onClick = { CrashReporter.sendUnsentReports() },
+        )
+
+        Spacer(Modifier.height(12.dp))
+        Text(
+            stringResource(
+                if (crashedBefore) R.string.diagnostics_previous_crash_yes
+                else R.string.diagnostics_previous_crash_no
+            ),
+            style = MaterialTheme.typography.bodyMedium,
+            color = Stage.TextMuted,
         )
     }
 }

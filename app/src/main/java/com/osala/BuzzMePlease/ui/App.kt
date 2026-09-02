@@ -24,6 +24,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.osala.BuzzMePlease.core.AppLanguage
 import com.osala.BuzzMePlease.core.AppLocale
+import com.osala.BuzzMePlease.core.CrashReporter
 import com.osala.BuzzMePlease.ui.screens.HomeScreen
 import com.osala.BuzzMePlease.ui.screens.JoinScreen
 import com.osala.BuzzMePlease.ui.screens.JoiningScreen
@@ -55,6 +56,15 @@ fun BuzzMeApp(viewModel: AppViewModel = viewModel()) {
         val message = notice ?: return@LaunchedEffect
         snackbarHostState.showSnackbar(message)
         viewModel.dismissNotice()
+    }
+
+    // La navigation étant centralisée ici, un seul effet suffit à étiqueter tous
+    // les rapports d'erreur avec l'écran affiché. C'est la première information
+    // regardée pour reproduire un incident, et elle donne aussi le fil d'Ariane du
+    // parcours suivi avant un crash : Home → Join → Joining → Room.
+    // Le nom de la route ne contient ni code de salon ni nom de joueur.
+    LaunchedEffect(route) {
+        CrashReporter.setCurrentScreen(route::class.simpleName ?: "Unknown")
     }
 
     // Langue de l'application : celle du téléphone par défaut, celle qu'on a choisie sinon. On

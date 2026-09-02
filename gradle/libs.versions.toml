@@ -9,6 +9,9 @@ coroutines = "1.9.0"
 serializationJson = "1.7.3"
 datastore = "1.1.1"
 junit = "4.13.2"
+googleServices = "4.4.3"
+crashlytics = "3.0.6"
+firebaseBom = "34.8.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -30,6 +33,12 @@ kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serializationJson" }
 androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
 
+# Crashlytics seul, sans firebase-analytics : Analytics apporterait les permissions
+# AD_ID et ACCESS_ADSERVICES_*, donc une declaration « Securite des donnees » sur
+# Play, pour un simple fil d'Ariane. Un jeu de buzzer local n'a pas a demander
+# l'identifiant publicitaire.
+firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
+firebase-crashlytics = { group = "com.google.firebase", name = "firebase-crashlytics" }
 
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 
@@ -38,3 +47,5 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+google-services = { id = "com.google.gms.google-services", version.ref = "googleServices" }
+firebase-crashlytics = { id = "com.google.firebase.crashlytics", version.ref = "crashlytics" }
