@@ -10,8 +10,10 @@ import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.osala.BuzzMePlease.model.RoomOptions
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.Json
 
@@ -85,14 +87,19 @@ class Prefs(context: Context) {
     private val store = context.applicationContext.dataStore
 
     val settings: Flow<Settings> = store.data
-        // Le `catch` est placé AVANT le `map` pour intercepter l'amont, et réinjecte
-        // un jeu vide pour que la transformation produise les valeurs par défaut.
-        // Sans lui, une erreur de lecture (stockage plein, fichier illisible)
-        // remonterait jusqu'au collecteur et ferait tomber l'écran, là où des
-        // réglages par défaut suffisent à continuer de jouer.
-        .catch { failure ->
-            CrashReporter.record(failure, "Prefs.settings")
-            emit(emptyPreferences())
+        // `retryWhen` avant tout repli : les erreurs de lecture DataStore sont le
+        // plus souvent passagères (fichier verrouillé, contention d'écriture). Un
+        // `catch` seul aurait TERMINÉ le flux — le collecteur unique de
+        // `AppViewModel` aurait rendu la main, et plus aucun changement de réglage
+        // n'aurait été vu pour le reste du processus.
+        .retryWhen { cause, attempt ->
+            CrashReporter.recordOnce("prefs-read", cause, "Prefs.settings")
+            if (attempt < MAX_READ_RETRIES) {
+                delay(READ_RETRY_MILLIS * (attempt + 1))
+                true
+            } else {
+                false
+            }
         }
         .map { prefs ->
         Settings(
@@ -110,6 +117,18 @@ class Prefs(context: Context) {
             imports = decodeImports(prefs[KEY_IMPORTS], prefs[KEY_BUZZER_IMPORT]),
         )
     }
+        // Placé APRÈS le `map` : couvre aussi l'analyse des chaînes persistées
+        // (`decodeSoundboard`, `AppLanguage.of`, `migratePath`, `decodeImports`),
+        // qui était la seule partie non protégée du flux.
+        //
+        // On ne réinjecte volontairement AUCUNE valeur : émettre un jeu vide
+        // produirait un `playerId` vide, et `AppViewModel.startSession` ouvrirait un
+        // salon avec cet identifiant — côté hôte, chaque invité à identifiant vide
+        // évincerait le précédent. Le flux se termine, l'application reste sur les
+        // réglages qu'elle a déjà, et `AppViewModel` garantit un identifiant valide.
+        .catch { failure ->
+            CrashReporter.recordOnce("prefs-read-final", failure, "Prefs.settings.final")
+        }
 
     /** Retourne l'identifiant existant, ou en crée un à la première ouverture. */
     suspend fun ensurePlayerId(): String {
@@ -173,10 +192,16 @@ class Prefs(context: Context) {
     private fun decodeOptions(raw: String?): RoomOptions =
         raw?.let { stored ->
             runCatching { optionsJson.decodeFromString(RoomOptions.serializer(), stored) }
-                .onFailure { failure ->
-                    CrashReporter.recordOnce(
+                .onFailure {
+                    // On ne transmet PAS l'exception : le message d'une
+                    // `JsonDecodingException` contient l'entrée brute. La charge
+                    // utile est ici bénigne (`RoomOptions` n'est qu'un enum et
+                    // quelques booléens), mais la règle vaut mieux que l'exception
+                    // à la règle — le jour où une option accueille un texte libre,
+                    // personne ne repassera par ici.
+                    CrashReporter.recordAnomalyOnce(
                         key = "prefs-room-options",
-                        throwable = failure,
+                        message = "Réglages de partie illisibles (${stored.length} car.), retour aux valeurs par défaut",
                         context = "Prefs.decodeOptions",
                     )
                 }
@@ -201,6 +226,10 @@ class Prefs(context: Context) {
 
     private companion object {
         const val SEPARATOR = "|"
+
+        /** Tentatives de relecture avant de renoncer, les erreurs DataStore étant surtout passagères. */
+        const val MAX_READ_RETRIES = 3
+        const val READ_RETRY_MILLIS = 150L
 
         /** Au-delà, ce sont des autorisations d'accès accumulées pour rien. */
         const val MAX_IMPORTS = 12

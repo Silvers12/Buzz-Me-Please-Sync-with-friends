@@ -383,12 +383,17 @@ class LanRoomSession(
         watchdogJob?.cancel()
         watchdogJob = scope.launch { watchHost(peer) }
 
-        withContext(Dispatchers.IO) { peer.readLoop { onGuestMessage(it) } }
-
-        pingJob?.cancel(); pingJob = null
-        watchdogJob?.cancel(); watchdogJob = null
-        peer.close()
-        if (clientLink === peer) clientLink = null
+        // `finally` : `readLoop` relance désormais les `CancellationException`, donc
+        // un nettoyage placé après l'appel serait sauté à l'annulation — sonde et
+        // chien de garde continueraient de tourner, et la socket resterait ouverte.
+        try {
+            withContext(Dispatchers.IO) { peer.readLoop { onGuestMessage(it) } }
+        } finally {
+            pingJob?.cancel(); pingJob = null
+            watchdogJob?.cancel(); watchdogJob = null
+            peer.close()
+            if (clientLink === peer) clientLink = null
+        }
     }
 
     /**

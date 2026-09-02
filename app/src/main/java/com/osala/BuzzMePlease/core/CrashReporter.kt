@@ -82,10 +82,15 @@ object CrashReporter {
             }
             crashlytics.recordException(throwable)
             Log.e(TAG, "non-fatale remontée : ${throwable.message}", throwable)
-        } catch (e: Exception) {
-            // Firebase indisponible (google-services.json absent, JVM de test) :
-            // la télémétrie ne doit jamais faire tomber l'appelant.
-            Log.e(TAG, "remontée impossible", e)
+        } catch (t: Throwable) {
+            // `Throwable` et non `Exception` : Firebase absent du classpath fait
+            // lever `NoClassDefFoundError` / `ExceptionInInitializerError`, qui sont
+            // des `Error` et passaient donc à travers. La garantie annoncée en tête
+            // de cette classe — sans effet plutôt que fautif — n'était pas tenue.
+            // Vaut aussi pour un `OutOfMemoryError` pendant la construction du
+            // rapport : depuis `crashReportingHandler`, une exception du handler
+            // repart au gestionnaire par défaut du thread, donc en crash fatal.
+            Log.e(TAG, "remontée impossible", t)
         }
     }
 
@@ -97,6 +102,14 @@ object CrashReporter {
      * l'information ; les neuf cents suivants ne font que masquer le reste.
      */
     fun recordOnce(key: String, throwable: Throwable, context: String? = null) {
+        // Le filtre est évalué AVANT de consommer la clé. Dans l'autre ordre, une
+        // annulation ordinaire brûlait la clé sans rien remonter, et la vraie panne
+        // suivante sous la même clé était perdue pour tout le lancement — soit
+        // exactement l'inverse du but.
+        if (!shouldReport(throwable)) {
+            Log.d(TAG, "annulation ignorée : ${throwable::class.java.simpleName}")
+            return
+        }
         if (!alreadyReported.add(key)) {
             Log.d(TAG, "non-fatale déjà remontée pour « $key », ignorée")
             return
@@ -114,6 +127,11 @@ object CrashReporter {
      * le salon n'est pas annonçable ou le son ne sort pas.
      */
     fun recordAnomalyOnce(key: String, message: String, context: String? = null) {
+        // Sortie anticipée pour éviter de payer `fillInStackTrace` sur un appel qui
+        // sera de toute façon dédupliqué. Le test n'est pas atomique, mais le `add`
+        // de [recordOnce] l'est : au pire deux threads construisent l'exception et
+        // un seul la remonte.
+        if (key in alreadyReported) return
         recordOnce(key, AppAnomalyException(message), context)
     }
 
@@ -121,7 +139,7 @@ object CrashReporter {
     fun log(message: String) {
         try {
             crashlytics.log(message)
-        } catch (e: Exception) {
+        } catch (t: Throwable) {
             Log.d(TAG, "log impossible : $message")
         }
     }
@@ -192,8 +210,8 @@ object CrashReporter {
     private inline fun guarded(block: () -> Unit) {
         try {
             block()
-        } catch (e: Exception) {
-            Log.d(TAG, "appel Crashlytics ignoré : ${e.message}")
+        } catch (t: Throwable) {
+            Log.d(TAG, "appel Crashlytics ignoré : ${t.message}")
         }
     }
 }

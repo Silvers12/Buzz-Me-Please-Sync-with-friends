@@ -111,24 +111,32 @@ class LanServer(
         val peer = PeerLink(socket)
         peer.startWriter(scope)
         scope.launch(Dispatchers.IO) {
-            peer.readLoop { message ->
-                if (message is Hello) {
-                    // Un joueur qui revient après une coupure remplace sa connexion précédente.
-                    peers.filter { it.playerId == message.playerId && it !== peer }
-                        .forEach { stale ->
-                            peers.remove(stale)
-                            stale.close()
-                        }
-                    peer.playerId = message.playerId
-                    if (!peers.contains(peer)) peers.add(peer)
-                    callbacks.onHello(peer, message)
-                } else if (peer.playerId != null) {
-                    callbacks.onMessage(peer, message)
+            // `finally` et non un enchaînement après l'appel : `readLoop` relance
+            // désormais les `CancellationException` au lieu de les absorber, ce qui
+            // crée un chemin de sortie par exception. Un nettoyage placé après
+            // l'appel serait alors sauté — socket jamais fermée, et surtout pair
+            // jamais retiré de `peers`, donc diffusé à jamais vers une liaison morte.
+            try {
+                peer.readLoop { message ->
+                    if (message is Hello) {
+                        // Un joueur qui revient après une coupure remplace sa connexion précédente.
+                        peers.filter { it.playerId == message.playerId && it !== peer }
+                            .forEach { stale ->
+                                peers.remove(stale)
+                                stale.close()
+                            }
+                        peer.playerId = message.playerId
+                        if (!peers.contains(peer)) peers.add(peer)
+                        callbacks.onHello(peer, message)
+                    } else if (peer.playerId != null) {
+                        callbacks.onMessage(peer, message)
+                    }
                 }
+            } finally {
+                peers.remove(peer)
+                peer.close()
+                callbacks.onGone(peer)
             }
-            peers.remove(peer)
-            peer.close()
-            callbacks.onGone(peer)
         }
     }
 

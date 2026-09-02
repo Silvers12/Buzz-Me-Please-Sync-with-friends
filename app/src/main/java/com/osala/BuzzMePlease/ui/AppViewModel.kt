@@ -7,6 +7,7 @@ import com.osala.BuzzMePlease.R
 import com.osala.BuzzMePlease.core.AppLanguage
 import com.osala.BuzzMePlease.core.AppLocale
 import com.osala.BuzzMePlease.core.ClipPlayer
+import com.osala.BuzzMePlease.core.CrashReporter
 import com.osala.BuzzMePlease.core.Codes
 import com.osala.BuzzMePlease.core.Prefs
 import com.osala.BuzzMePlease.core.Settings
@@ -16,6 +17,7 @@ import com.osala.BuzzMePlease.core.SoundLibrary
 import com.osala.BuzzMePlease.game.RoomSession
 import com.osala.BuzzMePlease.model.RoomOptions
 import com.osala.BuzzMePlease.net.lan.LanRoomSession
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -83,7 +85,27 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     init {
         viewModelScope.launch {
-            prefs.ensurePlayerId()
+            // `ensurePlayerId` écrit sur disque : son échec ne doit pas empêcher le
+            // démarrage. Un identifiant de session suffit à jouer — il ne survivra
+            // pas à la fermeture, ce qui est très préférable à un identifiant vide.
+            //
+            // Cet identifiant sert aussi de garde plus bas. `playerId` peut en effet
+            // arriver vide d'une lecture RÉUSSIE : le gestionnaire de corruption du
+            // DataStore repart légitimement d'un jeu de préférences vide. Or
+            // `startSession` transmet cet identifiant tel quel à `LanRoomSession`, et
+            // côté hôte `peers.filter { it.playerId == "" }` fait que chaque invité à
+            // identifiant vide évince le précédent : le salon n'accepterait plus
+            // qu'un seul joueur à la fois.
+            val ownId = try {
+                prefs.ensurePlayerId().takeIf { it.isNotBlank() }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                CrashReporter.recordOnce("prefs-ensure-player-id", e, "AppViewModel.ensurePlayerId")
+                null
+            } ?: Codes.newPlayerId()
+            _settings.value = _settings.value.copy(playerId = ownId)
+
             prefs.settings.collect { loaded ->
                 // La langue d'abord : le réseau et la sonothèque la lisent ici, faute de
                 // contexte Compose.
@@ -93,7 +115,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                     _soundLibrary.value =
                         SoundLibrary.all(AppLocale.wrap(getApplication()), loaded.imports)
                 }
-                _settings.value = loaded
+                _settings.value = if (loaded.playerId.isBlank()) loaded.copy(playerId = ownId) else loaded
                 soundFx.enabled = loaded.sound
                 soundFx.buzzerSound = loaded.buzzerSound
                 if (_route.value == Route.Loading) {
