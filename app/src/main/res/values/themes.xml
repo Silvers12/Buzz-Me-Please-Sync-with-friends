@@ -3,10 +3,14 @@
 
     <style name="Theme.BuzzMe" parent="android:Theme.Material.NoActionBar">
         <item name="android:windowBackground">@color/brand_background</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <!-- Ni statusBarColor, ni navigationBarColor, ni windowDrawsSystemBarBackgrounds :
+             dépréciés depuis l'API 35, sans effet depuis l'API 36, et signalés par le Play
+             Console comme paramètres obsolètes pour l'affichage bord à bord. Le bord à bord
+             est posé par MainActivity, qui appelle enableEdgeToEdge() avec
+             SystemBarStyle.dark(TRANSPARENT) sur les deux barres : barres transparentes et
+             icônes claires sur toutes les versions, la compatibilité étant à la charge
+             d'androidx et non de notre code. -->
         <item name="android:windowLightStatusBar">false</item>
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:windowActivityTransitions">true</item>
     </style>
 

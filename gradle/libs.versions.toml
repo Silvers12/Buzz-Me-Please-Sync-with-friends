@@ -8,6 +8,7 @@ composeBom = "2024.10.01"
 coroutines = "1.9.0"
 serializationJson = "1.7.3"
 datastore = "1.1.1"
+fragment = "1.9.0"
 junit = "4.13.2"
 googleServices = "4.4.3"
 crashlytics = "3.0.6"
@@ -32,6 +33,7 @@ androidx-compose-material-icons-extended = { group = "androidx.compose.material"
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
 kotlinx-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serializationJson" }
 androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
+androidx-fragment = { group = "androidx.fragment", name = "fragment", version.ref = "fragment" }
 
 # Crashlytics seul, sans firebase-analytics : Analytics apporterait les permissions
 # AD_ID et ACCESS_ADSERVICES_*, donc une declaration « Securite des donnees » sur

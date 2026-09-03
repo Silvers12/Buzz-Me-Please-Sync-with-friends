@@ -113,6 +113,15 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.crashlytics)
 
+    // Fragment ne sert à rien ici : tout est en Compose sur une ComponentActivity. Il entre
+    // quand même dans l'APK par la chaîne firebase-crashlytics -> play-services-tasks ->
+    // play-services-basement, qui le réclame en 1.1.0 (2019). Faute d'appcompat pour remonter
+    // cette résolution — CallMePlease en a un, pas ce projet — c'est bien cette version-là qui
+    // était embarquée, et le Play Console la signalait comme SDK obsolète. La déclarer ici
+    // aligne la résolution sur la version courante. À ne pas exclure : basement charge des
+    // classes Fragment à l'exécution.
+    implementation(libs.androidx.fragment)
+
     debugImplementation(libs.androidx.compose.ui.tooling)
 
     testImplementation(libs.junit)
