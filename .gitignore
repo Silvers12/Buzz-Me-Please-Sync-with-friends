@@ -10,7 +10,10 @@
 local.properties
 app/build/
 app/release/
-app/google-services.json
+# app/google-services.json est volontairement versionné : le build échoue sans lui, et
+# il ne contient qu'une clé API cliente et un app id, tous deux déjà extractibles de
+# l'APK publié — Google ne demande pas de le garder secret. Le versionner évite de le
+# recopier sur chaque poste. Les vrais secrets, eux, restent ignorés : *.jks, *.keystore.
 *.jks
 *.keystore
 

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "429062496187",
+    "project_id": "buzzmeplease-b4067",
+    "storage_bucket": "buzzmeplease-b4067.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:429062496187:android:d03b7a2fe9af4726b7ae9e",
+        "android_client_info": {
+          "package_name": "com.osala.buzzmeplease"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCwocB5peKEeG9kWESdg_WONPezB8UG6Ak"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
