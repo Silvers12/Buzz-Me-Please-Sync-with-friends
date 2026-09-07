@@ -77,6 +77,12 @@ interface RoomSession {
 
     // -------------------------------------------------------------- hôte
     fun arm()
+
+    /**
+     * Le stop du pupitre : les buzzers s'éteignent et la manche s'efface, sans toucher au
+     * plateau — les joueurs éliminés le restent, contrairement à [resetBoard]. Repartir se
+     * fait alors en deux gestes, stop puis go.
+     */
     fun reset()
 
     /** Mauvaise réponse : buzzer rouge et son de sanction, sans que la main ne bouge. */

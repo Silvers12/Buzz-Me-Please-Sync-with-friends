@@ -39,6 +39,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.LibraryMusic
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -558,6 +559,7 @@ private fun PhoneRoom(
                         HostControls(
                             state = state,
                             onArm = session::arm,
+                            onStop = session::reset,
                             onReset = session::resetBoard,
                             onOptions = onOptions,
                         )
@@ -929,6 +931,7 @@ private fun SoundBoardToggle(open: Boolean, onToggle: () -> Unit) {
 internal fun HostControls(
     state: RoomState,
     onArm: () -> Unit,
+    onStop: () -> Unit,
     onReset: () -> Unit,
     onOptions: () -> Unit,
 ) {
@@ -939,13 +942,21 @@ internal fun HostControls(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            // Manche en cours : le même bouton devient « stop » et éteint les buzzers sans
+            // toucher au plateau — les éliminés le restent, contrairement à la flèche
+            // circulaire d'à côté. Relancer se fait alors en deux gestes, stop puis go.
             PrimaryAction(
-                text = stringResource(if (armed) R.string.room_restart else R.string.room_go),
-                icon = Icons.Filled.Bolt,
-                // Tout le salon éliminé : le go n'arme personne, le bouton s'éteint.
-                enabled = state.canArm,
-                onClick = onArm,
-                colors = listOf(Stage.Gold, Color(0xFFDE9A12)),
+                text = stringResource(if (armed) R.string.room_stop else R.string.room_go),
+                icon = if (armed) Icons.Filled.Stop else Icons.Filled.Bolt,
+                // Tout le salon éliminé : le go n'arme personne, le bouton s'éteint. Le stop,
+                // lui, reste accessible — c'est justement une manche en cours qu'il ferme.
+                enabled = armed || state.canArm,
+                onClick = if (armed) onStop else onArm,
+                colors = if (armed) {
+                    listOf(Stage.Red, Stage.RedDeep)
+                } else {
+                    listOf(Stage.Gold, Color(0xFFDE9A12))
+                },
                 modifier = Modifier.weight(1f),
             )
             IconAction(
@@ -962,7 +973,7 @@ internal fun HostControls(
         }
 
         // Un bouton éteint sans un mot laisserait l'animateur chercher : on dit par où repartir.
-        if (!state.canArm) {
+        if (!state.canArm && !armed) {
             Spacer(Modifier.height(8.dp))
             Text(
                 text = stringResource(R.string.room_all_out),

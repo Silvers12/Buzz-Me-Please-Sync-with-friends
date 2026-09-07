@@ -188,7 +188,10 @@ class GameEngine(code: String, hostId: String, options: RoomOptions = RoomOption
         )
     }
 
-    /** Réinitialise : buzzers éteints, résultats effacés, scores et éliminations conservés. */
+    /**
+     * Le stop du pupitre : buzzers éteints, résultats effacés, scores et éliminations
+     * conservés. La manche n'est pas incrémentée — c'est le go suivant qui en ouvre une.
+     */
     fun reset() = mutate { current ->
         current.copy(
             roundState = RoundState.IDLE,

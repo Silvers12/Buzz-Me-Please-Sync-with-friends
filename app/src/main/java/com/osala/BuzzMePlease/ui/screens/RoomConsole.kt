@@ -196,6 +196,7 @@ private fun DeskColumn(
             HostControls(
                 state = state,
                 onArm = session::arm,
+                onStop = session::reset,
                 onReset = session::resetBoard,
                 onOptions = onOptions,
             )
