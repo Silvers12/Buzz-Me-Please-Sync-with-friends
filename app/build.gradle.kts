@@ -20,8 +20,8 @@ android {
         applicationId = "com.osala.buzzmeplease"
         minSdk = 26
         targetSdk = 36
-        versionCode = 115
-        versionName = "1.15"
+        versionCode = 116
+        versionName = "1.16"
     }
 
     buildTypes {
