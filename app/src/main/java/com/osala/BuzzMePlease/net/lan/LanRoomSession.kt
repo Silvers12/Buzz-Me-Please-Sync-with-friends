@@ -594,6 +594,16 @@ class LanRoomSession(
         host.reset()
     }
 
+    override fun closeBuzzers() {
+        val host = engine ?: return
+        // Le décompte n'a plus lieu d'aboutir : il ferait repasser la manche en ARMED juste
+        // après la fermeture, et les buzzers se rallumeraient tout seuls.
+        countdownJob?.cancel(); countdownJob = null
+        // Le repère local du buzz de l'animateur reste : son buzz, s'il en a un, est conservé
+        // comme celui des autres.
+        host.closeBuzzers(host.snapshot.round)
+    }
+
     override fun markWrong() {
         val host = engine ?: return
         rightJob?.cancel(); rightJob = null

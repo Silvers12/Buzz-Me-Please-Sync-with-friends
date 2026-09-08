@@ -559,7 +559,7 @@ private fun PhoneRoom(
                         HostControls(
                             state = state,
                             onArm = session::arm,
-                            onStop = session::reset,
+                            onCloseBuzzers = session::closeBuzzers,
                             onReset = session::resetBoard,
                             onOptions = onOptions,
                         )
@@ -931,28 +931,34 @@ private fun SoundBoardToggle(open: Boolean, onToggle: () -> Unit) {
 internal fun HostControls(
     state: RoomState,
     onArm: () -> Unit,
-    onStop: () -> Unit,
+    onCloseBuzzers: () -> Unit,
     onReset: () -> Unit,
     onOptions: () -> Unit,
 ) {
-    val armed = state.roundState == RoundState.ARMED || state.roundState == RoundState.COUNTDOWN
+    // Tant qu'il reste un buzzer vert, le go se change en « terminer » : il ne ferme que la
+    // phase de buzz, sans rien effacer de la manche — l'arbitrage continue buzzers fermés.
+    // Dès que plus un buzzer ne répond, il n'y a plus rien à couper et le go revient.
+    val closing = state.canCloseBuzzers
+    var confirmEnd by remember { mutableStateOf(false) }
+
+    // Le dernier buzzer vert peut retomber pendant que la question est posée — un dernier buzz,
+    // une élimination : il n'y a alors plus rien à fermer et la demande n'a plus d'objet.
+    LaunchedEffect(closing) { if (!closing) confirmEnd = false }
+
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            // Manche en cours : le même bouton devient « stop » et éteint les buzzers sans
-            // toucher au plateau — les éliminés le restent, contrairement à la flèche
-            // circulaire d'à côté. Relancer se fait alors en deux gestes, stop puis go.
             PrimaryAction(
-                text = stringResource(if (armed) R.string.room_stop else R.string.room_go),
-                icon = if (armed) Icons.Filled.Stop else Icons.Filled.Bolt,
-                // Tout le salon éliminé : le go n'arme personne, le bouton s'éteint. Le stop,
-                // lui, reste accessible — c'est justement une manche en cours qu'il ferme.
-                enabled = armed || state.canArm,
-                onClick = if (armed) onStop else onArm,
-                colors = if (armed) {
+                text = stringResource(if (closing) R.string.room_end else R.string.room_go),
+                icon = if (closing) Icons.Filled.Stop else Icons.Filled.Bolt,
+                // Tout le salon éliminé : le go n'arme personne, le bouton s'éteint.
+                enabled = closing || state.canArm,
+                // Terminer coupe les buzzers de tout le salon : on le demande avant de le faire.
+                onClick = { if (closing) confirmEnd = true else onArm() },
+                colors = if (closing) {
                     listOf(Stage.Red, Stage.RedDeep)
                 } else {
                     listOf(Stage.Gold, Color(0xFFDE9A12))
@@ -973,7 +979,7 @@ internal fun HostControls(
         }
 
         // Un bouton éteint sans un mot laisserait l'animateur chercher : on dit par où repartir.
-        if (!state.canArm && !armed) {
+        if (!state.canArm) {
             Spacer(Modifier.height(8.dp))
             Text(
                 text = stringResource(R.string.room_all_out),
@@ -981,6 +987,20 @@ internal fun HostControls(
                 color = Stage.Amber,
             )
         }
+    }
+
+    if (confirmEnd) {
+        ConfirmDialog(
+            title = stringResource(R.string.dialog_end_title),
+            message = stringResource(R.string.dialog_end_body),
+            confirmLabel = stringResource(R.string.room_end),
+            accent = Stage.Red,
+            onConfirm = {
+                confirmEnd = false
+                onCloseBuzzers()
+            },
+            onDismiss = { confirmEnd = false },
+        )
     }
 }
 

@@ -244,7 +244,7 @@ Text(stringResource(R.string.action_close), color = Stage.VioletSoft)
 
 /** Garde-fou devant une action qui ne se rattrape pas d'un simple appui. */
 @Composable
-private fun ConfirmDialog(
+internal fun ConfirmDialog(
     title: String,
     message: String,
     confirmLabel: String,

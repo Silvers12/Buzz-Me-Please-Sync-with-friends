@@ -168,6 +168,25 @@ class GameEngine(code: String, hostId: String, options: RoomOptions = RoomOption
     }
 
     /**
+     * Le rideau sur la phase de buzz : les buzzers verts s'éteignent, et **rien d'autre ne
+     * bouge**. Les buzz déjà pris gardent leur classement, la parole reste où elle est, les
+     * verdicts, les scores et les éliminations aussi. L'animateur ferme la porte, il ne solde
+     * pas la manche : elle reste telle quelle, et c'est le go suivant qui en ouvrira une autre.
+     *
+     * C'est exactement l'état d'une manche prise en duel — [RoundState.LOCKED] — étendu à tout
+     * le salon.
+     */
+    fun closeBuzzers(round: Int) = mutate { current ->
+        if (current.round != round) return@mutate current
+        // Rien à fermer sur une manche au repos ou déjà prise ; provisional ne peut pas être
+        // vrai ici, il n'existe qu'avec LOCKED.
+        if (current.roundState != RoundState.ARMED && current.roundState != RoundState.COUNTDOWN) {
+            return@mutate current
+        }
+        current.copy(roundState = RoundState.LOCKED)
+    }
+
+    /**
      * Le plateau remis à neuf : résultats effacés **et** tous les buzzers rallumés. C'est le
      * geste de la nouvelle question — une manche jouée à l'élimination laisse la moitié du
      * plateau éteinte, et les rallumer un par un serait long. Les scores, eux, ne bougent pas.
@@ -188,10 +207,7 @@ class GameEngine(code: String, hostId: String, options: RoomOptions = RoomOption
         )
     }
 
-    /**
-     * Le stop du pupitre : buzzers éteints, résultats effacés, scores et éliminations
-     * conservés. La manche n'est pas incrémentée — c'est le go suivant qui en ouvre une.
-     */
+    /** Réinitialise : buzzers éteints, résultats effacés, scores et éliminations conservés. */
     fun reset() = mutate { current ->
         current.copy(
             roundState = RoundState.IDLE,

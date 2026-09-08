@@ -273,6 +273,79 @@ class GameEngineTest {
     }
 
     @Test
+    fun `terminer ne se propose que tant qu un buzzer reste allume`() {
+        // Au repos, il n'y a pas de phase de buzz à fermer.
+        assertFalse(engine.snapshot.canCloseBuzzers)
+
+        armWithCountdown()
+        // Le décompte fait déjà partie de la manche : l'animateur peut le couper.
+        assertTrue(engine.snapshot.canCloseBuzzers)
+
+        engine.markArmed(1)
+        assertTrue(engine.snapshot.canCloseBuzzers)
+
+        // Tout le salon éliminé en pleine manche : plus un buzzer sur lequel appuyer.
+        listOf("host", "p1", "p2", "p3").forEach { engine.setStatus(it, PlayerStatus.ELIMINATED) }
+        assertFalse(engine.snapshot.canCloseBuzzers)
+    }
+
+    @Test
+    fun `en course terminer disparait quand tout le monde a buzze`() {
+        val race = GameEngine("ABCDE", "host", RoomOptions(mode = GameMode.COURSE))
+        race.join("a", "A", 0)
+        race.join("b", "B", 1)
+        race.arm(armAtMillis = 500, withCountdown = false)
+
+        race.registerBuzz("a", 1, 620, 0)
+        // B n'a pas encore appuyé : la manche court toujours.
+        assertTrue(race.snapshot.canCloseBuzzers)
+
+        race.registerBuzz("b", 1, 560, 0)
+        // Personne ne peut plus buzzer : la manche est finie d'elle-même, le pupitre repasse au go.
+        assertFalse(race.snapshot.canCloseBuzzers)
+    }
+
+    @Test
+    fun `terminer coupe les buzzers sans toucher a la manche`() {
+        val race = GameEngine("ABCDE", "host", RoomOptions(mode = GameMode.COURSE))
+        race.join("a", "A", 0)
+        race.join("b", "B", 1)
+        race.arm(armAtMillis = 500, withCountdown = false)
+        race.registerBuzz("a", 1, 620, 0)
+        race.addPoints("a", 1)
+
+        race.closeBuzzers(1)
+
+        val state = race.snapshot
+        assertEquals(RoundState.LOCKED, state.roundState)
+        // Plus rien à fermer : le pupitre repasse au go.
+        assertFalse(state.canCloseBuzzers)
+        // La manche, elle, reste entière : le buzz, la parole et le point ne bougent pas.
+        assertEquals(1, state.round)
+        assertEquals(listOf("a"), state.ranking.map { it.playerId })
+        assertEquals("a", state.speakerId)
+        assertEquals(1, state.player("a")?.score)
+        // B n'a plus de buzzer sur lequel appuyer, et il est bien arrivé après.
+        assertEquals(BuzzerVisual.LOST, state.visualFor("b", 900))
+        assertEquals(BuzzOutcome.REJECTED, race.registerBuzz("b", 1, 900, 0))
+    }
+
+    @Test
+    fun `terminer un decompte eteint les buzzers sans annoncer trop tard`() {
+        armWithCountdown()
+
+        engine.closeBuzzers(1)
+
+        val state = engine.snapshot
+        assertEquals(RoundState.LOCKED, state.roundState)
+        assertTrue(state.buzzes.isEmpty())
+        // Personne n'a été devancé sur une manche que personne n'a prise : les buzzers
+        // s'éteignent simplement, en attendant le prochain go.
+        assertEquals(BuzzerVisual.OFF, state.visualFor("p1", armedAt + 10))
+        assertEquals(BuzzOutcome.REJECTED, engine.registerBuzz("p1", 1, armedAt + 20, 0))
+    }
+
+    @Test
     fun `relancer efface les resultats mais garde les scores`() {
         engine.arm(armAtMillis = armedAt, withCountdown = false)
         engine.registerBuzz("p1", 1, armedAt + 100, 0)

@@ -78,7 +78,7 @@
     <string name="room_round">Manche %1$d</string>
     <string name="room_latency">%1$d ms · ± %2$d ms</string>
     <string name="room_go">Go !</string>
-    <string name="room_stop">Stop</string>
+    <string name="room_end">Terminer</string>
     <string name="room_reset">Réinitialiser : tous les buzzers rallumés</string>
     <string name="room_rules">Règles de la partie</string>
     <string name="announce_floor">À VOUS LA PAROLE !</string>
@@ -175,6 +175,8 @@
     <string name="dialog_revive">Réactiver le buzzer</string>
     <string name="dialog_transfer">Passer l\'animation</string>
     <string name="dialog_kick">Exclure du salon</string>
+    <string name="dialog_end_title">Voulez-vous terminer la phase de buzz ?</string>
+    <string name="dialog_end_body">Les buzzers verts s\'éteignent, et rien d\'autre ne bouge : les buzz déjà pris, la parole, les verdicts, les scores et les éliminations restent en place. La manche n\'est pas effacée — le go en ouvrira une nouvelle quand vous voudrez.</string>
     <string name="dialog_transfer_title">Passer l\'animation ?</string>
     <string name="dialog_transfer_body">%1$s deviendra l\'animateur du salon : c\'est cette personne qui lancera les go, comptera les points et réglera la partie. Vous redeviendrez un joueur ordinaire, et il faudra qu\'elle vous la rende pour reprendre la main.</string>
 
@@ -289,7 +291,7 @@
     <string name="tutorial_colour_eliminated">Gris · buzzer éteint par l’animateur</string>
     <string name="tutorial_colour_countdown">Ambre · le décompte 3 · 2 · 1, tenez-vous prêt</string>
     <string name="tutorial_5_title">Enchaîner les manches</string>
-    <string name="tutorial_5_body">Sous le bandeau, trois verdicts. « Vrai » met le point, fait passer le buzzer du joueur au vert avec le son de la bonne réponse, puis éteint les buzzers. « Faux » passe son buzzer au rouge et fait entendre la sanction chez lui, sans que la main ne bouge ; le bouton devient alors « Éliminer », de quoi relancer la même question aux seuls joueurs qui n\'ont pas encore répondu. « Suivant » descend la main au buzz d\'après, et ne s\'affiche que s\'il y a quelqu\'un derrière. Le temps de la manche, le go devient « Stop » : il éteint les buzzers et efface la manche sans réactiver personne — pour repartir, c\'est stop puis go. La flèche circulaire, elle, remet le plateau à neuf : buzz effacés, tous les buzzers rallumés, scores intacts.</string>
+    <string name="tutorial_5_body">Sous le bandeau, trois verdicts. « Vrai » met le point, fait passer le buzzer du joueur au vert avec le son de la bonne réponse, puis éteint les buzzers. « Faux » passe son buzzer au rouge et fait entendre la sanction chez lui, sans que la main ne bouge ; le bouton devient alors « Éliminer », de quoi relancer la même question aux seuls joueurs qui n\'ont pas encore répondu. « Suivant » descend la main au buzz d\'après, et ne s\'affiche que s\'il y a quelqu\'un derrière. Tant qu\'il reste un buzzer vert, le go devient « Terminer » : après confirmation, il éteint les buzzers et rien d\'autre — les buzz déjà pris, la parole et les verdicts restent en place, et vous continuez d\'arbitrer la manche buzzers fermés. Dès qu\'il n\'y a plus un buzzer sur lequel appuyer — tout le monde a buzzé, ou tout le monde est éliminé — le go revient de lui-même. La flèche circulaire, elle, remet le plateau à neuf : buzz effacés, tous les buzzers rallumés, scores intacts.</string>
     <string name="tutorial_6_title">Donner la parole, éliminer, compter</string>
     <string name="tutorial_6_body">L\'animateur appuie sur la ligne d\'un joueur pour ouvrir son pupitre. « Donner la parole » la lui confie sans passer par le classement — il n\'a même pas eu besoin de buzzer, de quoi interroger quelqu\'un directement. En dessous : buzzer gris (éliminé) ou réactivé en un geste, points en +1, +3 ou −1, exclusion du salon. Un joueur éliminé garde sa ligne sur tous les écrans, buzzer éteint : il ne joue plus, son score compte toujours, et l\'animateur le rappelle quand il veut. La flèche circulaire, à droite du go, les rallume tous d\'un coup.</string>
     <string name="tutorial_7_title">Passer l\'animation</string>

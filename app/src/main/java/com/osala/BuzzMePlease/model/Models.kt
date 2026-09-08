@@ -58,7 +58,12 @@ enum class RoundState {
     /** Buzzers armés (verts). */
     ARMED,
 
-    /** Quelqu'un a buzzé : buzzers verrouillés (mode duel uniquement). */
+    /**
+     * Fenêtre de buzz fermée, résultats de la manche conservés : plus personne ne peut
+     * appuyer, mais les buzz déjà pris, la parole et les verdicts restent en place. Le mode
+     * duel y entre au premier buzz, et l'animateur y met tout le salon quand il termine la
+     * phase de buzz.
+     */
     LOCKED,
 }
 
@@ -250,6 +255,15 @@ data class RoomState(
     val canArm: Boolean get() = activePlayers.isNotEmpty()
 
     /**
+     * Reste-t-il un buzzer vert, c'est-à-dire quelqu'un qui peut encore appuyer ? C'est tout
+     * ce que « terminer » a à fermer. Quand plus un buzzer ne répond — tout le monde a buzzé,
+     * ou tout le monde est éliminé — il n'y a plus rien à couper et le pupitre repasse au go.
+     */
+    val canCloseBuzzers: Boolean get() =
+        (roundState == RoundState.ARMED || roundState == RoundState.COUNTDOWN) &&
+            activePlayers.any { buzzOf(it.id) == null }
+
+    /**
      * État réellement visible à l'instant [nowHostMillis] : pendant le décompte, chaque appareil
      * bascule tout seul en ARMED à l'heure prévue, sans attendre un message de l'hôte.
      */
@@ -330,9 +344,10 @@ fun RoomState.visualFor(
         effectiveRoundState(nowHostMillis) == RoundState.ARMED -> BuzzerVisual.ARMED
         roundState == RoundState.COUNTDOWN -> BuzzerVisual.COUNTDOWN
         // Manche prise par un autre. Celui que l'animateur vient de remettre en jeu n'a rien
-        // laissé passer : son buzzer s'éteint simplement, en attendant le prochain go.
+        // laissé passer, et personne n'arrive trop tard sur une manche que personne n'a
+        // prise : l'animateur a simplement fermé les buzzers, son buzzer s'éteint.
         roundState == RoundState.LOCKED ->
-            if (p.revivedRound == round) BuzzerVisual.OFF else BuzzerVisual.LOST
+            if (p.revivedRound == round || buzzes.isEmpty()) BuzzerVisual.OFF else BuzzerVisual.LOST
         else -> BuzzerVisual.OFF
     }
 }
