@@ -175,8 +175,8 @@
     <string name="dialog_revive">Réactiver le buzzer</string>
     <string name="dialog_transfer">Passer l\'animation</string>
     <string name="dialog_kick">Exclure du salon</string>
-    <string name="dialog_end_title">Voulez-vous terminer la phase de buzz ?</string>
-    <string name="dialog_end_body">Les buzzers verts s\'éteignent, et rien d\'autre ne bouge : les buzz déjà pris, la parole, les verdicts, les scores et les éliminations restent en place. La manche n\'est pas effacée — le go en ouvrira une nouvelle quand vous voudrez.</string>
+    <string name="dialog_end_title">Terminer la phase de buzz ?</string>
+    <string name="dialog_end_body">Les buzzers verts s\'éteignent. Rien d\'autre ne bouge : la manche reste en place.</string>
     <string name="dialog_transfer_title">Passer l\'animation ?</string>
     <string name="dialog_transfer_body">%1$s deviendra l\'animateur du salon : c\'est cette personne qui lancera les go, comptera les points et réglera la partie. Vous redeviendrez un joueur ordinaire, et il faudra qu\'elle vous la rende pour reprendre la main.</string>
 

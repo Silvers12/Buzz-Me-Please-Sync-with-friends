@@ -178,7 +178,7 @@
     <string name="dialog_transfer">Hand over hosting</string>
     <string name="dialog_kick">Remove from the room</string>
     <string name="dialog_end_title">Close the buzzers?</string>
-    <string name="dialog_end_body">The green buzzers switch off, and nothing else moves: the buzzes already in, the floor, the verdicts, the scores and the knock-outs all stay as they are. The round is left exactly where it stands — the go opens the next one.</string>
+    <string name="dialog_end_body">The green buzzers switch off. Nothing else moves: the round stays as it is.</string>
     <string name="dialog_transfer_title">Hand over hosting?</string>
     <string name="dialog_transfer_body">%1$s becomes the host: they will call the go, keep score and set the rules. You go back to being an ordinary player, and they will have to hand it back for you to take over again.</string>
 
