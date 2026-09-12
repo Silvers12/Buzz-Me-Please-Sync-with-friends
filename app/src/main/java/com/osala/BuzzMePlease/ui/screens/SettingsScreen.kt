@@ -27,6 +27,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Apps
 import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.material.icons.filled.Info
@@ -121,6 +122,7 @@ fun SettingsScreen(
         SupportPanel(
             onContact = { context.startSupportMail() },
             onDonate = { context.openLink(Links.DONATE) },
+            onOtherApps = { context.openLink(Links.DEVELOPER_PAGE) },
         )
     }
 
@@ -368,14 +370,19 @@ private fun BuzzerPanel(
 }
 
 /**
- * De quoi joindre l'auteur, et de quoi le remercier.
+ * De quoi joindre l'auteur, de quoi le remercier, et de quoi voir ce qu'il fait d'autre.
  *
  * Le courriel part déjà rempli : modèle, version d'Android, version de l'application. Un rapport
  * de bug sans ces trois lignes oblige à un aller-retour, et la personne qui l'écrit n'a en
  * général aucune idée d'où les trouver.
+ *
+ * La page de l'auteur ferme le panneau, et c'est voulu : elle ne demande rien, elle propose. Un
+ * simple lien sortant, sans bibliothèque ni identifiant d'appareil — ce qui la distingue d'une
+ * campagne de notifications, qui aurait imposé les deux pour interrompre quelqu'un qui n'avait
+ * rien demandé.
  */
 @Composable
-private fun SupportPanel(onContact: () -> Unit, onDonate: () -> Unit) {
+private fun SupportPanel(onContact: () -> Unit, onDonate: () -> Unit, onOtherApps: () -> Unit) {
     StagePanel(modifier = Modifier.fillMaxWidth()) {
         SectionLabel(stringResource(R.string.settings_support_label))
         Spacer(Modifier.height(10.dp))
@@ -405,6 +412,21 @@ private fun SupportPanel(onContact: () -> Unit, onDonate: () -> Unit) {
             icon = Icons.Filled.Favorite,
             onClick = onDonate,
             accent = Stage.Gold,
+            modifier = Modifier.fillMaxWidth(),
+        )
+
+        Spacer(Modifier.height(20.dp))
+        Text(
+            stringResource(R.string.settings_other_apps_hint),
+            style = MaterialTheme.typography.bodyMedium,
+            color = Stage.TextMuted,
+        )
+        Spacer(Modifier.height(12.dp))
+        GhostAction(
+            text = stringResource(R.string.settings_other_apps),
+            icon = Icons.Filled.Apps,
+            onClick = onOtherApps,
+            accent = Stage.Violet,
             modifier = Modifier.fillMaxWidth(),
         )
     }

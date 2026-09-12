@@ -62,8 +62,15 @@
     <string name="settings_contact_hint">Un courriel s\'ouvre, déjà rempli avec votre modèle de téléphone et la version de l\'application. Il ne reste qu\'à raconter.</string>
     <string name="settings_contact_subject">Buzz Me Please — %1$s</string>
     <string name="settings_contact_body">Décrivez le problème ici, et ce que vous étiez en train de faire.\n\n— — —\nAppareil : %1$s\nAndroid : %2$s (API %3$d)\nApplication : %4$s\nLangue : %5$s</string>
-    <string name="settings_donate">Offrir un café au développeur</string>
-    <string name="settings_donate_hint">Buzz Me Please est gratuit, sans publicité et ne collecte rien. Seulement si le cœur vous en dit.</string>
+    <!-- Section Soutien. Ton : premiere personne, pince-sans-rire. L'auteur s'adresse
+         directement au joueur, l'humour vient du sous-entendu et jamais d'une blague
+         appuyee. Ne pas repasser a la troisieme personne (« le developpeur »), qui
+         sonnait froid dans la seule section qui demande quelque chose. Meme voix que
+         Call Me Please, volontairement : c'est la meme personne qui parle. -->
+    <string name="settings_donate">Offrez-moi un café</string>
+    <string name="settings_donate_hint">Gratuit, sans publicité, rien de collecté. Juste moi, et beaucoup de café.</string>
+    <string name="settings_other_apps">Découvrir mes autres apps</string>
+    <string name="settings_other_apps_hint">J\'ai d\'autres idées. Certaines sont même utiles.</string>
     <string name="settings_footer">Buzz Me Please · buzzer de quiz synchronisé</string>
     <string name="settings_version">Version %1$s</string>
     <string name="settings_copyright">© 2026 Olivier SALA</string>

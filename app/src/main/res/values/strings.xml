@@ -64,8 +64,15 @@
     <string name="settings_contact_hint">An email opens, already filled in with your phone model and the app version. Just describe what happened.</string>
     <string name="settings_contact_subject">Buzz Me Please — %1$s</string>
     <string name="settings_contact_body">Describe the problem here, and what you were doing when it happened.\n\n— — —\nDevice: %1$s\nAndroid: %2$s (API %3$d)\nApp: %4$s\nLanguage: %5$s</string>
-    <string name="settings_donate">Buy the developer a coffee</string>
-    <string name="settings_donate_hint">Buzz Me Please is free, ad-free and collects nothing. Only if you feel like it.</string>
+    <!-- Support section. Tone: first person, deadpan. The author speaks to the player
+         directly; the humour comes from understatement, never from a punchline. Do not
+         go back to the third person ("the developer") — it read cold in the one section
+         that asks for something. Same voice as Call Me Please, on purpose: it is the
+         same person talking. -->
+    <string name="settings_donate">Buy me a coffee</string>
+    <string name="settings_donate_hint">Free, no ads, nothing collected. Just me, and a lot of coffee.</string>
+    <string name="settings_other_apps">Discover my other apps</string>
+    <string name="settings_other_apps_hint">I have other ideas. Some are even useful.</string>
     <string name="settings_footer">Buzz Me Please · synchronised quiz buzzer</string>
     <string name="settings_version">Version %1$s</string>
     <string name="settings_copyright">© 2026 Olivier SALA</string>

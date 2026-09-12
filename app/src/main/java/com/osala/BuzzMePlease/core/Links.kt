@@ -23,6 +23,15 @@ object Links {
 
     const val DONATE = "https://paypal.me/SalaOlivier"
 
+    /**
+     * La page de l'auteur sur le Store, qui liste tout ce qu'il a publié.
+     *
+     * L'identifiant est celui du compte, et non son nom : un nom de compte se change, un
+     * identifiant non. Un lien de la forme `developer?id=Nom` cesserait de mener quelque part
+     * le jour d'un renommage, sans que rien dans l'application ne le signale.
+     */
+    const val DEVELOPER_PAGE = "https://play.google.com/store/apps/dev?id=8673366199474385575"
+
     const val SUPPORT_MAIL = "silversvsil@gmail.com"
 }
 
