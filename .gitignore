@@ -19,3 +19,7 @@ app/release/
 
 # Cache du compilateur Kotlin, régénéré à chaque build.
 .kotlin/
+
+# Les identifiants de signature : chemin du keystore, alias, mots de passe. Le .jks est
+# déjà ignoré plus haut ; le fichier qui le désigne et l'ouvre ne doit pas partir non plus.
+keystore.properties

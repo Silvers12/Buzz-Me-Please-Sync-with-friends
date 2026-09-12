@@ -1,3 +1,6 @@
+import com.android.build.api.artifact.SingleArtifact
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -24,6 +27,27 @@ android {
         versionName = "1.18"
     }
 
+    // Les identifiants de signature vivent hors du dépôt, dans keystore.properties, qui n'est
+    // pas versionné — pas plus que le .jks qu'il désigne. Le fichier absent, le build release
+    // retombe sur la clé de debug : il reste compilable et installable sur un autre poste ou
+    // sur le runner d'intégration, mais le Play Console le refusera, puisqu'il n'attend que le
+    // certificat d'upload enregistré une fois pour toutes.
+    val signingProperties = Properties().apply {
+        val file = rootProject.file("keystore.properties")
+        if (file.exists()) file.inputStream().use(::load)
+    }
+
+    signingConfigs {
+        if (signingProperties.isNotEmpty()) {
+            create("release") {
+                storeFile = file(signingProperties.getProperty("storeFile"))
+                storePassword = signingProperties.getProperty("storePassword")
+                keyAlias = signingProperties.getProperty("keyAlias")
+                keyPassword = signingProperties.getProperty("keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         debug {
             // `applicationIdSuffix = ".debug"` retiré : le plugin google-services
@@ -47,8 +71,9 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-            // Lets `./gradlew assembleRelease` produce an installable APK without a keystore.
-            signingConfig = signingConfigs.getByName("debug")
+            // La clé d'upload si elle est déclarée, celle de debug sinon : `./gradlew
+            // assembleRelease` produit un APK installable même sans keystore.
+            signingConfig = signingConfigs.findByName("release") ?: signingConfigs.getByName("debug")
             // R8 obscurcit et élague ce build : sans l'envoi du mapping, les stack
             // traces arrivent illisibles dans Crashlytics. D'autant plus ici que les
             // règles ci-dessus laissent R8 renommer tout sauf le protocole.
@@ -88,6 +113,25 @@ android {
             "/META-INF/DEPENDENCIES",
             "/META-INF/INDEX.LIST",
         )
+    }
+}
+
+/**
+ * L'AAB signé atterrit aussi dans `app/release/`, là où Android Studio dépose le sien et d'où
+ * part l'envoi au Play Console.
+ *
+ * Gradle écrit le bundle dans `app/build/outputs/bundle/release/`. Deux emplacements pour le
+ * même artefact, c'est l'occasion d'envoyer le mauvais — celui de la veille, ou celui signé
+ * avec la clé de debug. La copie garde les deux alignés, quel que soit le chemin emprunté.
+ */
+androidComponents {
+    onVariants(selector().withBuildType("release")) { variant ->
+        val copyBundle = tasks.register<Copy>("copy${variant.name.replaceFirstChar(Char::uppercase)}Bundle") {
+            from(variant.artifacts.get(SingleArtifact.BUNDLE))
+            into(layout.projectDirectory.dir("release"))
+        }
+        tasks.matching { it.name == "bundle${variant.name.replaceFirstChar(Char::uppercase)}" }
+            .configureEach { finalizedBy(copyBundle) }
     }
 }
 
