@@ -25,8 +25,8 @@ android {
         applicationId = "com.osala.buzzmeplease"
         minSdk = 26
         targetSdk = 36
-        versionCode = 118
-        versionName = "1.18"
+        versionCode = 119
+        versionName = "1.19"
     }
 
     // Les identifiants de signature vivent hors du dépôt, dans keystore.properties, qui n'est
