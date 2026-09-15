@@ -14,9 +14,11 @@ android {
     namespace = "com.osala.BuzzMePlease"
     compileSdk = 37
 
-    // Deux langues embarquées, pas les cent-quarante d'AndroidX : l'application pèse moins.
+    // Les langues traduites, pas les cent-quarante d'AndroidX : l'application pèse moins. Toute
+    // langue absente de cette liste est retirée de l'APK, `values-xx` ou pas — une traduction
+    // ajoutée sans son entrée ici ne s'afficherait jamais.
     androidResources {
-        localeFilters += listOf("fr", "en")
+        localeFilters += listOf("fr", "en", "de", "es", "it", "ar")
     }
 
     defaultConfig {

@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Deutsch: greift, sobald das Telefon auf Deutsch steht. Der Name des Spiels,
+    „Buzz Me Please", wird nicht übersetzt — er bleibt in res/values.
+    Angesprochen wird geduzt: ein Spielabend unter Freunden siezt sich nicht.
+-->
+<resources>
+    <!-- Commun -->
+    <string name="action_back">Zurück</string>
+    <string name="action_close">Schließen</string>
+    <string name="action_cancel">Abbrechen</string>
+    <string name="action_settings">Einstellungen</string>
+
+    <!-- Accueil -->
+    <string name="home_tagline">Der Quizbuzzer, auf die Millisekunde genau</string>
+    <string name="home_nickname_label">Dein Spitzname</string>
+    <string name="home_nickname_hint">Z. B. Camille</string>
+    <string name="home_connection_label">Verbindung der Spieler</string>
+    <string name="home_wifi_title">Lokales WLAN</string>
+    <string name="home_wifi_subtitle">Ohne Internet · am genauesten</string>
+    <string name="home_wifi_only">Alle Telefone müssen im selben WLAN sein.</string>
+    <string name="home_create_room">Raum erstellen</string>
+    <string name="home_join_room">Mit Code beitreten</string>
+    <string name="home_need_nickname">Wähle zuerst einen Spitznamen (mindestens 2 Zeichen).</string>
+    <string name="home_rate">App bewerten</string>
+
+    <!-- Rejoindre -->
+    <string name="join_title">Einem Raum beitreten</string>
+    <string name="join_code_label">Raumcode</string>
+    <string name="join_code_hint">ABCDE</string>
+    <string name="join_action">Beitreten</string>
+    <string name="join_discovered_label">Im WLAN gefundene Räume</string>
+    <string name="join_searching">Suche läuft… Stelle sicher, dass der Gastgeber den Raum erstellt hat und alle Telefone im selben WLAN sind.</string>
+    <string name="join_room_host">Bei %1$s</string>
+    <string name="join_room_action">BEITRETEN</string>
+    <string name="joining_title">Beitritt zum Raum</string>
+    <string name="joining_searching">Der Raum wird gesucht…</string>
+    <string name="joining_hint">Der Raum öffnet sich, sobald der Gastgeber antwortet. Es tut sich nichts? Prüfe den Code und ob alle Telefone im selben WLAN sind.</string>
+    <string name="joining_cancel">Abbrechen</string>
+
+    <!-- Réglages -->
+    <string name="settings_title">Einstellungen</string>
+    <string name="settings_language_label">Sprache</string>
+    <string name="settings_language_auto">System</string>
+    <string name="settings_language_fr">Français</string>
+    <string name="settings_language_en">English</string>
+    <string name="settings_language_de">Deutsch</string>
+    <string name="settings_language_es">Español</string>
+    <string name="settings_language_it">Italiano</string>
+    <string name="settings_language_ar">العربية</string>
+    <string name="settings_comfort_label">Spielkomfort</string>
+    <string name="settings_buzzer_label">Buzzer-Ton</string>
+    <string name="settings_buzzer_hint">Was dein eigenes Telefon beim Drücken spielt. Tippe einen Ton an, um ihn zu hören.</string>
+    <string name="settings_buzzer_default">Standardton</string>
+    <string name="settings_buzzer_import">Ton importieren…</string>
+    <string name="settings_buzzer_imported">Importierter Ton</string>
+    <string name="settings_buzzer_unreadable">Diese Datei lässt sich nicht lesen. Wähle eine andere.</string>
+    <string name="settings_sound_title">Ton und Vibration</string>
+    <string name="settings_sound_subtitle">Countdown-Töne, Startsignal, Rückmeldung beim Buzzen.</string>
+    <string name="settings_screen_title">Bildschirm anlassen</string>
+    <string name="settings_screen_subtitle">Während einer Partie unverzichtbar: ein dunkler Bildschirm heißt ein verpasster Buzz und eine Wiederverbindung, auf die man wartet.</string>
+    <string name="settings_howto_label">So funktioniert es</string>
+    <string name="settings_howto_body">Die ganze Anleitung: Raum erstellen, Start geben, Spieler ausschalten, Punkte zählen, Moderation übergeben.</string>
+    <string name="settings_open_tutorial">Anleitung öffnen</string>
+    <string name="settings_support_label">Ein Problem, eine Idee?</string>
+    <string name="settings_contact">Problem melden</string>
+    <string name="settings_contact_hint">Eine E-Mail öffnet sich, Telefonmodell und App-Version schon eingetragen. Beschreibe einfach, was passiert ist.</string>
+    <string name="settings_contact_subject">Buzz Me Please — %1$s</string>
+    <string name="settings_contact_body">Beschreibe das Problem hier, und was du gerade getan hast, als es auftrat.\n\n— — —\nGerät: %1$s\nAndroid: %2$s (API %3$d)\nApp: %4$s\nSprache: %5$s</string>
+    <!-- Support section. Tone: first person, deadpan. The author speaks to the player
+         directly; the humour comes from understatement, never from a punchline. Do not
+         go back to the third person ("the developer") — it read cold in the one section
+         that asks for something. Same voice as Call Me Please, on purpose: it is the
+         same person talking. -->
+    <string name="settings_donate">Spendier mir einen Kaffee</string>
+    <string name="settings_donate_hint">Kostenlos, keine Werbung, nichts gesammelt. Nur ich, und ziemlich viel Kaffee.</string>
+    <string name="settings_other_apps">Meine anderen Apps entdecken</string>
+    <string name="settings_other_apps_hint">Ich habe noch andere Ideen. Manche sind sogar nützlich.</string>
+    <string name="settings_footer">Buzz Me Please · synchronisierter Quizbuzzer</string>
+    <string name="settings_version">Version %1$s</string>
+    <string name="settings_copyright">© 2026 Olivier SALA</string>
+
+    <!-- Salon -->
+    <string name="room_code_label">Raumcode</string>
+    <string name="room_leave">Raum verlassen</string>
+    <string name="room_badge_host">Gastgeber</string>
+    <string name="room_badge_player">Spieler</string>
+    <string name="room_badge_duel">Schnell</string>
+    <string name="room_badge_race">Rennen</string>
+    <string name="room_round">Runde %1$d</string>
+    <string name="room_latency">%1$d ms · ± %2$d ms</string>
+    <string name="room_go">Los!</string>
+    <string name="room_end">Buzzer schließen</string>
+    <string name="room_reset">Zurücksetzen: alle Buzzer wieder an</string>
+    <string name="room_rules">Spielregeln</string>
+    <string name="announce_floor">DU HAST DAS WORT!</string>
+    <string name="announce_right">GUT GEMACHT!</string>
+    <string name="announce_wrong">FALSCH!</string>
+    <string name="player_yellow_cards">Gelbe Karten: %1$d</string>
+    <string name="player_red_cards">Rote Karten: %1$d</string>
+    <string name="alert_clear">KARTEN LÖSCHEN (%1$s)</string>
+    <plurals name="alert_clear_yellow">
+        <item quantity="one">%d gelbe</item>
+        <item quantity="other">%d gelbe</item>
+    </plurals>
+    <plurals name="alert_clear_red">
+        <item quantity="one">%d rote</item>
+        <item quantity="other">%d rote</item>
+    </plurals>
+    <string name="alert_send">Verwarnung geben…</string>
+    <string name="alert_pick_title">Welche Verwarnung?</string>
+    <string name="alert_yellow">Gelbe Karte</string>
+    <string name="alert_red">Rote Karte</string>
+    <string name="announce_yellow_you">GELBE KARTE</string>
+    <string name="announce_yellow_other">GELBE KARTE\n%1$s</string>
+    <string name="announce_red_you">ROTE KARTE</string>
+    <string name="announce_red_other">ROTE KARTE\n%1$s</string>
+    <string name="announce_game_over">SPIEL VORBEI\nSieger: %1$s</string>
+    <string name="announce_game_over_tie">SPIEL VORBEI\nUnentschieden!</string>
+    <string name="rules_end_game">Spiel beenden</string>
+    <string name="rules_end_game_title">Spiel beenden?</string>
+    <string name="rules_end_game_body">Sieger und Punktestand werden auf allen Telefonen verkündet. Nichts wird gelöscht: ihr könnt danach weiterspielen.</string>
+    <string name="announce_late">ZU SPÄT</string>
+    <string name="announce_out">DU BIST RAUS</string>
+    <string name="announce_back">DU BIST WIEDER DABEI</string>
+    <string name="announce_host_you">DU BIST DER GASTGEBER</string>
+    <string name="announce_host_other">NEUER GASTGEBER\n%1$s</string>
+    <string name="room_all_out">Alle sind ausgeschieden. Hol einen Spieler zurück, oder schalte mit dem Pfeil alle Buzzer wieder ein.</string>
+    <string name="room_board">Tabelle</string>
+    <string name="room_board_host">Tabelle · Spieler antippen</string>
+    <string name="room_board_hidden_host">Tabelle · für Spieler verborgen</string>
+    <string name="room_board_sounds">Soundboard · lange drücken zum Ändern</string>
+    <string name="room_online_count">%1$d/%2$d online</string>
+    <string name="room_sounds_open">Töne</string>
+    <string name="room_sounds_close">Tabelle</string>
+    <string name="room_sounds_open_desc">Soundboard öffnen</string>
+    <string name="room_sounds_close_desc">Zurück zur Tabelle</string>
+
+    <!-- Buzzer -->
+    <string name="buzzer_buzz">BUZZ</string>
+    <string name="buzzer_taken">VERGEBEN</string>
+    <string name="buzzer_correct">RICHTIG</string>
+    <string name="buzzer_missed">DANEBEN</string>
+    <string name="buzzer_too_late">ZU SPÄT</string>
+    <string name="buzzer_passed">NÄCHSTER</string>
+    <string name="buzzer_out">RAUS</string>
+    <string name="buzzer_ready">BEREIT?</string>
+    <string name="buzzer_get_ready">Mach dich bereit</string>
+    <string name="buzzer_press">Drücken!</string>
+    <string name="buzzer_recorded">Erfasst</string>
+    <string name="buzzer_your_turn">Du bist mit Antworten dran</string>
+    <string name="buzzer_point">Punkt geholt</string>
+    <string name="buzzer_can_return">Der Gastgeber kann dich zurückholen</string>
+    <string name="buzzer_waiting">Warten auf den Start</string>
+
+    <!-- Bandeau de résultat -->
+    <string name="banner_yours">Du bist dran!</string>
+    <string name="banner_has_hand">%1$s hat das Wort</string>
+    <string name="banner_given">Wort vom Gastgeber erteilt</string>
+    <string name="banner_reaction">Reaktion %1$s</string>
+    <string name="banner_precision">" (± %1$d ms)"</string>
+    <string name="banner_ahead">" · %2$s vor %1$s"</string>
+    <string name="banner_photo_finish">Fotofinish: wird ausgewertet…</string>
+    <string name="banner_right">Richtig</string>
+    <string name="banner_wrong">Falsch</string>
+    <string name="banner_next">Nächster</string>
+    <string name="banner_knock_out">Ausschalten</string>
+    <string name="banner_nobody">Niemand hatte es · starte eine neue Runde</string>
+
+    <!-- Ligne de joueur -->
+    <string name="player_host_desc">Gastgeber</string>
+    <string name="player_you">DU</string>
+    <string name="player_out">Raus</string>
+    <string name="player_offline">Offline</string>
+    <string name="player_ready">Bereit</string>
+    <string name="player_ready_ping">Bereit · %1$d ms</string>
+    <string name="player_winner_desc">Sieger der Runde</string>
+
+    <!-- Pupitre du joueur -->
+    <string name="dialog_score">Punkte</string>
+    <string name="dialog_floor">WORT</string>
+    <string name="dialog_give_floor">DAS WORT ERTEILEN</string>
+    <string name="dialog_buzzer">Buzzer</string>
+    <string name="dialog_alert">Verwarnung</string>
+    <string name="dialog_room">Raum</string>
+    <string name="dialog_eliminate">Ausschalten (grauer Buzzer)</string>
+    <string name="dialog_revive">Buzzer wieder einschalten</string>
+    <string name="dialog_transfer">Moderation übergeben</string>
+    <string name="dialog_kick">Aus dem Raum entfernen</string>
+    <string name="dialog_end_title">Buzzer schließen?</string>
+    <string name="dialog_end_body">Die grünen Buzzer gehen aus. Sonst ändert sich nichts: die Runde bleibt, wie sie ist.</string>
+    <string name="dialog_transfer_title">Moderation übergeben?</string>
+    <string name="dialog_transfer_body">%1$s wird Gastgeber: diese Person gibt den Start, zählt die Punkte und stellt die Regeln ein. Du wirst wieder ein gewöhnlicher Spieler, und sie muss sie dir zurückgeben, damit du wieder übernehmen kannst.</string>
+
+    <!-- Règles de la partie -->
+    <string name="rules_title">Spielregeln</string>
+    <string name="rules_duel_title">Schnellmodus</string>
+    <string name="rules_duel_subtitle">Wer zuerst buzzt, sperrt alle anderen. Ausgeschaltet buzzen alle, und es gibt eine vollständige Rangliste.</string>
+    <string name="rules_countdown_title">Countdown 3 · 2 · 1</string>
+    <string name="rules_countdown_subtitle">Alle Geräte schalten im selben Augenblick scharf, auf die Millisekunde genau.</string>
+    <string name="rules_hide_board_title">Verborgene Tabelle</string>
+    <string name="rules_hide_board_subtitle">Auf den Telefonen der Spieler schrumpft die Tabelle auf ihre eigene Zeile und ihre Punkte. Du behältst die vollständige Übersicht.</string>
+    <string name="rules_sound_title">Ton und Vibration</string>
+    <string name="rules_sound_subtitle">Countdown-Töne, Startsignal und Rückmeldung beim Buzzen.</string>
+    <string name="rules_reset_scores">Alle Punkte zurücksetzen</string>
+
+    <!-- Sonothèque -->
+    <string name="sounds_title">Ton für dieses Feld</string>
+    <string name="sounds_help">▶ antippen zum Hören, den Namen antippen, um ihn auf das Feld zu legen.</string>
+    <string name="sounds_clear">Leeren</string>
+    <string name="sounds_pick_desc">Einen Ton für dieses Feld wählen</string>
+    <string name="sounds_preview_desc">%1$s abspielen</string>
+    <string name="sounds_empty_title">Leere Tonbibliothek</string>
+    <string name="sounds_empty_body">Lege deine Audiodateien in app/src/main/res/raw (Namen klein, ohne Akzente: correct.mp3, wrong.mp3…) und trage sie dann in SoundLibrary ein.</string>
+
+    <!-- Sons -->
+    <string name="sound_correct">Richtige Antwort</string>
+    <string name="sound_wrong">Falsche Antwort</string>
+    <string name="sound_tadaa">Tadaa</string>
+    <string name="sound_wow">Wow</string>
+    <string name="sound_cash_register">Registrierkasse</string>
+    <string name="sound_fireworks">Feuerwerk</string>
+    <string name="sound_drum_joke">Rimshot</string>
+    <string name="sound_boom">Explosion</string>
+    <string name="sound_gunshot">Schuss</string>
+    <string name="sound_glass_breaking">Glasbruch</string>
+    <string name="sound_whoosh">Whoosh</string>
+    <string name="sound_pop">Plopp</string>
+    <string name="sound_doorbell">Türklingel</string>
+    <string name="sound_horn">Nebelhorn</string>
+    <string name="sound_car_honk">Autohupe</string>
+    <string name="sound_police_siren">Polizeisirene</string>
+    <string name="sound_car_engine">Motor</string>
+    <string name="sound_clock">Uhr</string>
+    <string name="sound_slow_clock_ticking">Langsames Ticken</string>
+    <string name="sound_heartbeat">Herzschlag</string>
+    <string name="sound_winter_wind">Winterwind</string>
+    <string name="sound_keyboard_typing">Tippen</string>
+    <string name="sound_violin">Traurige Geige</string>
+    <string name="sound_witch_laugh">Hexenlachen</string>
+    <string name="sound_evil_laugh">Böses Lachen</string>
+    <string name="sound_monster_growl">Monsterknurren</string>
+    <string name="sound_pathetic_screaming">Jämmerlicher Schrei</string>
+    <string name="sound_i_see_you">Ich sehe dich</string>
+    <string name="sound_stop_it">Hör auf</string>
+    <string name="sound_shut_up">Sei still</string>
+    <string name="sound_baby_crying">Weinendes Baby</string>
+    <string name="sound_meow">Miau</string>
+    <string name="sound_goat">Ziege</string>
+    <string name="sound_frog">Frosch</string>
+    <string name="sound_rooster_crowing">Hahn</string>
+    <string name="sound_wet_fart">Furz</string>
+
+    <!-- Liaison réseau -->
+    <string name="link_hosting">Du bist Gastgeber des Raums</string>
+    <string name="link_searching">Raum %1$s wird gesucht…</string>
+    <string name="link_searching_wifi">Raum %1$s wird im WLAN gesucht…</string>
+    <string name="link_not_found">Raum %1$s nicht gefunden. Prüfe, ob alle im selben WLAN sind.</string>
+    <string name="link_connecting">Verbindung zum Gastgeber…</string>
+    <string name="link_retrying">Neuer Versuch…</string>
+    <string name="link_lost">Verbindung verloren, Wiederverbindung…</string>
+    <string name="link_connected">Verbunden</string>
+    <string name="link_taking_over">Du übernimmst als Gastgeber…</string>
+    <string name="link_new_host">Neuer Gastgeber, Wiederverbindung…</string>
+    <string name="link_closed">Raum geschlossen</string>
+    <string name="link_port_busy">Port %1$d ließ sich nicht öffnen</string>
+
+    <!-- Fins de session -->
+    <string name="end_host_closed">Der Gastgeber hat den Raum geschlossen.</string>
+    <string name="end_kicked">Der Gastgeber hat dich aus dem Raum entfernt.</string>
+    <string name="end_version_update">Der Gastgeber spielt mit einer neueren Version von Buzz Me Please. Aktualisiere deine im Play Store, um beizutreten.</string>
+    <string name="end_version_host_old">Der Gastgeber spielt mit einer älteren Version von Buzz Me Please. Bitte ihn, seine zu aktualisieren.</string>
+    <string name="join_room_newer">Neuere Version · aktualisiere deine zum Beitreten</string>
+    <string name="join_room_older">Ältere Version · er muss aktualisieren</string>
+    <string name="join_room_host_version">Bei %1$s · v%2$s</string>
+    <string name="end_version">Das andere Telefon läuft mit einer anderen Version von Buzz Me Please. Aktualisiert beide im Play Store, um zusammen zu spielen.</string>
+    <string name="end_left">Spieler hat verlassen</string>
+
+    <!-- Messages -->
+    <string name="notice_code_length">Der Code muss %1$d Zeichen lang sein.</string>
+    <string name="default_player_name">Spieler</string>
+
+    <!-- Tutoriel -->
+    <string name="tutorial_title">So funktioniert es</string>
+    <string name="tutorial_intro">Zwölf Schritte, vom Erstellen des Raums bis zum Soundboard des Gastgebers.</string>
+    <string name="tutorial_start">Los geht\'s</string>
+    <string name="tutorial_1_title">Wähle deinen Spitznamen</string>
+    <string name="tutorial_1_body">Gib auf dem Startbildschirm den Spitznamen ein, der in der Tabelle erscheint — du kannst ihn jederzeit ändern. Gespielt wird über das lokale WLAN: alle Telefone im selben Netz, kein Internet, und die genaueste Zeitmessung.</string>
+    <string name="tutorial_2_title">Raum erstellen oder beitreten</string>
+    <string name="tutorial_2_body">Der Gastgeber tippt auf „Raum erstellen": oben auf dem Bildschirm erscheint ein Code aus fünf Buchstaben. Die anderen tippen auf „Beitreten" und geben diesen Code ein. Im lokalen WLAN taucht der Raum von allein in der Liste der gefundenen Räume auf: ein Tipp, nichts zu tippen. Alle im Raum müssen dieselbe Version des Spiels haben: die Liste zeigt die des Gastgebers und sagt, wer von beiden aktualisieren muss.</string>
+    <string name="tutorial_3_title">Den Start geben</string>
+    <string name="tutorial_3_body">Der Gastgeber tippt auf „Los!". Auf allen Telefonen läuft gleichzeitig ein Countdown 3 · 2 · 1, dann wird jeder Buzzer auf die Millisekunde genau grün. Auf den Telefonen der Spieler räumt sich der Rest des Bildschirms für die Runde frei: nur der Buzzer bleibt, groß, in der Mitte. Der Gastgeber behält das ganze Pult — es ist sein Armaturenbrett — und spielt mit. Auf einem quer gehaltenen Tablet hat er alles auf einmal: Pult, Tabelle und Soundboard nebeneinander.</string>
+    <string name="tutorial_4_title">Buzzen</string>
+    <string name="tutorial_4_body">Wer zuerst drückt, sieht seinen Buzzer blau werden — der Buzz ist drin, das Urteil kommt gleich — und alle anderen sind sofort gesperrt. Die genaue Zeit des Buzzes wird gesendet — Stunde, Minute, Sekunde und Millisekunde — und der Gastgeber sieht die Rangfolge, den Abstand zur Bestzeit und die Messunsicherheit. Sobald die Rangfolge steht, wird ein einziger Buzzer weiß: der mit dem Wort.</string>
+    <string name="tutorial_colours_title">Die Farben des Buzzers</string>
+    <string name="tutorial_colours_body">Der Buzzer sagt alles über seine Farbe: man muss nicht in der Tabelle nachlesen, um zu wissen, woran man ist.</string>
+    <string name="tutorial_colour_armed">Grün · die Buzzer sind offen, drück zu</string>
+    <string name="tutorial_colour_speaking">Weiß · du hast das Wort, antworte</string>
+    <string name="tutorial_colour_right">Hellgrün · richtige Antwort, der Punkt gehört dir</string>
+    <string name="tutorial_colour_wrong">Rot · falsche Antwort</string>
+    <string name="tutorial_colour_buzzed">Leuchtendes Blau · dein Buzz ist drin, das Urteil kommt</string>
+    <string name="tutorial_colour_lost">Dunkelblau · jemand anders hat das Wort, oder die Runde hat nicht begonnen</string>
+    <string name="tutorial_colour_eliminated">Grau · Buzzer vom Gastgeber ausgeschaltet</string>
+    <string name="tutorial_colour_countdown">Bernstein · der Countdown 3 · 2 · 1, mach dich bereit</string>
+    <string name="tutorial_5_title">Die Runden führen</string>
+    <string name="tutorial_5_body">Unter dem Banner stehen drei Urteile. „Richtig" gibt den Punkt, färbt den Buzzer des Spielers grün mit dem Ton für die richtige Antwort und schließt dann die Buzzer. „Falsch" färbt seinen Buzzer rot und spielt die Strafe auf seinem Telefon, ohne das Wort weiterzugeben; die Schaltfläche wird daraufhin zu „Ausschalten", sodass dieselbe Frage noch einmal an die gestellt werden kann, die noch nicht geantwortet haben. „Nächster" gibt das Wort in der Rangfolge weiter und erscheint nur, wenn jemand dahinter wartet. Solange noch ein grüner Buzzer da draußen ist, wird der Start zu „Buzzer schließen": nach einer Bestätigung schaltet er sie aus und sonst nichts — die schon abgegebenen Buzzes, das Wort und die Urteile bleiben genau, wo sie sind, sodass du die Runde mit geschlossenen Buzzern weiterführen kannst. Sobald kein Buzzer mehr zu drücken ist — alle haben gebuzzt, oder alle sind raus — kommt der Start von allein zurück. Der Kreispfeil dagegen wischt die Tafel sauber: Buzzes gelöscht, alle Buzzer wieder an, Punkte unberührt.</string>
+    <string name="tutorial_6_title">Wort erteilen, ausschalten, Punkte zählen</string>
+    <string name="tutorial_6_body">Der Gastgeber tippt auf die Zeile eines Spielers, um dessen Pult zu öffnen. „Das Wort erteilen" gibt es ihm, ohne den Umweg über die Rangfolge — er muss nicht einmal gebuzzt haben, und genau so stellt man jemandem eine Frage direkt. Darunter: grauer Buzzer (ausgeschaltet) oder mit einer Geste zurückgeholt, Punkte in +1, +3 oder −1, Entfernung aus dem Raum. Ein ausgeschalteter Spieler behält seine Zeile auf allen Bildschirmen, Buzzer aus: er spielt nicht mehr mit, seine Punkte zählen weiter, und der Gastgeber kann ihn jederzeit zurückrufen. Der Kreispfeil, rechts neben dem Start, schaltet alle auf einmal wieder an.</string>
+    <string name="tutorial_7_title">Moderation übergeben</string>
+    <string name="tutorial_7_body">Von demselben Pult aus gibt „Moderation übergeben" die Rolle des Gastgebers an einen anderen Spieler. Niemand verlässt den Raum: Punkte, Zustände und die laufende Runde ziehen mit, und der bisherige Gastgeber wird ein gewöhnlicher Spieler.</string>
+    <string name="tutorial_8_title">Die Regeln biegen</string>
+    <string name="tutorial_8_body">Die Regler-Schaltfläche, rechts neben dem Start, öffnet die Spielregeln. Der Schnellmodus lässt sich zugunsten des Rennmodus abschalten, in dem alle buzzen und man eine vollständige Rangliste bekommt — praktisch für ein Stechen oder eine Schnellrunde. „Verborgene Tabelle" hält die Spannung: jedem Spieler bleibt allein seine eigene Zeile, du behältst die ganze Übersicht. Countdown und Töne schaltet man an derselben Stelle ab.</string>
+    <string name="tutorial_9_title">Bereite deine Toneffekte vor</string>
+    <string name="tutorial_9_body">Die Schaltfläche „Töne" über der Tabelle öffnet das Soundboard des Gastgebers: neun Felder, die vor dem Spiel zu füllen sind, aus den mitgelieferten Tönen oder aus eigenen Dateien. Ein Tipp spielt den Ton und lässt das Feld grün aufleuchten, ein zweiter stoppt ihn; ein langer Druck ändert das Feld oder leert es. Importierte Töne — fürs Soundboard wie für deinen Buzzer, in den Einstellungen — werden nach vier Sekunden abgeschnitten, damit kein zweiminütiges Stück die Runde verschluckt. Deine Auswahl bleibt von einem Spiel zum nächsten erhalten, und die Ansicht klappt wieder auf die Tabelle zurück.</string>
+    <string name="tutorial_cards_title">Die Ankündigungskarten</string>
+    <string name="tutorial_cards_body">Was dir zustößt, zieht in großen Lettern über den Bildschirm: „Du hast das Wort", „Gut gemacht", „Falsch", „Nächster", „Zu spät", „Du bist raus". Die Karte bleibt fünf Sekunden und blockiert nichts — der Buzzer funktioniert darunter weiter. Der Ton allerdings erklingt nur auf dem betroffenen Telefon: der Raum sieht es, der Betroffene hört es.</string>
+    <string name="tutorial_alerts_title">Karten und Spielende</string>
+    <string name="tutorial_alerts_body">Vom Pult eines Spielers aus verteilt „Verwarnung geben" eine gelbe oder eine rote Karte. Sie wird auf allen Bildschirmen angekündigt, erklingt nur auf dem Telefon des Verwarnten und wird auf seiner Zeile in der Tabelle mitgezählt, direkt vor seinen Punkten — vor der ersten Verwarnung steht dort nichts. „Karten löschen" wischt sein Register sauber. In den Spielregeln ruft „Spiel beenden" den Sieger und seine Punkte auf allen Telefonen aus, Feuerwerk inklusive. Nichts wird gelöscht: ihr könnt danach weiterspielen.</string>
+    <string name="tutorial_tips_title">Damit der Buzz ehrlich bleibt</string>
+    <string name="tutorial_tip_1">Im lokalen Modus alle im selben WLAN — niemand über mobile Daten.</string>
+    <string name="tutorial_tip_2">Schalte „Bildschirm anlassen" in den Einstellungen ein, bevor es losgeht.</string>
+    <string name="tutorial_tip_3">Der angezeigte Abstand rechnet die Netzlaufzeit heraus: verglichen wird der Augenblick des Drückens, nicht die Reihenfolge, in der die Nachrichten ankommen.</string>
+    <string name="tutorial_tip_4">Unterhalb der angezeigten Unsicherheit (± ein paar ms im lokalen Netz) sind zwei Reflexe gleichauf: der Gastgeber entscheidet.</string>
+
+    <!-- Crashlytics diagnostics (debug builds only) -->
+    <string name="diagnostics_label">Diagnose</string>
+    <string name="diagnostics_hint">Nur in Debug-Builds. Prüft, ob die Fehlermeldung an Crashlytics funktioniert — beide Wege, denn ein nicht-fataler Fehler und ein Absturz reisen unterschiedlich.</string>
+    <string name="diagnostics_collection_title">Crashlytics-Erfassung</string>
+    <string name="diagnostics_collection_subtitle">In Debug-Builds standardmäßig aus, damit die Konsole sauber bleibt</string>
+    <string name="diagnostics_collection_off">Die Erfassung ist aus: die Schaltflächen unten senden nichts.</string>
+    <string name="diagnostics_send_non_fatal">Nicht-fatalen Fehler senden</string>
+    <string name="diagnostics_force_crash">Absturz erzwingen</string>
+    <string name="diagnostics_flush">Ausstehende Berichte hochladen</string>
+    <string name="diagnostics_previous_crash_yes">Vorherige Sitzung endete mit einem Absturz</string>
+    <string name="diagnostics_previous_crash_no">Kein Absturz in der vorherigen Sitzung</string>
+</resources>

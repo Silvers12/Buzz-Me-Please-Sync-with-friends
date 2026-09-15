@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    العربية الفصحى — l'arabe standard moderne : pris dès que le téléphone est en arabe.
+    Le nom du jeu, « Buzz Me Please », ne se traduit pas — il reste dans res/values.
+
+    Deux choses à savoir avant d'y toucher :
+    — la mise en page passe de droite à gauche, toute seule (AppLocale fournit le sens de
+      lecture, et les icônes du projet sont des AutoMirrored) ;
+    — les chiffres restent latins, par choix : voir AppLocale.ARABIC. Le chrono à la
+      milliseconde, les scores et le code de salon se lisent ainsi d'un téléphone à l'autre.
+
+    Les pluriels arabes ont six formes — zero, one, two, few (3-10), many (11-99), other —
+    et le CLDR les exige toutes.
+-->
+<resources>
+    <!-- Commun -->
+    <string name="action_back">رجوع</string>
+    <string name="action_close">إغلاق</string>
+    <string name="action_cancel">إلغاء</string>
+    <string name="action_settings">الإعدادات</string>
+
+    <!-- Accueil -->
+    <string name="home_tagline">جرس المسابقات، بدقة المللي ثانية</string>
+    <string name="home_nickname_label">اسمك المستعار</string>
+    <string name="home_nickname_hint">مثال: كميل</string>
+    <string name="home_connection_label">الاتصال بين اللاعبين</string>
+    <string name="home_wifi_title">واي فاي محلي</string>
+    <string name="home_wifi_subtitle">دون إنترنت · الأدق</string>
+    <string name="home_wifi_only">يجب أن تكون جميع الهواتف على شبكة الواي فاي نفسها.</string>
+    <string name="home_create_room">إنشاء غرفة</string>
+    <string name="home_join_room">الانضمام برمز</string>
+    <string name="home_need_nickname">اختر اسمًا مستعارًا أولًا (حرفان على الأقل).</string>
+    <string name="home_rate">تقييم التطبيق</string>
+
+    <!-- Rejoindre -->
+    <string name="join_title">الانضمام إلى غرفة</string>
+    <string name="join_code_label">رمز الغرفة</string>
+    <string name="join_code_hint">ABCDE</string>
+    <string name="join_action">انضمام</string>
+    <string name="join_discovered_label">الغرف الموجودة على الواي فاي</string>
+    <string name="join_searching">جارٍ البحث… تأكد من أن المقدّم أنشأ الغرفة وأن جميع الهواتف على شبكة الواي فاي نفسها.</string>
+    <string name="join_room_host">عند %1$s</string>
+    <string name="join_room_action">انضمام</string>
+    <string name="joining_title">الانضمام إلى الغرفة</string>
+    <string name="joining_searching">جارٍ البحث عن الغرفة…</string>
+    <string name="joining_hint">ستُفتح الغرفة بمجرد أن يستجيب المقدّم. لا شيء يحدث؟ تحقق من الرمز، ومن أن جميع الهواتف على شبكة الواي فاي نفسها.</string>
+    <string name="joining_cancel">إلغاء</string>
+
+    <!-- Réglages -->
+    <string name="settings_title">الإعدادات</string>
+    <string name="settings_language_label">اللغة</string>
+    <string name="settings_language_auto">النظام</string>
+    <string name="settings_language_fr">Français</string>
+    <string name="settings_language_en">English</string>
+    <string name="settings_language_de">Deutsch</string>
+    <string name="settings_language_es">Español</string>
+    <string name="settings_language_it">Italiano</string>
+    <string name="settings_language_ar">العربية</string>
+    <string name="settings_comfort_label">راحة اللعب</string>
+    <string name="settings_buzzer_label">صوت الجرس</string>
+    <string name="settings_buzzer_hint">ما يصدره هاتفك أنت عند الضغط. المس صوتًا لسماعه.</string>
+    <string name="settings_buzzer_default">الصفير الأصلي</string>
+    <string name="settings_buzzer_import">استيراد صوت…</string>
+    <string name="settings_buzzer_imported">صوت مستورد</string>
+    <string name="settings_buzzer_unreadable">تعذّرت قراءة هذا الملف. اختر غيره.</string>
+    <string name="settings_sound_title">الصوت والاهتزاز</string>
+    <string name="settings_sound_subtitle">صفير العدّ التنازلي، إشارة الانطلاق، ارتجاع الضغط.</string>
+    <string name="settings_screen_title">إبقاء الشاشة مضاءة</string>
+    <string name="settings_screen_subtitle">لا غنى عنه أثناء المباراة: شاشة تنطفئ تعني ضغطة ضائعة وإعادة اتصال في الانتظار.</string>
+    <string name="settings_howto_label">كيف يعمل</string>
+    <string name="settings_howto_body">الدليل الكامل: إنشاء غرفة، إعطاء الانطلاق، إقصاء اللاعبين، حساب النقاط، تسليم التقديم.</string>
+    <string name="settings_open_tutorial">فتح الشرح</string>
+    <string name="settings_support_label">مشكلة أو فكرة؟</string>
+    <string name="settings_contact">الإبلاغ عن مشكلة</string>
+    <string name="settings_contact_hint">سيُفتح بريد إلكتروني، معبّأ مسبقًا بطراز هاتفك وإصدار التطبيق. يكفي أن تصف ما حدث.</string>
+    <string name="settings_contact_subject">Buzz Me Please — %1$s</string>
+    <string name="settings_contact_body">صف المشكلة هنا، وما كنت تفعله حين وقعت.\n\n— — —\nالجهاز: %1$s\nأندرويد: %2$s (API %3$d)\nالتطبيق: %4$s\nاللغة: %5$s</string>
+    <!-- Support section. Tone: first person, deadpan. The author speaks to the player
+         directly; the humour comes from understatement, never from a punchline. Do not
+         go back to the third person ("the developer") — it read cold in the one section
+         that asks for something. Same voice as Call Me Please, on purpose: it is the
+         same person talking. -->
+    <string name="settings_donate">ادعُني إلى فنجان قهوة</string>
+    <string name="settings_donate_hint">مجاني، بلا إعلانات، ولا يُجمع منك شيء. أنا فقط، وكثير من القهوة.</string>
+    <string name="settings_other_apps">اكتشف تطبيقاتي الأخرى</string>
+    <string name="settings_other_apps_hint">لديّ أفكار أخرى. بعضها مفيد حتى.</string>
+    <string name="settings_footer">Buzz Me Please · جرس مسابقات متزامن</string>
+    <string name="settings_version">الإصدار %1$s</string>
+    <string name="settings_copyright">© 2026 Olivier SALA</string>
+
+    <!-- Salon -->
+    <string name="room_code_label">رمز الغرفة</string>
+    <string name="room_leave">مغادرة الغرفة</string>
+    <string name="room_badge_host">المقدّم</string>
+    <string name="room_badge_player">لاعب</string>
+    <string name="room_badge_duel">سريع</string>
+    <string name="room_badge_race">سباق</string>
+    <string name="room_round">الجولة %1$d</string>
+    <string name="room_latency">%1$d ms · ± %2$d ms</string>
+    <string name="room_go">انطلق!</string>
+    <string name="room_end">إغلاق الأجراس</string>
+    <string name="room_reset">إعادة الضبط: كل الأجراس تعمل من جديد</string>
+    <string name="room_rules">قواعد المباراة</string>
+    <string name="announce_floor">لك الكلمة!</string>
+    <string name="announce_right">أحسنت!</string>
+    <string name="announce_wrong">خطأ!</string>
+    <string name="player_yellow_cards">بطاقات صفراء: %1$d</string>
+    <string name="player_red_cards">بطاقات حمراء: %1$d</string>
+    <string name="alert_clear">محو البطاقات (%1$s)</string>
+    <plurals name="alert_clear_yellow">
+        <item quantity="zero">لا صفراء</item>
+        <item quantity="one">صفراء واحدة</item>
+        <item quantity="two">صفراوان</item>
+        <item quantity="few">%d صفراء</item>
+        <item quantity="many">%d صفراء</item>
+        <item quantity="other">%d صفراء</item>
+    </plurals>
+    <plurals name="alert_clear_red">
+        <item quantity="zero">لا حمراء</item>
+        <item quantity="one">حمراء واحدة</item>
+        <item quantity="two">حمراوان</item>
+        <item quantity="few">%d حمراء</item>
+        <item quantity="many">%d حمراء</item>
+        <item quantity="other">%d حمراء</item>
+    </plurals>
+    <string name="alert_send">إرسال إنذار…</string>
+    <string name="alert_pick_title">أي إنذار؟</string>
+    <string name="alert_yellow">بطاقة صفراء</string>
+    <string name="alert_red">بطاقة حمراء</string>
+    <string name="announce_yellow_you">بطاقة صفراء</string>
+    <string name="announce_yellow_other">بطاقة صفراء\n%1$s</string>
+    <string name="announce_red_you">بطاقة حمراء</string>
+    <string name="announce_red_other">بطاقة حمراء\n%1$s</string>
+    <string name="announce_game_over">انتهت المباراة\nالفائز: %1$s</string>
+    <string name="announce_game_over_tie">انتهت المباراة\nتعادل!</string>
+    <string name="rules_end_game">إنهاء المباراة</string>
+    <string name="rules_end_game_title">إنهاء المباراة؟</string>
+    <string name="rules_end_game_body">يُعلَن الفائز ونقاطه على كل الهواتف. لا يُمحى شيء: يمكنكم متابعة اللعب بعدها.</string>
+    <string name="announce_late">فات الأوان</string>
+    <string name="announce_out">أنت خارج اللعب</string>
+    <string name="announce_back">عدت إلى اللعب</string>
+    <string name="announce_host_you">أنت المقدّم</string>
+    <string name="announce_host_other">مقدّم جديد\n%1$s</string>
+    <string name="room_all_out">الجميع خارج اللعب. أعد لاعبًا، أو أعد تشغيل كل الأجراس بالسهم.</string>
+    <string name="room_board">اللوحة</string>
+    <string name="room_board_host">اللوحة · المس لاعبًا</string>
+    <string name="room_board_hidden_host">اللوحة · مخفية عن اللاعبين</string>
+    <string name="room_board_sounds">لوحة الأصوات · اضغط مطوّلًا للتغيير</string>
+    <string name="room_online_count">%1$d/%2$d متصلون</string>
+    <string name="room_sounds_open">الأصوات</string>
+    <string name="room_sounds_close">اللوحة</string>
+    <string name="room_sounds_open_desc">فتح لوحة الأصوات</string>
+    <string name="room_sounds_close_desc">العودة إلى اللوحة</string>
+
+    <!-- Buzzer -->
+    <string name="buzzer_buzz">اضغط</string>
+    <string name="buzzer_taken">محجوز</string>
+    <string name="buzzer_correct">صحيح</string>
+    <string name="buzzer_missed">خطأ</string>
+    <string name="buzzer_too_late">متأخر</string>
+    <string name="buzzer_passed">اللاعب التالي</string>
+    <string name="buzzer_out">خارج</string>
+    <string name="buzzer_ready">جاهز؟</string>
+    <string name="buzzer_get_ready">استعد</string>
+    <string name="buzzer_press">اضغط!</string>
+    <string name="buzzer_recorded">سُجّلت</string>
+    <string name="buzzer_your_turn">دورك في الإجابة</string>
+    <string name="buzzer_point">أحرزت نقطة</string>
+    <string name="buzzer_can_return">يستطيع المقدّم إعادتك</string>
+    <string name="buzzer_waiting">في انتظار الانطلاق</string>
+
+    <!-- Bandeau de résultat -->
+    <string name="banner_yours">دورك!</string>
+    <string name="banner_has_hand">الكلمة لـ %1$s</string>
+    <string name="banner_given">كلمة ممنوحة من المقدّم</string>
+    <string name="banner_reaction">زمن الاستجابة %1$s</string>
+    <string name="banner_precision">" (± %1$d ms)"</string>
+    <string name="banner_ahead">" · يسبق %1$s بفارق %2$s"</string>
+    <string name="banner_photo_finish">نهاية متقاربة: جارٍ التحكيم…</string>
+    <string name="banner_right">صحيح</string>
+    <string name="banner_wrong">خطأ</string>
+    <string name="banner_next">التالي</string>
+    <string name="banner_knock_out">إقصاء</string>
+    <string name="banner_nobody">لم يُصب أحد · ابدأ جولة أخرى</string>
+
+    <!-- Ligne de joueur -->
+    <string name="player_host_desc">المقدّم</string>
+    <string name="player_you">أنت</string>
+    <string name="player_out">مُقصى</string>
+    <string name="player_offline">غير متصل</string>
+    <string name="player_ready">جاهز</string>
+    <string name="player_ready_ping">جاهز · %1$d ms</string>
+    <string name="player_winner_desc">الفائز بالجولة</string>
+
+    <!-- Pupitre du joueur -->
+    <string name="dialog_score">النقاط</string>
+    <string name="dialog_floor">الكلمة</string>
+    <string name="dialog_give_floor">منح الكلمة</string>
+    <string name="dialog_buzzer">الجرس</string>
+    <string name="dialog_alert">إنذار</string>
+    <string name="dialog_room">الغرفة</string>
+    <string name="dialog_eliminate">إقصاء (جرس رمادي)</string>
+    <string name="dialog_revive">إعادة تشغيل الجرس</string>
+    <string name="dialog_transfer">تسليم التقديم</string>
+    <string name="dialog_kick">الإخراج من الغرفة</string>
+    <string name="dialog_end_title">إغلاق الأجراس؟</string>
+    <string name="dialog_end_body">تنطفئ الأجراس الخضراء. لا شيء آخر يتغيّر: تبقى الجولة كما هي.</string>
+    <string name="dialog_transfer_title">تسليم التقديم؟</string>
+    <string name="dialog_transfer_body">سيصبح %1$s المقدّم: هو من يعطي الانطلاق ويحسب النقاط ويضبط القواعد. تعود أنت لاعبًا عاديًا، وعليه أن يعيدها إليك لتستلم من جديد.</string>
+
+    <!-- Règles de la partie -->
+    <string name="rules_title">قواعد المباراة</string>
+    <string name="rules_duel_title">الوضع السريع</string>
+    <string name="rules_duel_subtitle">أول من يضغط يقفل الباقين جميعًا. عطّله فيضغط الجميع، وتحصل على ترتيب كامل.</string>
+    <string name="rules_countdown_title">العدّ التنازلي 3 · 2 · 1</string>
+    <string name="rules_countdown_subtitle">تتهيّأ كل الأجهزة في اللحظة نفسها، بدقة المللي ثانية.</string>
+    <string name="rules_hide_board_title">لوحة مخفية</string>
+    <string name="rules_hide_board_subtitle">على هواتف اللاعبين، تتقلّص اللوحة إلى سطر اللاعب ونقاطه وحدهما. أما أنت فتحتفظ بالجدول كاملًا.</string>
+    <string name="rules_sound_title">الصوت والاهتزاز</string>
+    <string name="rules_sound_subtitle">صفير العدّ التنازلي، إشارة الانطلاق وارتجاع الضغط.</string>
+    <string name="rules_reset_scores">تصفير كل النقاط</string>
+
+    <!-- Sonothèque -->
+    <string name="sounds_title">صوت هذا المفتاح</string>
+    <string name="sounds_help">المس ▶ للاستماع، والمس الاسم لوضعه على المفتاح.</string>
+    <string name="sounds_clear">إفراغ</string>
+    <string name="sounds_pick_desc">اختيار صوت لهذا المفتاح</string>
+    <string name="sounds_preview_desc">تشغيل %1$s</string>
+    <string name="sounds_empty_title">مكتبة الأصوات فارغة</string>
+    <string name="sounds_empty_body">ضع ملفاتك الصوتية في app/src/main/res/raw (بأسماء صغيرة بلا علامات: correct.mp3, wrong.mp3…)، ثم صرّح بها في SoundLibrary.</string>
+
+    <!-- Sons -->
+    <string name="sound_correct">إجابة صحيحة</string>
+    <string name="sound_wrong">إجابة خاطئة</string>
+    <string name="sound_tadaa">تا-دا</string>
+    <string name="sound_wow">واو</string>
+    <string name="sound_cash_register">آلة تسجيل النقد</string>
+    <string name="sound_fireworks">ألعاب نارية</string>
+    <string name="sound_drum_joke">قرع الطبل</string>
+    <string name="sound_boom">انفجار</string>
+    <string name="sound_gunshot">طلقة</string>
+    <string name="sound_glass_breaking">تحطّم زجاج</string>
+    <string name="sound_whoosh">حفيف</string>
+    <string name="sound_pop">فرقعة</string>
+    <string name="sound_doorbell">جرس الباب</string>
+    <string name="sound_horn">بوق الضباب</string>
+    <string name="sound_car_honk">زمّور سيارة</string>
+    <string name="sound_police_siren">صفارة شرطة</string>
+    <string name="sound_car_engine">محرّك</string>
+    <string name="sound_clock">ساعة</string>
+    <string name="sound_slow_clock_ticking">تكتكة بطيئة</string>
+    <string name="sound_heartbeat">نبض القلب</string>
+    <string name="sound_winter_wind">رياح الشتاء</string>
+    <string name="sound_keyboard_typing">طَرْق لوحة المفاتيح</string>
+    <string name="sound_violin">كمان حزين</string>
+    <string name="sound_witch_laugh">ضحكة ساحرة</string>
+    <string name="sound_evil_laugh">ضحكة شريرة</string>
+    <string name="sound_monster_growl">زمجرة وحش</string>
+    <string name="sound_pathetic_screaming">صرخة مثيرة للشفقة</string>
+    <string name="sound_i_see_you">أراك</string>
+    <string name="sound_stop_it">كفى</string>
+    <string name="sound_shut_up">اصمت</string>
+    <string name="sound_baby_crying">بكاء رضيع</string>
+    <string name="sound_meow">مواء</string>
+    <string name="sound_goat">ماعز</string>
+    <string name="sound_frog">ضفدع</string>
+    <string name="sound_rooster_crowing">ديك</string>
+    <string name="sound_wet_fart">ضرطة</string>
+
+    <!-- Liaison réseau -->
+    <string name="link_hosting">أنت من يستضيف الغرفة</string>
+    <string name="link_searching">جارٍ البحث عن الغرفة %1$s…</string>
+    <string name="link_searching_wifi">جارٍ البحث عن الغرفة %1$s على الواي فاي…</string>
+    <string name="link_not_found">لم يُعثر على الغرفة %1$s. تأكد من أنكم جميعًا على الواي فاي نفسه.</string>
+    <string name="link_connecting">جارٍ الاتصال بالمقدّم…</string>
+    <string name="link_retrying">محاولة جديدة…</string>
+    <string name="link_lost">انقطع الاتصال، جارٍ إعادة الاتصال…</string>
+    <string name="link_connected">متصل</string>
+    <string name="link_taking_over">أنت تتسلّم التقديم…</string>
+    <string name="link_new_host">مقدّم جديد، جارٍ إعادة الاتصال…</string>
+    <string name="link_closed">أُغلقت الغرفة</string>
+    <string name="link_port_busy">تعذّر فتح المنفذ %1$d</string>
+
+    <!-- Fins de session -->
+    <string name="end_host_closed">أغلق المقدّم الغرفة.</string>
+    <string name="end_kicked">أخرجك المقدّم من الغرفة.</string>
+    <string name="end_version_update">يلعب المقدّم بإصدار أحدث من Buzz Me Please. حدّث إصدارك من متجر Play للانضمام.</string>
+    <string name="end_version_host_old">يلعب المقدّم بإصدار أقدم من Buzz Me Please. اطلب منه تحديث إصداره.</string>
+    <string name="join_room_newer">إصدار أحدث · حدّث إصدارك للانضمام</string>
+    <string name="join_room_older">إصدار أقدم · عليه أن يحدّث</string>
+    <string name="join_room_host_version">عند %1$s · v%2$s</string>
+    <string name="end_version">الهاتف الآخر يعمل بإصدار مختلف من Buzz Me Please. حدّثا الإصدارين من متجر Play للعب معًا.</string>
+    <string name="end_left">غادر اللاعب</string>
+
+    <!-- Messages -->
+    <string name="notice_code_length">يجب أن يتكوّن الرمز من %1$d أحرف.</string>
+    <string name="default_player_name">لاعب</string>
+
+    <!-- Tutoriel -->
+    <string name="tutorial_title">كيف يعمل</string>
+    <string name="tutorial_intro">اثنتا عشرة خطوة، من إنشاء الغرفة إلى لوحة أصوات المقدّم.</string>
+    <string name="tutorial_start">هيا بنا</string>
+    <string name="tutorial_1_title">اختر اسمك المستعار</string>
+    <string name="tutorial_1_body">في الشاشة الرئيسية، أدخل الاسم المستعار الذي سيظهر على اللوحة — ويمكنك تغييره في أي وقت. تجري اللعبة على الواي فاي المحلي: كل الهواتف على الشبكة نفسها، دون إنترنت، وبأدق قياس للزمن.</string>
+    <string name="tutorial_2_title">أنشئ الغرفة أو انضم إليها</string>
+    <string name="tutorial_2_body">يلمس المقدّم «إنشاء غرفة»: فيظهر رمز من خمسة أحرف أعلى الشاشة. ويلمس الآخرون «انضمام» ويدخلون ذلك الرمز. على الواي فاي المحلي تظهر الغرفة من تلقاء نفسها في قائمة الغرف الموجودة: لمسة واحدة، دون كتابة شيء. على جميع من في الغرفة أن يشغّلوا الإصدار نفسه من اللعبة: تعرض القائمة إصدار المقدّم، وتبيّن أيّ الطرفين عليه التحديث.</string>
+    <string name="tutorial_3_title">أعطِ الانطلاق</string>
+    <string name="tutorial_3_body">يلمس المقدّم «انطلق!». فينطلق عدّ تنازلي 3 · 2 · 1 على كل الهواتف في آنٍ واحد، ثم يخضرّ كل جرس بدقة المللي ثانية. على هواتف اللاعبين تخلو بقية الشاشة طوال الجولة: لا يبقى إلا الجرس، كبيرًا، في الوسط. أما المقدّم فيحتفظ بمنصّته كاملة — فهي لوحة قيادته — ويلعب معهم. وعلى جهاز لوحي ممسوك بالعرض يرى كل شيء دفعة واحدة: المنصّة واللوحة ولوحة الأصوات جنبًا إلى جنب.</string>
+    <string name="tutorial_4_title">الضغط على الجرس</string>
+    <string name="tutorial_4_body">أول من يضغط يرى جرسه يزرقّ — الضغطة سُجّلت، والحكم آتٍ — ويُقفل الباقون جميعًا في الحال. يُرسَل وقت الضغطة بالضبط — الساعة والدقيقة والثانية والمللي ثانية — فيرى المقدّم الترتيب والفارق عن أفضل زمن وهامش الخطأ في القياس. وحين يستقرّ الترتيب، يبيضّ جرس واحد: صاحب الكلمة.</string>
+    <string name="tutorial_colours_title">ألوان الجرس</string>
+    <string name="tutorial_colours_body">يقول الجرس كل شيء بلونه: لا حاجة إلى قراءة اللوحة لتعرف أين أنت.</string>
+    <string name="tutorial_colour_armed">أخضر · الأجراس مفتوحة، اضغط</string>
+    <string name="tutorial_colour_speaking">أبيض · لك الكلمة، أجب</string>
+    <string name="tutorial_colour_right">أخضر فاتح · إجابة صحيحة، النقطة لك</string>
+    <string name="tutorial_colour_wrong">أحمر · إجابة خاطئة</string>
+    <string name="tutorial_colour_buzzed">أزرق ساطع · ضغطتك سُجّلت، والحكم آتٍ</string>
+    <string name="tutorial_colour_lost">أزرق داكن · الكلمة لغيرك، أو الجولة لم تبدأ</string>
+    <string name="tutorial_colour_eliminated">رمادي · جرس أطفأه المقدّم</string>
+    <string name="tutorial_colour_countdown">كهرماني · العدّ التنازلي 3 · 2 · 1، استعد</string>
+    <string name="tutorial_5_title">إدارة الجولات</string>
+    <string name="tutorial_5_body">تحت الشريط ثلاثة أحكام. «صحيح» يمنح النقطة، ويجعل جرس اللاعب أخضر مع صوت الإجابة الصحيحة، ثم يغلق الأجراس. «خطأ» يجعل جرسه أحمر ويُسمعه صوت العقوبة على هاتفه، دون أن ينقل الكلمة؛ ويصير الزر عندئذٍ «إقصاء»، فيمكن طرح السؤال نفسه من جديد على من لم يجب بعد. «التالي» ينقل الكلمة إلى من يليه في الترتيب، ولا يظهر إلا إذا كان أحد ينتظر خلفه. وما دام هناك جرس أخضر في الخارج، يتحوّل زر الانطلاق إلى «إغلاق الأجراس»: فيطفئها بعد تأكيد، ولا يفعل شيئًا آخر — تبقى الضغطات المسجَّلة والكلمة والأحكام في موضعها تمامًا، فتتابع إدارة الجولة والأجراس مغلقة. وما إن يخلو الميدان من جرس يُضغط — ضغط الجميع، أو خرج الجميع — حتى يعود الانطلاق من تلقاء نفسه. أما السهم الدائري فيمسح اللوحة تمامًا: تُمحى الضغطات، وتعود كل الأجراس للعمل، وتبقى النقاط كما هي.</string>
+    <string name="tutorial_6_title">امنح الكلمة، أقصِ، واحسب النقاط</string>
+    <string name="tutorial_6_body">يلمس المقدّم سطر لاعب ليفتح منصّته. «منح الكلمة» يسلّمها إليه دون المرور بالترتيب — ولا يلزم حتى أن يكون قد ضغط، وهكذا يُطرح السؤال على شخص بعينه. وتحته: جرس رمادي (مُقصى) أو معاد إلى اللعب بحركة واحدة، ونقاط بـ +1 أو +3 أو −1، وإخراج من الغرفة. يحتفظ اللاعب المُقصى بسطره على كل الشاشات، وجرسه مطفأ: لم يعد يلعب، ونقاطه ما تزال تُحسب، وللمقدّم أن يستدعيه متى شاء. والسهم الدائري، يمين زر الانطلاق، يضيئهم جميعًا دفعة واحدة.</string>
+    <string name="tutorial_7_title">تسليم التقديم</string>
+    <string name="tutorial_7_body">من المنصّة نفسها، يمنح «تسليم التقديم» دور المقدّم للاعب آخر. لا يغادر أحد الغرفة: تتبعه النقاط والحالات والجولة الجارية، ويعود المقدّم السابق لاعبًا عاديًا.</string>
+    <string name="tutorial_8_title">طوِّع القواعد</string>
+    <string name="tutorial_8_body">زر المؤشّرات، يمين زر الانطلاق، يفتح قواعد المباراة. يمكن تعطيل الوضع السريع لصالح وضع السباق، حيث يضغط الجميع وتحصل على ترتيب كامل — وهو مفيد لكسر التعادل أو لجولة سرعة. و«اللوحة المخفية» تُبقي التشويق: لا يبقى لكل لاعب إلا سطره وحده، وتحتفظ أنت بالجدول كاملًا. ومن المكان نفسه يُطفأ العدّ التنازلي وتُطفأ الأصوات.</string>
+    <string name="tutorial_9_title">هيّئ مؤثراتك الصوتية</string>
+    <string name="tutorial_9_body">زر «الأصوات»، فوق اللوحة، يفتح لوحة أصوات المقدّم: تسعة مفاتيح تُملأ قبل المباراة، من الأصوات المرفقة باللعبة أو من ملفاتك أنت. لمسة تشغّل الصوت وتضيء المفتاح بالأخضر، وثانية توقفه؛ وضغطة مطوّلة تغيّر المفتاح أو تفرغه. والأصوات التي تستوردها — للوحة كما لجرسك، في الإعدادات — تُقتطع عند أربع ثوانٍ، حتى لا يبتلع مقطع من دقيقتين الجولة كلها. يُحفظ اختيارك من مباراة إلى أخرى، وتنطوي اللوحة عائدةً إلى جدول النقاط.</string>
+    <string name="tutorial_cards_title">بطاقات الإعلان</string>
+    <string name="tutorial_cards_body">ما يحدث لك يعبر الشاشة بحروف كبيرة: «لك الكلمة»، «أحسنت»، «خطأ»، «التالي»، «فات الأوان»، «أنت خارج اللعب». تبقى البطاقة خمس ثوانٍ ولا تعطّل شيئًا — فالجرس يعمل تحتها. أما الصوت فلا يصدر إلا على الهاتف المعني: الغرفة ترى، والمعني يسمع.</string>
+    <string name="tutorial_alerts_title">البطاقات ونهاية المباراة</string>
+    <string name="tutorial_alerts_body">من منصّة لاعب، يمنح «إرسال إنذار» بطاقة صفراء أو حمراء. يُعلَن ذلك على كل الشاشات، ولا يصدر الصوت إلا على هاتف المُنذَر، ويُحسب على سطره في اللوحة، قبل نقاطه مباشرة — ولا يظهر شيء ما لم يُنذَر. و«محو البطاقات» يمسح سجلّه. وفي قواعد المباراة، يعلن «إنهاء المباراة» الفائز ونقاطه على كل الهواتف، مع الألعاب النارية. ولا يُمحى شيء: يمكنكم متابعة اللعب بعدها.</string>
+    <string name="tutorial_tips_title">كي تبقى الضغطة نزيهة</string>
+    <string name="tutorial_tip_1">الجميع على الواي فاي نفسه في الوضع المحلي — ولا أحد على بيانات الهاتف.</string>
+    <string name="tutorial_tip_2">فعّل «إبقاء الشاشة مضاءة» في الإعدادات قبل البدء.</string>
+    <string name="tutorial_tip_3">الفارق المعروض يحسب تأخّر الشبكة: ما يُقارَن هو لحظة الضغط، لا ترتيب وصول الرسائل.</string>
+    <string name="tutorial_tip_4">دون هامش الخطأ المعروض (± بضعة ms محليًا)، تتعادل ردّتا فعل: والقرار للمقدّم.</string>
+
+    <!-- Crashlytics diagnostics (debug builds only) -->
+    <string name="diagnostics_label">التشخيص</string>
+    <string name="diagnostics_hint">في نسخ التطوير فقط. يتحقق من أن إرسال الأخطاء إلى Crashlytics يعمل — على المسارين، فالخطأ غير القاتل والانهيار يسلكان طريقين مختلفين.</string>
+    <string name="diagnostics_collection_title">جمع بيانات Crashlytics</string>
+    <string name="diagnostics_collection_subtitle">معطّل افتراضيًا في نسخ التطوير، إبقاءً على نظافة وحدة التحكم</string>
+    <string name="diagnostics_collection_off">الجمع معطّل: لن ترسل الأزرار أدناه شيئًا.</string>
+    <string name="diagnostics_send_non_fatal">إرسال خطأ غير قاتل</string>
+    <string name="diagnostics_force_crash">فرض انهيار</string>
+    <string name="diagnostics_flush">رفع التقارير المعلّقة</string>
+    <string name="diagnostics_previous_crash_yes">انتهت الجلسة السابقة بانهيار</string>
+    <string name="diagnostics_previous_crash_no">لا انهيار في الجلسة السابقة</string>
+</resources>

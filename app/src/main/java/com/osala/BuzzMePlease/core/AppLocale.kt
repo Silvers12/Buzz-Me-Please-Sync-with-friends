@@ -27,8 +27,32 @@ object AppLocale {
         get() = when (current) {
             AppLanguage.FRENCH -> Locale.FRENCH
             AppLanguage.ENGLISH -> Locale.ENGLISH
+            AppLanguage.GERMAN -> Locale.GERMAN
+            AppLanguage.SPANISH -> SPANISH
+            AppLanguage.ITALIAN -> Locale.ITALIAN
+            AppLanguage.ARABIC -> ARABIC
             AppLanguage.SYSTEM -> Locale.getDefault()
         }
+
+    /** `Locale` n'a de constante que pour une poignée de langues ; les autres se construisent. */
+    private val SPANISH: Locale = Locale.forLanguageTag("es")
+
+    /**
+     * L'arabe, mais avec les chiffres latins (`-u-nu-latn`). Sans cette extension, l'arabe prend
+     * les chiffres arabes orientaux du CLDR — ٠١٢٣ — et c'est tout le jeu qui bascule : le chrono
+     * à la milliseconde, l'écart entre deux buzz, les scores, le décompte 3 · 2 · 1. Or on
+     * compare ici des durées au millième, souvent d'un téléphone à l'autre, à côté d'un code de
+     * salon qui reste en lettres latines. Les chiffres latins sont lus partout dans le monde
+     * arabe, et le Maghreb n'écrit plus guère autrement.
+     *
+     * L'extension ne change pas le choix des ressources : c'est la langue, `ar`, qui désigne
+     * `values-ar`, et c'est bien elle aussi qui met la mise en page de droite à gauche.
+     */
+    private val ARABIC: Locale = Locale.forLanguageTag("ar-u-nu-latn")
+
+    /** Le même tag, pour la configuration : la langue de l'interface et celle des nombres accordées. */
+    fun tagOf(language: AppLanguage): String? =
+        if (language == AppLanguage.ARABIC) ARABIC.toLanguageTag() else language.tag
 
     /**
      * Le même contexte, mais dont les ressources parlent la langue choisie.
@@ -39,7 +63,7 @@ object AppLocale {
      * le sélecteur de fichiers du son de buzzer, par exemple — ne la trouverait plus.
      */
     fun wrap(base: Context): Context {
-        val tag = current.tag ?: return base
+        val tag = tagOf(current) ?: return base
         val configuration = Configuration(base.resources.configuration).apply {
             setLocales(LocaleList(Locale.forLanguageTag(tag)))
         }

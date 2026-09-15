@@ -4,7 +4,9 @@
     tous les autres retombent ici.
 -->
 <resources>
-    <string name="app_name">Buzz Me Please</string>
+    <!-- Le nom du jeu ne se traduit dans aucune langue : `translatable="false"` le dit à
+         lint, qui réclamait sinon une traduction par langue ajoutée. -->
+    <string name="app_name" translatable="false">Buzz Me Please</string>
 
     <!-- Commun -->
     <string name="action_back">Back</string>
@@ -45,6 +47,10 @@
     <string name="settings_language_auto">System</string>
     <string name="settings_language_fr">Français</string>
     <string name="settings_language_en">English</string>
+    <string name="settings_language_de">Deutsch</string>
+    <string name="settings_language_es">Español</string>
+    <string name="settings_language_it">Italiano</string>
+    <string name="settings_language_ar">العربية</string>
     <string name="settings_comfort_label">Playing comfort</string>
     <string name="settings_buzzer_label">Buzzer sound</string>
     <string name="settings_buzzer_hint">What your own phone plays when you press. Tap a sound to hear it.</string>

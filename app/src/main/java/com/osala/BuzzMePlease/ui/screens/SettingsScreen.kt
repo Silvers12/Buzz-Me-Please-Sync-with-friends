@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -267,13 +269,20 @@ private fun SettingsHeader(onBack: () -> Unit) {
     }
 }
 
-/** La langue de l'application : celle du téléphone, ou l'une des deux imposées. */
+/** La langue de l'application : celle du téléphone, ou l'une de celles qu'on impose. */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun LanguagePanel(language: AppLanguage, onLanguage: (AppLanguage) -> Unit) {
     StagePanel(modifier = Modifier.fillMaxWidth()) {
         SectionLabel(stringResource(R.string.settings_language_label))
         Spacer(Modifier.height(12.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        // FlowRow, et des pastilles à leur largeur naturelle : à sept langues, une rangée de
+        // colonnes égales écraserait les noms les plus longs. Chacune prend la place de son nom
+        // et passe à la ligne quand la largeur manque — police système agrandie comprise.
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
             AppLanguage.entries.forEach { choice ->
                 LanguageChoice(
                     label = stringResource(
@@ -281,11 +290,14 @@ private fun LanguagePanel(language: AppLanguage, onLanguage: (AppLanguage) -> Un
                             AppLanguage.SYSTEM -> R.string.settings_language_auto
                             AppLanguage.FRENCH -> R.string.settings_language_fr
                             AppLanguage.ENGLISH -> R.string.settings_language_en
+                            AppLanguage.GERMAN -> R.string.settings_language_de
+                            AppLanguage.SPANISH -> R.string.settings_language_es
+                            AppLanguage.ITALIAN -> R.string.settings_language_it
+                            AppLanguage.ARABIC -> R.string.settings_language_ar
                         },
                     ),
                     selected = choice == language,
                     onClick = { onLanguage(choice) },
-                    modifier = Modifier.weight(1f),
                 )
             }
         }
@@ -677,7 +689,7 @@ private fun LanguageChoice(
             )
             .border(1.dp, accent.copy(alpha = if (selected) 0.8f else 0.5f), shape)
             .selectable(selected = selected, role = Role.RadioButton, onClick = onClick)
-            .padding(vertical = 12.dp),
+            .padding(horizontal = 18.dp, vertical = 12.dp),
         contentAlignment = Alignment.Center,
     ) {
         Text(

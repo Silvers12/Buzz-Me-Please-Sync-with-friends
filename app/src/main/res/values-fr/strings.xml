@@ -43,6 +43,10 @@
     <string name="settings_language_auto">Système</string>
     <string name="settings_language_fr">Français</string>
     <string name="settings_language_en">English</string>
+    <string name="settings_language_de">Deutsch</string>
+    <string name="settings_language_es">Español</string>
+    <string name="settings_language_it">Italiano</string>
+    <string name="settings_language_ar">العربية</string>
     <string name="settings_comfort_label">Confort de jeu</string>
     <string name="settings_buzzer_label">Son du buzzer</string>
     <string name="settings_buzzer_hint">Ce que joue votre propre téléphone quand vous appuyez. Touchez un son pour l\'écouter.</string>

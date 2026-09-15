@@ -50,13 +50,23 @@ data class Settings(
 )
 
 /**
- * Langue de l'application. Par défaut elle suit le système : un téléphone en français ouvre le
- * jeu en français, tous les autres en anglais. Le choix manuel prime, et se conserve.
+ * Langue de l'application. Par défaut elle suit le système : un téléphone réglé dans l'une des
+ * langues traduites ouvre le jeu dedans, tous les autres en anglais. Le choix manuel prime, et
+ * se conserve.
+ *
+ * L'ordre des entrées est celui du sélecteur des réglages. Ajouter une langue ici oblige à
+ * traduire `values-<tag>`, à l'ajouter aux `localeFilters` du build — sans quoi la traduction
+ * est retirée de l'APK — et à l'étiqueter dans [AppLocale] comme dans le sélecteur, deux `when`
+ * exhaustifs qui ne compilent pas tant que c'est oublié.
  */
 enum class AppLanguage(val tag: String?) {
     SYSTEM(null),
     FRENCH("fr"),
     ENGLISH("en"),
+    GERMAN("de"),
+    SPANISH("es"),
+    ITALIAN("it"),
+    ARABIC("ar"),
     ;
 
     companion object {

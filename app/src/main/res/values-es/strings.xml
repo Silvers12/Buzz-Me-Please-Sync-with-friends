@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Español: se usa en cuanto el teléfono está en español. El nombre del juego,
+    «Buzz Me Please», no se traduce — se queda en res/values.
+    Se tutea: una partida entre amigos no se trata de usted.
+-->
+<resources>
+    <!-- Commun -->
+    <string name="action_back">Atrás</string>
+    <string name="action_close">Cerrar</string>
+    <string name="action_cancel">Cancelar</string>
+    <string name="action_settings">Ajustes</string>
+
+    <!-- Accueil -->
+    <string name="home_tagline">El pulsador de concurso, al milisegundo</string>
+    <string name="home_nickname_label">Tu apodo</string>
+    <string name="home_nickname_hint">Ej. Camille</string>
+    <string name="home_connection_label">Conexión entre jugadores</string>
+    <string name="home_wifi_title">Wi-Fi local</string>
+    <string name="home_wifi_subtitle">Sin internet · lo más preciso</string>
+    <string name="home_wifi_only">Todos los teléfonos deben estar en la misma red Wi-Fi.</string>
+    <string name="home_create_room">Crear una sala</string>
+    <string name="home_join_room">Entrar con un código</string>
+    <string name="home_need_nickname">Elige primero un apodo (2 caracteres como mínimo).</string>
+    <string name="home_rate">Valorar la aplicación</string>
+
+    <!-- Rejoindre -->
+    <string name="join_title">Entrar en una sala</string>
+    <string name="join_code_label">Código de la sala</string>
+    <string name="join_code_hint">ABCDE</string>
+    <string name="join_action">Entrar</string>
+    <string name="join_discovered_label">Salas encontradas en el Wi-Fi</string>
+    <string name="join_searching">Buscando… Asegúrate de que el anfitrión ha creado la sala y de que todos los teléfonos están en la misma red Wi-Fi.</string>
+    <string name="join_room_host">En casa de %1$s</string>
+    <string name="join_room_action">ENTRAR</string>
+    <string name="joining_title">Entrando en la sala</string>
+    <string name="joining_searching">Buscando la sala…</string>
+    <string name="joining_hint">La sala se abrirá en cuanto responda el anfitrión. ¿No pasa nada? Comprueba el código, y que todos los teléfonos estén en la misma red Wi-Fi.</string>
+    <string name="joining_cancel">Cancelar</string>
+
+    <!-- Réglages -->
+    <string name="settings_title">Ajustes</string>
+    <string name="settings_language_label">Idioma</string>
+    <string name="settings_language_auto">Sistema</string>
+    <string name="settings_language_fr">Français</string>
+    <string name="settings_language_en">English</string>
+    <string name="settings_language_de">Deutsch</string>
+    <string name="settings_language_es">Español</string>
+    <string name="settings_language_it">Italiano</string>
+    <string name="settings_language_ar">العربية</string>
+    <string name="settings_comfort_label">Comodidad de juego</string>
+    <string name="settings_buzzer_label">Sonido del pulsador</string>
+    <string name="settings_buzzer_hint">Lo que suena en tu propio teléfono cuando pulsas. Toca un sonido para escucharlo.</string>
+    <string name="settings_buzzer_default">Pitido original</string>
+    <string name="settings_buzzer_import">Importar un sonido…</string>
+    <string name="settings_buzzer_imported">Sonido importado</string>
+    <string name="settings_buzzer_unreadable">Este archivo no se puede leer. Elige otro.</string>
+    <string name="settings_sound_title">Sonido y vibración</string>
+    <string name="settings_sound_subtitle">Pitidos de la cuenta atrás, señal de salida, respuesta al pulsar.</string>
+    <string name="settings_screen_title">Mantener la pantalla encendida</string>
+    <string name="settings_screen_subtitle">Imprescindible durante una partida: una pantalla que se apaga es un pulso perdido y una reconexión que esperar.</string>
+    <string name="settings_howto_label">Cómo funciona</string>
+    <string name="settings_howto_body">El manual completo: crear una sala, dar la salida, eliminar jugadores, llevar la puntuación, ceder la presentación.</string>
+    <string name="settings_open_tutorial">Abrir el tutorial</string>
+    <string name="settings_support_label">¿Un problema, una idea?</string>
+    <string name="settings_contact">Informar de un problema</string>
+    <string name="settings_contact_hint">Se abre un correo, ya relleno con el modelo de tu teléfono y la versión de la aplicación. Solo tienes que contar qué ha pasado.</string>
+    <string name="settings_contact_subject">Buzz Me Please — %1$s</string>
+    <string name="settings_contact_body">Describe aquí el problema, y qué estabas haciendo cuando ocurrió.\n\n— — —\nDispositivo: %1$s\nAndroid: %2$s (API %3$d)\nAplicación: %4$s\nIdioma: %5$s</string>
+    <!-- Support section. Tone: first person, deadpan. The author speaks to the player
+         directly; the humour comes from understatement, never from a punchline. Do not
+         go back to the third person ("the developer") — it read cold in the one section
+         that asks for something. Same voice as Call Me Please, on purpose: it is the
+         same person talking. -->
+    <string name="settings_donate">Invítame a un café</string>
+    <string name="settings_donate_hint">Gratis, sin anuncios, sin recoger nada. Solo yo, y mucho café.</string>
+    <string name="settings_other_apps">Descubre mis otras aplicaciones</string>
+    <string name="settings_other_apps_hint">Tengo más ideas. Algunas hasta son útiles.</string>
+    <string name="settings_footer">Buzz Me Please · pulsador de concurso sincronizado</string>
+    <string name="settings_version">Versión %1$s</string>
+    <string name="settings_copyright">© 2026 Olivier SALA</string>
+
+    <!-- Salon -->
+    <string name="room_code_label">Código de la sala</string>
+    <string name="room_leave">Salir de la sala</string>
+    <string name="room_badge_host">Anfitrión</string>
+    <string name="room_badge_player">Jugador</string>
+    <string name="room_badge_duel">Rápido</string>
+    <string name="room_badge_race">Carrera</string>
+    <string name="room_round">Ronda %1$d</string>
+    <string name="room_latency">%1$d ms · ± %2$d ms</string>
+    <string name="room_go">¡Ya!</string>
+    <string name="room_end">Cerrar los pulsadores</string>
+    <string name="room_reset">Reiniciar: todos los pulsadores de nuevo activos</string>
+    <string name="room_rules">Reglas de la partida</string>
+    <string name="announce_floor">¡TIENES LA PALABRA!</string>
+    <string name="announce_right">¡BIEN JUGADO!</string>
+    <string name="announce_wrong">¡INCORRECTO!</string>
+    <string name="player_yellow_cards">Tarjetas amarillas: %1$d</string>
+    <string name="player_red_cards">Tarjetas rojas: %1$d</string>
+    <string name="alert_clear">BORRAR LAS TARJETAS (%1$s)</string>
+    <plurals name="alert_clear_yellow">
+        <item quantity="one">%d amarilla</item>
+        <item quantity="many">%d amarillas</item>
+        <item quantity="other">%d amarillas</item>
+    </plurals>
+    <plurals name="alert_clear_red">
+        <item quantity="one">%d roja</item>
+        <item quantity="many">%d rojas</item>
+        <item quantity="other">%d rojas</item>
+    </plurals>
+    <string name="alert_send">Enviar un aviso…</string>
+    <string name="alert_pick_title">¿Qué aviso?</string>
+    <string name="alert_yellow">Tarjeta amarilla</string>
+    <string name="alert_red">Tarjeta roja</string>
+    <string name="announce_yellow_you">TARJETA AMARILLA</string>
+    <string name="announce_yellow_other">TARJETA AMARILLA\n%1$s</string>
+    <string name="announce_red_you">TARJETA ROJA</string>
+    <string name="announce_red_other">TARJETA ROJA\n%1$s</string>
+    <string name="announce_game_over">FIN DE LA PARTIDA\nGanador: %1$s</string>
+    <string name="announce_game_over_tie">FIN DE LA PARTIDA\n¡Hay empate!</string>
+    <string name="rules_end_game">Terminar la partida</string>
+    <string name="rules_end_game_title">¿Terminar la partida?</string>
+    <string name="rules_end_game_body">El ganador y su puntuación se anuncian en todos los teléfonos. No se borra nada: podéis seguir jugando después.</string>
+    <string name="announce_late">DEMASIADO TARDE</string>
+    <string name="announce_out">ESTÁS ELIMINADO</string>
+    <string name="announce_back">VUELVES A JUGAR</string>
+    <string name="announce_host_you">ERES EL ANFITRIÓN</string>
+    <string name="announce_host_other">NUEVO ANFITRIÓN\n%1$s</string>
+    <string name="room_all_out">Todos están eliminados. Devuelve a un jugador, o reactiva todos los pulsadores con la flecha.</string>
+    <string name="room_board">Marcador</string>
+    <string name="room_board_host">Marcador · toca un jugador</string>
+    <string name="room_board_hidden_host">Marcador · oculto a los jugadores</string>
+    <string name="room_board_sounds">Panel de sonidos · pulsación larga para cambiar</string>
+    <string name="room_online_count">%1$d/%2$d conectados</string>
+    <string name="room_sounds_open">Sonidos</string>
+    <string name="room_sounds_close">Marcador</string>
+    <string name="room_sounds_open_desc">Abrir el panel de sonidos</string>
+    <string name="room_sounds_close_desc">Volver al marcador</string>
+
+    <!-- Buzzer -->
+    <string name="buzzer_buzz">PULSA</string>
+    <string name="buzzer_taken">OCUPADO</string>
+    <string name="buzzer_correct">CORRECTO</string>
+    <string name="buzzer_missed">FALLADO</string>
+    <string name="buzzer_too_late">TARDE</string>
+    <string name="buzzer_passed">SIGUIENTE</string>
+    <string name="buzzer_out">FUERA</string>
+    <string name="buzzer_ready">¿LISTO?</string>
+    <string name="buzzer_get_ready">Prepárate</string>
+    <string name="buzzer_press">¡Pulsa!</string>
+    <string name="buzzer_recorded">Registrado</string>
+    <string name="buzzer_your_turn">Te toca responder</string>
+    <string name="buzzer_point">Punto conseguido</string>
+    <string name="buzzer_can_return">El anfitrión puede devolverte al juego</string>
+    <string name="buzzer_waiting">Esperando la salida</string>
+
+    <!-- Bandeau de résultat -->
+    <string name="banner_yours">¡Te toca!</string>
+    <string name="banner_has_hand">%1$s tiene la palabra</string>
+    <string name="banner_given">Palabra dada por el anfitrión</string>
+    <string name="banner_reaction">Reacción %1$s</string>
+    <string name="banner_precision">" (± %1$d ms)"</string>
+    <string name="banner_ahead">" · %2$s por delante de %1$s"</string>
+    <string name="banner_photo_finish">Photo finish: revisando…</string>
+    <string name="banner_right">Correcto</string>
+    <string name="banner_wrong">Incorrecto</string>
+    <string name="banner_next">Siguiente</string>
+    <string name="banner_knock_out">Eliminar</string>
+    <string name="banner_nobody">Nadie ha acertado · lanza otra ronda</string>
+
+    <!-- Ligne de joueur -->
+    <string name="player_host_desc">Anfitrión</string>
+    <string name="player_you">TÚ</string>
+    <string name="player_out">Eliminado</string>
+    <string name="player_offline">Sin conexión</string>
+    <string name="player_ready">Listo</string>
+    <string name="player_ready_ping">Listo · %1$d ms</string>
+    <string name="player_winner_desc">Ganador de la ronda</string>
+
+    <!-- Pupitre du joueur -->
+    <string name="dialog_score">Puntuación</string>
+    <string name="dialog_floor">PALABRA</string>
+    <string name="dialog_give_floor">DAR LA PALABRA</string>
+    <string name="dialog_buzzer">Pulsador</string>
+    <string name="dialog_alert">Aviso</string>
+    <string name="dialog_room">Sala</string>
+    <string name="dialog_eliminate">Eliminar (pulsador gris)</string>
+    <string name="dialog_revive">Reactivar el pulsador</string>
+    <string name="dialog_transfer">Ceder la presentación</string>
+    <string name="dialog_kick">Expulsar de la sala</string>
+    <string name="dialog_end_title">¿Cerrar los pulsadores?</string>
+    <string name="dialog_end_body">Los pulsadores verdes se apagan. No cambia nada más: la ronda se queda como está.</string>
+    <string name="dialog_transfer_title">¿Ceder la presentación?</string>
+    <string name="dialog_transfer_body">%1$s pasa a ser el anfitrión: dará las salidas, llevará la puntuación y ajustará las reglas. Tú vuelves a ser un jugador más, y tendrá que devolvértela para que puedas retomarla.</string>
+
+    <!-- Règles de la partie -->
+    <string name="rules_title">Reglas de la partida</string>
+    <string name="rules_duel_title">Modo rápido</string>
+    <string name="rules_duel_subtitle">El primero en pulsar bloquea a todos los demás. Desactivado, todos pulsan y se obtiene una clasificación completa.</string>
+    <string name="rules_countdown_title">Cuenta atrás 3 · 2 · 1</string>
+    <string name="rules_countdown_subtitle">Todos los dispositivos se arman en el mismo instante, al milisegundo.</string>
+    <string name="rules_hide_board_title">Marcador oculto</string>
+    <string name="rules_hide_board_subtitle">En los teléfonos de los jugadores, el marcador se reduce a su propia línea y su puntuación. Tú conservas la tabla completa.</string>
+    <string name="rules_sound_title">Sonido y vibración</string>
+    <string name="rules_sound_subtitle">Pitidos de la cuenta atrás, señal de salida y respuesta al pulsar.</string>
+    <string name="rules_reset_scores">Poner todas las puntuaciones a cero</string>
+
+    <!-- Sonothèque -->
+    <string name="sounds_title">Sonido para esta tecla</string>
+    <string name="sounds_help">Toca ▶ para escuchar, toca el nombre para ponerlo en la tecla.</string>
+    <string name="sounds_clear">Vaciar</string>
+    <string name="sounds_pick_desc">Elegir un sonido para esta tecla</string>
+    <string name="sounds_preview_desc">Reproducir %1$s</string>
+    <string name="sounds_empty_title">Biblioteca de sonidos vacía</string>
+    <string name="sounds_empty_body">Pon tus archivos de audio en app/src/main/res/raw (nombres en minúscula, sin acentos: correct.mp3, wrong.mp3…) y decláralos después en SoundLibrary.</string>
+
+    <!-- Sons -->
+    <string name="sound_correct">Respuesta correcta</string>
+    <string name="sound_wrong">Respuesta incorrecta</string>
+    <string name="sound_tadaa">Tachán</string>
+    <string name="sound_wow">Guau</string>
+    <string name="sound_cash_register">Caja registradora</string>
+    <string name="sound_fireworks">Fuegos artificiales</string>
+    <string name="sound_drum_joke">Redoble de chiste</string>
+    <string name="sound_boom">Explosión</string>
+    <string name="sound_gunshot">Disparo</string>
+    <string name="sound_glass_breaking">Cristales rotos</string>
+    <string name="sound_whoosh">Silbido</string>
+    <string name="sound_pop">Pop</string>
+    <string name="sound_doorbell">Timbre</string>
+    <string name="sound_horn">Sirena de niebla</string>
+    <string name="sound_car_honk">Claxon</string>
+    <string name="sound_police_siren">Sirena de policía</string>
+    <string name="sound_car_engine">Motor</string>
+    <string name="sound_clock">Reloj</string>
+    <string name="sound_slow_clock_ticking">Tictac lento</string>
+    <string name="sound_heartbeat">Latido</string>
+    <string name="sound_winter_wind">Viento de invierno</string>
+    <string name="sound_keyboard_typing">Tecleo</string>
+    <string name="sound_violin">Violín triste</string>
+    <string name="sound_witch_laugh">Risa de bruja</string>
+    <string name="sound_evil_laugh">Risa malvada</string>
+    <string name="sound_monster_growl">Gruñido de monstruo</string>
+    <string name="sound_pathetic_screaming">Grito patético</string>
+    <string name="sound_i_see_you">Te veo</string>
+    <string name="sound_stop_it">Para ya</string>
+    <string name="sound_shut_up">Cállate</string>
+    <string name="sound_baby_crying">Bebé llorando</string>
+    <string name="sound_meow">Miau</string>
+    <string name="sound_goat">Cabra</string>
+    <string name="sound_frog">Rana</string>
+    <string name="sound_rooster_crowing">Gallo</string>
+    <string name="sound_wet_fart">Pedo</string>
+
+    <!-- Liaison réseau -->
+    <string name="link_hosting">Eres el anfitrión de la sala</string>
+    <string name="link_searching">Buscando la sala %1$s…</string>
+    <string name="link_searching_wifi">Buscando la sala %1$s en el Wi-Fi…</string>
+    <string name="link_not_found">Sala %1$s no encontrada. Comprueba que todos estén en el mismo Wi-Fi.</string>
+    <string name="link_connecting">Conectando con el anfitrión…</string>
+    <string name="link_retrying">Reintentando…</string>
+    <string name="link_lost">Conexión perdida, reconectando…</string>
+    <string name="link_connected">Conectado</string>
+    <string name="link_taking_over">Vas a tomar el relevo como anfitrión…</string>
+    <string name="link_new_host">Nuevo anfitrión, reconectando…</string>
+    <string name="link_closed">Sala cerrada</string>
+    <string name="link_port_busy">No se ha podido abrir el puerto %1$d</string>
+
+    <!-- Fins de session -->
+    <string name="end_host_closed">El anfitrión ha cerrado la sala.</string>
+    <string name="end_kicked">El anfitrión te ha expulsado de la sala.</string>
+    <string name="end_version_update">El anfitrión juega con una versión más reciente de Buzz Me Please. Actualiza la tuya desde Play Store para entrar.</string>
+    <string name="end_version_host_old">El anfitrión juega con una versión más antigua de Buzz Me Please. Pídele que actualice la suya.</string>
+    <string name="join_room_newer">Versión más reciente · actualiza la tuya para entrar</string>
+    <string name="join_room_older">Versión más antigua · tiene que actualizar</string>
+    <string name="join_room_host_version">En casa de %1$s · v%2$s</string>
+    <string name="end_version">El otro teléfono usa una versión distinta de Buzz Me Please. Actualizad ambos desde Play Store para jugar juntos.</string>
+    <string name="end_left">Jugador salido</string>
+
+    <!-- Messages -->
+    <string name="notice_code_length">El código debe tener %1$d caracteres.</string>
+    <string name="default_player_name">Jugador</string>
+
+    <!-- Tutoriel -->
+    <string name="tutorial_title">Cómo funciona</string>
+    <string name="tutorial_intro">Doce pasos, desde crear la sala hasta el panel de sonidos del anfitrión.</string>
+    <string name="tutorial_start">Vamos allá</string>
+    <string name="tutorial_1_title">Elige tu apodo</string>
+    <string name="tutorial_1_body">En la pantalla de inicio, escribe el apodo que aparecerá en el marcador — puedes cambiarlo cuando quieras. Se juega por Wi-Fi local: todos los teléfonos en la misma red, sin internet, y la medición más precisa.</string>
+    <string name="tutorial_2_title">Crear la sala o entrar en ella</string>
+    <string name="tutorial_2_body">El anfitrión toca «Crear una sala»: aparece un código de cinco letras en lo alto de la pantalla. Los demás tocan «Entrar» y escriben ese código. En Wi-Fi local la sala aparece sola en la lista de salas encontradas: un toque, nada que escribir. Todos los de la sala deben tener la misma versión del juego: la lista muestra la del anfitrión, y dice cuál de los dos tiene que actualizar.</string>
+    <string name="tutorial_3_title">Dar la salida</string>
+    <string name="tutorial_3_body">El anfitrión toca «¡Ya!». Una cuenta atrás 3 · 2 · 1 se dispara a la vez en todos los teléfonos, y luego cada pulsador se pone verde al milisegundo. En los teléfonos de los jugadores el resto de la pantalla se despeja durante la ronda: solo queda el pulsador, grande, en el centro. El anfitrión conserva la mesa entera — es su cuadro de mando — y juega también. En una tableta en horizontal lo tiene todo a la vez: mesa, marcador y panel de sonidos, uno al lado del otro.</string>
+    <string name="tutorial_4_title">Pulsar</string>
+    <string name="tutorial_4_body">El primero que pulsa ve su pulsador volverse azul — el pulso está dentro, el veredicto llega — y todos los demás quedan bloqueados al instante. Se envía la hora exacta del pulso — hora, minuto, segundo y milisegundo — y el anfitrión ve la clasificación, la diferencia con el mejor tiempo y la incertidumbre de la medición. Una vez fijada la clasificación, un solo pulsador se vuelve blanco: el que tiene la palabra.</string>
+    <string name="tutorial_colours_title">Los colores del pulsador</string>
+    <string name="tutorial_colours_body">El pulsador lo dice todo con su color: no hace falta mirar el marcador para saber cómo vas.</string>
+    <string name="tutorial_colour_armed">Verde · los pulsadores están abiertos, pulsa</string>
+    <string name="tutorial_colour_speaking">Blanco · tienes la palabra, responde</string>
+    <string name="tutorial_colour_right">Verde claro · respuesta correcta, el punto es tuyo</string>
+    <string name="tutorial_colour_wrong">Rojo · respuesta incorrecta</string>
+    <string name="tutorial_colour_buzzed">Azul brillante · tu pulso está dentro, llega el veredicto</string>
+    <string name="tutorial_colour_lost">Azul oscuro · otro tiene la palabra, o la ronda no ha empezado</string>
+    <string name="tutorial_colour_eliminated">Gris · pulsador apagado por el anfitrión</string>
+    <string name="tutorial_colour_countdown">Ámbar · la cuenta atrás 3 · 2 · 1, prepárate</string>
+    <string name="tutorial_5_title">Llevar las rondas</string>
+    <string name="tutorial_5_body">Bajo el rótulo hay tres veredictos. «Correcto» suma el punto, pone verde el pulsador del jugador con el sonido de respuesta acertada, y cierra luego los pulsadores. «Incorrecto» pone rojo su pulsador y hace sonar la penalización en su teléfono, sin mover la palabra; el botón se convierte entonces en «Eliminar», de modo que la misma pregunta puede volver a plantearse a quienes aún no han respondido. «Siguiente» pasa la palabra al siguiente de la clasificación, y solo aparece cuando hay alguien esperando detrás. Mientras quede un pulsador verde por ahí, la salida se convierte en «Cerrar los pulsadores»: tras una confirmación los apaga y nada más — los pulsos ya registrados, la palabra y los veredictos se quedan exactamente donde están, así puedes seguir llevando la ronda con los pulsadores cerrados. En cuanto no quede ningún pulsador que pulsar — todos han pulsado, o todos están eliminados — la salida vuelve sola. La flecha circular, en cambio, deja la pizarra limpia: pulsos borrados, todos los pulsadores de nuevo activos, puntuaciones intactas.</string>
+    <string name="tutorial_6_title">Dar la palabra, eliminar, puntuar</string>
+    <string name="tutorial_6_body">El anfitrión toca la línea de un jugador para abrir su mesa. «Dar la palabra» se la entrega sin pasar por la clasificación — ni siquiera hace falta que haya pulsado, y así es como se pregunta a alguien directamente. Debajo: pulsador gris (eliminado) o devuelto al juego de un gesto, puntos en +1, +3 o −1, expulsión de la sala. Un jugador eliminado conserva su línea en todas las pantallas, con el pulsador apagado: ya no juega, su puntuación sigue contando, y el anfitrión puede devolverlo cuando quiera. La flecha circular, a la derecha de la salida, los enciende a todos de golpe.</string>
+    <string name="tutorial_7_title">Ceder la presentación</string>
+    <string name="tutorial_7_body">Desde esa misma mesa, «Ceder la presentación» entrega el papel de anfitrión a otro jugador. Nadie sale de la sala: puntuaciones, estados y ronda en curso siguen adelante, y el anfitrión anterior pasa a ser un jugador más.</string>
+    <string name="tutorial_8_title">Doblar las reglas</string>
+    <string name="tutorial_8_body">El botón de los deslizadores, a la derecha de la salida, abre las reglas de la partida. El modo rápido puede desactivarse a favor del modo carrera, en el que todos pulsan y se obtiene una clasificación completa — muy útil para un desempate o una ronda de velocidad. «Marcador oculto» mantiene la intriga: a cada jugador le queda solo su propia línea, tú conservas la tabla entera. La cuenta atrás y los sonidos se apagan en el mismo sitio.</string>
+    <string name="tutorial_9_title">Prepara tus efectos de sonido</string>
+    <string name="tutorial_9_body">El botón «Sonidos», encima del marcador, abre el panel de sonidos del anfitrión: nueve teclas que llenar antes de la partida, con los sonidos que trae el juego o con archivos tuyos. Un toque reproduce el sonido y enciende la tecla en verde, un segundo lo detiene; una pulsación larga cambia la tecla o la vacía. Los sonidos que importas — para el panel y también para tu pulsador, en los ajustes — se cortan a los cuatro segundos, para que una pista de dos minutos no se trague la ronda. Tu selección se conserva de una partida a la siguiente, y el panel se pliega de nuevo sobre el marcador.</string>
+    <string name="tutorial_cards_title">Las tarjetas de anuncio</string>
+    <string name="tutorial_cards_body">Lo que te pasa cruza la pantalla en letras grandes: «Tienes la palabra», «Bien jugado», «Incorrecto», «Siguiente», «Demasiado tarde», «Estás eliminado». La tarjeta dura cinco segundos y no bloquea nada — el pulsador funciona por debajo. El sonido, en cambio, solo suena en el teléfono afectado: la sala lo ve, el afectado lo oye.</string>
+    <string name="tutorial_alerts_title">Tarjetas y fin de partida</string>
+    <string name="tutorial_alerts_body">Desde la mesa de un jugador, «Enviar un aviso» reparte una tarjeta amarilla o roja. Se anuncia en todas las pantallas, solo suena en el teléfono del amonestado, y se cuenta en su línea del marcador, justo antes de su puntuación — no aparece nada mientras no haya sido amonestado. «Borrar las tarjetas» le deja el historial limpio. En las reglas de la partida, «Terminar la partida» proclama al ganador y su puntuación en todos los teléfonos, fuegos artificiales incluidos. No se borra nada: podéis seguir jugando después.</string>
+    <string name="tutorial_tips_title">Para que el pulso sea justo</string>
+    <string name="tutorial_tip_1">Todos en el mismo Wi-Fi en modo local — nadie con datos móviles.</string>
+    <string name="tutorial_tip_2">Activa «Mantener la pantalla encendida» en los ajustes antes de empezar.</string>
+    <string name="tutorial_tip_3">La diferencia mostrada descuenta la latencia de la red: lo que se compara es el momento de la pulsación, no el orden en que llegan los mensajes.</string>
+    <string name="tutorial_tip_4">Por debajo de la incertidumbre indicada (± unos pocos ms en local), dos reflejos están empatados: decide el anfitrión.</string>
+
+    <!-- Crashlytics diagnostics (debug builds only) -->
+    <string name="diagnostics_label">Diagnóstico</string>
+    <string name="diagnostics_hint">Solo en compilaciones de depuración. Comprueba que el envío de errores a Crashlytics funciona — por las dos vías, ya que un error no fatal y un fallo grave viajan de forma distinta.</string>
+    <string name="diagnostics_collection_title">Recogida de Crashlytics</string>
+    <string name="diagnostics_collection_subtitle">Desactivada por defecto en depuración, para mantener limpia la consola</string>
+    <string name="diagnostics_collection_off">La recogida está desactivada: los botones de abajo no enviarán nada.</string>
+    <string name="diagnostics_send_non_fatal">Enviar un error no fatal</string>
+    <string name="diagnostics_force_crash">Forzar un fallo grave</string>
+    <string name="diagnostics_flush">Subir los informes pendientes</string>
+    <string name="diagnostics_previous_crash_yes">La sesión anterior terminó con un fallo grave</string>
+    <string name="diagnostics_previous_crash_no">Ningún fallo grave en la sesión anterior</string>
+</resources>

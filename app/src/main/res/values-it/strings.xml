@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Italiano: si usa appena il telefono è in italiano. Il nome del gioco,
+    «Buzz Me Please», non si traduce — resta in res/values.
+    Si dà del tu: una partita tra amici non dà del lei.
+-->
+<resources>
+    <!-- Commun -->
+    <string name="action_back">Indietro</string>
+    <string name="action_close">Chiudi</string>
+    <string name="action_cancel">Annulla</string>
+    <string name="action_settings">Impostazioni</string>
+
+    <!-- Accueil -->
+    <string name="home_tagline">Il buzzer da quiz, al millesimo di secondo</string>
+    <string name="home_nickname_label">Il tuo soprannome</string>
+    <string name="home_nickname_hint">Es. Camille</string>
+    <string name="home_connection_label">Collegamento tra giocatori</string>
+    <string name="home_wifi_title">Wi-Fi locale</string>
+    <string name="home_wifi_subtitle">Senza internet · il più preciso</string>
+    <string name="home_wifi_only">Tutti i telefoni devono essere sulla stessa rete Wi-Fi.</string>
+    <string name="home_create_room">Crea una stanza</string>
+    <string name="home_join_room">Entra con un codice</string>
+    <string name="home_need_nickname">Scegli prima un soprannome (almeno 2 caratteri).</string>
+    <string name="home_rate">Valuta l\'app</string>
+
+    <!-- Rejoindre -->
+    <string name="join_title">Entra in una stanza</string>
+    <string name="join_code_label">Codice della stanza</string>
+    <string name="join_code_hint">ABCDE</string>
+    <string name="join_action">Entra</string>
+    <string name="join_discovered_label">Stanze trovate sul Wi-Fi</string>
+    <string name="join_searching">Ricerca in corso… Assicurati che il conduttore abbia creato la stanza e che tutti i telefoni siano sulla stessa rete Wi-Fi.</string>
+    <string name="join_room_host">Da %1$s</string>
+    <string name="join_room_action">ENTRA</string>
+    <string name="joining_title">Ingresso nella stanza</string>
+    <string name="joining_searching">Ricerca della stanza…</string>
+    <string name="joining_hint">La stanza si apre appena il conduttore risponde. Non succede nulla? Controlla il codice, e che tutti i telefoni siano sulla stessa rete Wi-Fi.</string>
+    <string name="joining_cancel">Annulla</string>
+
+    <!-- Réglages -->
+    <string name="settings_title">Impostazioni</string>
+    <string name="settings_language_label">Lingua</string>
+    <string name="settings_language_auto">Sistema</string>
+    <string name="settings_language_fr">Français</string>
+    <string name="settings_language_en">English</string>
+    <string name="settings_language_de">Deutsch</string>
+    <string name="settings_language_es">Español</string>
+    <string name="settings_language_it">Italiano</string>
+    <string name="settings_language_ar">العربية</string>
+    <string name="settings_comfort_label">Comfort di gioco</string>
+    <string name="settings_buzzer_label">Suono del buzzer</string>
+    <string name="settings_buzzer_hint">Quello che suona il tuo telefono quando premi. Tocca un suono per ascoltarlo.</string>
+    <string name="settings_buzzer_default">Bip originale</string>
+    <string name="settings_buzzer_import">Importa un suono…</string>
+    <string name="settings_buzzer_imported">Suono importato</string>
+    <string name="settings_buzzer_unreadable">Questo file non si può leggere. Scegline un altro.</string>
+    <string name="settings_sound_title">Suoni e vibrazione</string>
+    <string name="settings_sound_subtitle">Bip del conto alla rovescia, segnale di via, risposta al buzz.</string>
+    <string name="settings_screen_title">Tieni acceso lo schermo</string>
+    <string name="settings_screen_subtitle">Indispensabile durante una partita: uno schermo che si spegne è un buzz mancato e una riconnessione da aspettare.</string>
+    <string name="settings_howto_label">Come funziona</string>
+    <string name="settings_howto_body">Il manuale completo: creare una stanza, dare il via, eliminare i giocatori, tenere il punteggio, passare la conduzione.</string>
+    <string name="settings_open_tutorial">Apri il tutorial</string>
+    <string name="settings_support_label">Un problema, un\'idea?</string>
+    <string name="settings_contact">Segnala un problema</string>
+    <string name="settings_contact_hint">Si apre un\'email, già compilata con il modello del telefono e la versione dell\'app. Basta raccontare che cosa è successo.</string>
+    <string name="settings_contact_subject">Buzz Me Please — %1$s</string>
+    <string name="settings_contact_body">Descrivi qui il problema, e che cosa stavi facendo quando è successo.\n\n— — —\nDispositivo: %1$s\nAndroid: %2$s (API %3$d)\nApp: %4$s\nLingua: %5$s</string>
+    <!-- Support section. Tone: first person, deadpan. The author speaks to the player
+         directly; the humour comes from understatement, never from a punchline. Do not
+         go back to the third person ("the developer") — it read cold in the one section
+         that asks for something. Same voice as Call Me Please, on purpose: it is the
+         same person talking. -->
+    <string name="settings_donate">Offrimi un caffè</string>
+    <string name="settings_donate_hint">Gratis, senza pubblicità, senza raccogliere niente. Solo io, e parecchio caffè.</string>
+    <string name="settings_other_apps">Scopri le mie altre app</string>
+    <string name="settings_other_apps_hint">Ho altre idee. Qualcuna è perfino utile.</string>
+    <string name="settings_footer">Buzz Me Please · buzzer da quiz sincronizzato</string>
+    <string name="settings_version">Versione %1$s</string>
+    <string name="settings_copyright">© 2026 Olivier SALA</string>
+
+    <!-- Salon -->
+    <string name="room_code_label">Codice della stanza</string>
+    <string name="room_leave">Esci dalla stanza</string>
+    <string name="room_badge_host">Conduttore</string>
+    <string name="room_badge_player">Giocatore</string>
+    <string name="room_badge_duel">Rapida</string>
+    <string name="room_badge_race">Gara</string>
+    <string name="room_round">Manche %1$d</string>
+    <string name="room_latency">%1$d ms · ± %2$d ms</string>
+    <string name="room_go">Via!</string>
+    <string name="room_end">Chiudi i buzzer</string>
+    <string name="room_reset">Azzera: tutti i buzzer di nuovo attivi</string>
+    <string name="room_rules">Regole della partita</string>
+    <string name="announce_floor">HAI LA PAROLA!</string>
+    <string name="announce_right">BEN GIOCATO!</string>
+    <string name="announce_wrong">SBAGLIATO!</string>
+    <string name="player_yellow_cards">Cartellini gialli: %1$d</string>
+    <string name="player_red_cards">Cartellini rossi: %1$d</string>
+    <string name="alert_clear">CANCELLA I CARTELLINI (%1$s)</string>
+    <plurals name="alert_clear_yellow">
+        <item quantity="one">%d giallo</item>
+        <item quantity="many">%d gialli</item>
+        <item quantity="other">%d gialli</item>
+    </plurals>
+    <plurals name="alert_clear_red">
+        <item quantity="one">%d rosso</item>
+        <item quantity="many">%d rossi</item>
+        <item quantity="other">%d rossi</item>
+    </plurals>
+    <string name="alert_send">Manda un richiamo…</string>
+    <string name="alert_pick_title">Quale richiamo?</string>
+    <string name="alert_yellow">Cartellino giallo</string>
+    <string name="alert_red">Cartellino rosso</string>
+    <string name="announce_yellow_you">CARTELLINO GIALLO</string>
+    <string name="announce_yellow_other">CARTELLINO GIALLO\n%1$s</string>
+    <string name="announce_red_you">CARTELLINO ROSSO</string>
+    <string name="announce_red_other">CARTELLINO ROSSO\n%1$s</string>
+    <string name="announce_game_over">PARTITA FINITA\nVincitore: %1$s</string>
+    <string name="announce_game_over_tie">PARTITA FINITA\nÈ un pareggio!</string>
+    <string name="rules_end_game">Termina la partita</string>
+    <string name="rules_end_game_title">Terminare la partita?</string>
+    <string name="rules_end_game_body">Il vincitore e il suo punteggio vengono annunciati su tutti i telefoni. Non si cancella niente: potete continuare a giocare dopo.</string>
+    <string name="announce_late">TROPPO TARDI</string>
+    <string name="announce_out">SEI FUORI</string>
+    <string name="announce_back">SEI DI NUOVO IN GIOCO</string>
+    <string name="announce_host_you">SEI TU IL CONDUTTORE</string>
+    <string name="announce_host_other">NUOVO CONDUTTORE\n%1$s</string>
+    <string name="room_all_out">Sono tutti eliminati. Rimetti in gioco un giocatore, oppure riaccendi tutti i buzzer con la freccia.</string>
+    <string name="room_board">Tabellone</string>
+    <string name="room_board_host">Tabellone · tocca un giocatore</string>
+    <string name="room_board_hidden_host">Tabellone · nascosto ai giocatori</string>
+    <string name="room_board_sounds">Pannello suoni · tieni premuto per cambiare</string>
+    <string name="room_online_count">%1$d/%2$d online</string>
+    <string name="room_sounds_open">Suoni</string>
+    <string name="room_sounds_close">Tabellone</string>
+    <string name="room_sounds_open_desc">Apri il pannello suoni</string>
+    <string name="room_sounds_close_desc">Torna al tabellone</string>
+
+    <!-- Buzzer -->
+    <string name="buzzer_buzz">BUZZ</string>
+    <string name="buzzer_taken">PRESO</string>
+    <string name="buzzer_correct">GIUSTO</string>
+    <string name="buzzer_missed">SBAGLIATO</string>
+    <string name="buzzer_too_late">TARDI</string>
+    <string name="buzzer_passed">AL PROSSIMO</string>
+    <string name="buzzer_out">FUORI</string>
+    <string name="buzzer_ready">PRONTO?</string>
+    <string name="buzzer_get_ready">Preparati</string>
+    <string name="buzzer_press">Premi!</string>
+    <string name="buzzer_recorded">Registrato</string>
+    <string name="buzzer_your_turn">Tocca a te rispondere</string>
+    <string name="buzzer_point">Punto conquistato</string>
+    <string name="buzzer_can_return">Il conduttore può rimetterti in gioco</string>
+    <string name="buzzer_waiting">In attesa del via</string>
+
+    <!-- Bandeau de résultat -->
+    <string name="banner_yours">Tocca a te!</string>
+    <string name="banner_has_hand">%1$s ha la parola</string>
+    <string name="banner_given">Parola data dal conduttore</string>
+    <string name="banner_reaction">Reazione %1$s</string>
+    <string name="banner_precision">" (± %1$d ms)"</string>
+    <string name="banner_ahead">" · %2$s davanti a %1$s"</string>
+    <string name="banner_photo_finish">Photo finish: verifica in corso…</string>
+    <string name="banner_right">Giusto</string>
+    <string name="banner_wrong">Sbagliato</string>
+    <string name="banner_next">Prossimo</string>
+    <string name="banner_knock_out">Elimina</string>
+    <string name="banner_nobody">Nessuno ci è arrivato · lancia un\'altra manche</string>
+
+    <!-- Ligne de joueur -->
+    <string name="player_host_desc">Conduttore</string>
+    <string name="player_you">TU</string>
+    <string name="player_out">Eliminato</string>
+    <string name="player_offline">Offline</string>
+    <string name="player_ready">Pronto</string>
+    <string name="player_ready_ping">Pronto · %1$d ms</string>
+    <string name="player_winner_desc">Vincitore della manche</string>
+
+    <!-- Pupitre du joueur -->
+    <string name="dialog_score">Punteggio</string>
+    <string name="dialog_floor">PAROLA</string>
+    <string name="dialog_give_floor">DAI LA PAROLA</string>
+    <string name="dialog_buzzer">Buzzer</string>
+    <string name="dialog_alert">Richiamo</string>
+    <string name="dialog_room">Stanza</string>
+    <string name="dialog_eliminate">Elimina (buzzer grigio)</string>
+    <string name="dialog_revive">Riattiva il buzzer</string>
+    <string name="dialog_transfer">Passa la conduzione</string>
+    <string name="dialog_kick">Espelli dalla stanza</string>
+    <string name="dialog_end_title">Chiudere i buzzer?</string>
+    <string name="dialog_end_body">I buzzer verdi si spengono. Nient\'altro si muove: la manche resta com\'è.</string>
+    <string name="dialog_transfer_title">Passare la conduzione?</string>
+    <string name="dialog_transfer_body">%1$s diventa il conduttore: darà i via, terrà il punteggio e deciderà le regole. Tu torni a essere un giocatore come gli altri, e dovrà ridartela perché tu possa riprendere.</string>
+
+    <!-- Règles de la partie -->
+    <string name="rules_title">Regole della partita</string>
+    <string name="rules_duel_title">Modalità rapida</string>
+    <string name="rules_duel_subtitle">Il primo che buzza blocca tutti gli altri. Disattivata, buzzano tutti e si ottiene una classifica completa.</string>
+    <string name="rules_countdown_title">Conto alla rovescia 3 · 2 · 1</string>
+    <string name="rules_countdown_subtitle">Tutti i dispositivi si armano nello stesso istante, al millesimo.</string>
+    <string name="rules_hide_board_title">Tabellone nascosto</string>
+    <string name="rules_hide_board_subtitle">Sui telefoni dei giocatori, il tabellone si riduce alla loro riga e al loro punteggio. Tu conservi la tabella completa.</string>
+    <string name="rules_sound_title">Suoni e vibrazione</string>
+    <string name="rules_sound_subtitle">Bip del conto alla rovescia, segnale di via e risposta al buzz.</string>
+    <string name="rules_reset_scores">Azzera tutti i punteggi</string>
+
+    <!-- Sonothèque -->
+    <string name="sounds_title">Suono per questo tasto</string>
+    <string name="sounds_help">Tocca ▶ per ascoltare, tocca il nome per metterlo sul tasto.</string>
+    <string name="sounds_clear">Svuota</string>
+    <string name="sounds_pick_desc">Scegli un suono per questo tasto</string>
+    <string name="sounds_preview_desc">Riproduci %1$s</string>
+    <string name="sounds_empty_title">Libreria dei suoni vuota</string>
+    <string name="sounds_empty_body">Metti i tuoi file audio in app/src/main/res/raw (nomi minuscoli, senza accenti: correct.mp3, wrong.mp3…), poi dichiarali in SoundLibrary.</string>
+
+    <!-- Sons -->
+    <string name="sound_correct">Risposta giusta</string>
+    <string name="sound_wrong">Risposta sbagliata</string>
+    <string name="sound_tadaa">Ta-daa</string>
+    <string name="sound_wow">Wow</string>
+    <string name="sound_cash_register">Registratore di cassa</string>
+    <string name="sound_fireworks">Fuochi d\'artificio</string>
+    <string name="sound_drum_joke">Rullo da battuta</string>
+    <string name="sound_boom">Esplosione</string>
+    <string name="sound_gunshot">Sparo</string>
+    <string name="sound_glass_breaking">Vetri rotti</string>
+    <string name="sound_whoosh">Sibilo</string>
+    <string name="sound_pop">Pop</string>
+    <string name="sound_doorbell">Campanello</string>
+    <string name="sound_horn">Sirena da nebbia</string>
+    <string name="sound_car_honk">Clacson</string>
+    <string name="sound_police_siren">Sirena della polizia</string>
+    <string name="sound_car_engine">Motore</string>
+    <string name="sound_clock">Orologio</string>
+    <string name="sound_slow_clock_ticking">Ticchettio lento</string>
+    <string name="sound_heartbeat">Battito del cuore</string>
+    <string name="sound_winter_wind">Vento d\'inverno</string>
+    <string name="sound_keyboard_typing">Tastiera</string>
+    <string name="sound_violin">Violino triste</string>
+    <string name="sound_witch_laugh">Risata di strega</string>
+    <string name="sound_evil_laugh">Risata malvagia</string>
+    <string name="sound_monster_growl">Ringhio di mostro</string>
+    <string name="sound_pathetic_screaming">Urlo patetico</string>
+    <string name="sound_i_see_you">Ti vedo</string>
+    <string name="sound_stop_it">Smettila</string>
+    <string name="sound_shut_up">Stai zitto</string>
+    <string name="sound_baby_crying">Neonato che piange</string>
+    <string name="sound_meow">Miao</string>
+    <string name="sound_goat">Capra</string>
+    <string name="sound_frog">Rana</string>
+    <string name="sound_rooster_crowing">Gallo</string>
+    <string name="sound_wet_fart">Scoreggia</string>
+
+    <!-- Liaison réseau -->
+    <string name="link_hosting">Sei tu a ospitare la stanza</string>
+    <string name="link_searching">Ricerca della stanza %1$s…</string>
+    <string name="link_searching_wifi">Ricerca della stanza %1$s sul Wi-Fi…</string>
+    <string name="link_not_found">Stanza %1$s non trovata. Controlla che siate tutti sullo stesso Wi-Fi.</string>
+    <string name="link_connecting">Connessione al conduttore…</string>
+    <string name="link_retrying">Nuovo tentativo…</string>
+    <string name="link_lost">Connessione persa, riconnessione…</string>
+    <string name="link_connected">Connesso</string>
+    <string name="link_taking_over">Stai prendendo la conduzione…</string>
+    <string name="link_new_host">Nuovo conduttore, riconnessione…</string>
+    <string name="link_closed">Stanza chiusa</string>
+    <string name="link_port_busy">Impossibile aprire la porta %1$d</string>
+
+    <!-- Fins de session -->
+    <string name="end_host_closed">Il conduttore ha chiuso la stanza.</string>
+    <string name="end_kicked">Il conduttore ti ha espulso dalla stanza.</string>
+    <string name="end_version_update">Il conduttore gioca con una versione più recente di Buzz Me Please. Aggiorna la tua dal Play Store per entrare.</string>
+    <string name="end_version_host_old">Il conduttore gioca con una versione più vecchia di Buzz Me Please. Chiedigli di aggiornare la sua.</string>
+    <string name="join_room_newer">Versione più recente · aggiorna la tua per entrare</string>
+    <string name="join_room_older">Versione più vecchia · deve aggiornare</string>
+    <string name="join_room_host_version">Da %1$s · v%2$s</string>
+    <string name="end_version">L\'altro telefono usa una versione diversa di Buzz Me Please. Aggiornatele entrambe dal Play Store per giocare insieme.</string>
+    <string name="end_left">Giocatore uscito</string>
+
+    <!-- Messages -->
+    <string name="notice_code_length">Il codice deve essere di %1$d caratteri.</string>
+    <string name="default_player_name">Giocatore</string>
+
+    <!-- Tutoriel -->
+    <string name="tutorial_title">Come funziona</string>
+    <string name="tutorial_intro">Dodici passi, dalla creazione della stanza al pannello suoni del conduttore.</string>
+    <string name="tutorial_start">Si parte</string>
+    <string name="tutorial_1_title">Scegli il tuo soprannome</string>
+    <string name="tutorial_1_body">Nella schermata iniziale, scrivi il soprannome che comparirà sul tabellone — puoi cambiarlo quando vuoi. Si gioca sul Wi-Fi locale: tutti i telefoni sulla stessa rete, senza internet, e la misura più precisa.</string>
+    <string name="tutorial_2_title">Creare la stanza o entrarci</string>
+    <string name="tutorial_2_body">Il conduttore tocca «Crea una stanza»: in alto sullo schermo compare un codice di cinque lettere. Gli altri toccano «Entra» e scrivono quel codice. Sul Wi-Fi locale la stanza compare da sola nell\'elenco delle stanze trovate: un tocco, niente da scrivere. Tutti nella stanza devono avere la stessa versione del gioco: l\'elenco mostra quella del conduttore, e dice quale dei due deve aggiornare.</string>
+    <string name="tutorial_3_title">Dare il via</string>
+    <string name="tutorial_3_body">Il conduttore tocca «Via!». Un conto alla rovescia 3 · 2 · 1 parte su tutti i telefoni insieme, poi ogni buzzer diventa verde al millesimo. Sui telefoni dei giocatori il resto dello schermo si libera per la manche: resta solo il buzzer, grande, al centro. Il conduttore conserva la console intera — è il suo cruscotto — e gioca anche lui. Su un tablet tenuto in orizzontale ha tutto insieme: console, tabellone e pannello suoni uno accanto all\'altro.</string>
+    <string name="tutorial_4_title">Buzzare</string>
+    <string name="tutorial_4_body">Il primo che preme vede il suo buzzer diventare blu — il buzz è dentro, il verdetto sta arrivando — e tutti gli altri si bloccano all\'istante. Viene inviata l\'ora esatta del buzz — ora, minuto, secondo e millesimo — e il conduttore vede la classifica, lo scarto dal tempo migliore e l\'incertezza della misura. Una volta fissata la classifica, un solo buzzer diventa bianco: quello che ha la parola.</string>
+    <string name="tutorial_colours_title">I colori del buzzer</string>
+    <string name="tutorial_colours_body">Il buzzer dice tutto con il suo colore: non serve leggere il tabellone per sapere come stai.</string>
+    <string name="tutorial_colour_armed">Verde · i buzzer sono aperti, premi</string>
+    <string name="tutorial_colour_speaking">Bianco · hai la parola, rispondi</string>
+    <string name="tutorial_colour_right">Verde chiaro · risposta giusta, il punto è tuo</string>
+    <string name="tutorial_colour_wrong">Rosso · risposta sbagliata</string>
+    <string name="tutorial_colour_buzzed">Blu acceso · il tuo buzz è dentro, il verdetto arriva</string>
+    <string name="tutorial_colour_lost">Blu scuro · la parola è di un altro, o la manche non è iniziata</string>
+    <string name="tutorial_colour_eliminated">Grigio · buzzer spento dal conduttore</string>
+    <string name="tutorial_colour_countdown">Ambra · il conto alla rovescia 3 · 2 · 1, preparati</string>
+    <string name="tutorial_5_title">Condurre le manche</string>
+    <string name="tutorial_5_body">Sotto la fascia ci sono tre verdetti. «Giusto» assegna il punto, fa diventare verde il buzzer del giocatore con il suono della risposta esatta, poi chiude i buzzer. «Sbagliato» fa diventare rosso il suo buzzer e suona la penalità sul suo telefono, senza spostare la parola; il pulsante diventa allora «Elimina», così la stessa domanda può essere rilanciata a chi non ha ancora risposto. «Prossimo» passa la parola al successivo in classifica, e compare solo quando c\'è qualcuno in attesa dietro. Finché resta un buzzer verde in giro, il via diventa «Chiudi i buzzer»: dopo una conferma li spegne e nient\'altro — i buzz già registrati, la parola e i verdetti restano esattamente dove sono, così puoi continuare a condurre la manche a buzzer chiusi. Appena non resta più nessun buzzer da premere — hanno buzzato tutti, o sono tutti fuori — il via torna da solo. La freccia circolare, invece, pulisce la lavagna: buzz cancellati, tutti i buzzer di nuovo attivi, punteggi intatti.</string>
+    <string name="tutorial_6_title">Dare la parola, eliminare, contare i punti</string>
+    <string name="tutorial_6_body">Il conduttore tocca la riga di un giocatore per aprire la sua console. «Dai la parola» gliela consegna senza passare dalla classifica — non serve nemmeno che abbia buzzato, ed è così che si fa una domanda diretta a qualcuno. Sotto: buzzer grigio (eliminato) oppure rimesso in gioco con un gesto, punti in +1, +3 o −1, espulsione dalla stanza. Un giocatore eliminato conserva la sua riga su tutti gli schermi, buzzer spento: non gioca più, il suo punteggio conta ancora, e il conduttore può richiamarlo quando vuole. La freccia circolare, a destra del via, li riaccende tutti in una volta.</string>
+    <string name="tutorial_7_title">Passare la conduzione</string>
+    <string name="tutorial_7_body">Da quella stessa console, «Passa la conduzione» consegna il ruolo di conduttore a un altro giocatore. Nessuno esce dalla stanza: punteggi, stati e manche in corso seguono, e il vecchio conduttore torna a essere un giocatore come gli altri.</string>
+    <string name="tutorial_8_title">Piegare le regole</string>
+    <string name="tutorial_8_body">Il pulsante dei cursori, a destra del via, apre le regole della partita. La modalità rapida si può disattivare in favore della modalità gara, dove buzzano tutti e si ottiene una classifica completa — comoda per uno spareggio o una manche di velocità. «Tabellone nascosto» tiene viva la suspense: a ogni giocatore resta solo la propria riga, tu conservi la tabella intera. Il conto alla rovescia e i suoni si spengono nello stesso posto.</string>
+    <string name="tutorial_9_title">Prepara i tuoi effetti sonori</string>
+    <string name="tutorial_9_body">Il pulsante «Suoni», sopra il tabellone, apre il pannello suoni del conduttore: nove tasti da riempire prima della partita, con i suoni forniti con l\'app o con file tuoi. Un tocco riproduce il suono e accende il tasto di verde, un secondo lo ferma; una pressione lunga cambia il tasto o lo svuota. I suoni che importi — per il pannello come per il tuo buzzer, nelle impostazioni — vengono tagliati a quattro secondi, perché un brano di due minuti non si mangi la manche. La tua scelta si conserva da una partita all\'altra, e il pannello si richiude sul tabellone.</string>
+    <string name="tutorial_cards_title">I cartelli di annuncio</string>
+    <string name="tutorial_cards_body">Quel che ti capita attraversa lo schermo a caratteri grandi: «Hai la parola», «Ben giocato», «Sbagliato», «Prossimo», «Troppo tardi», «Sei fuori». Il cartello resta cinque secondi e non blocca niente — il buzzer funziona sotto. Il suono, invece, parte solo sul telefono interessato: la stanza vede, chi è in ballo sente.</string>
+    <string name="tutorial_alerts_title">Cartellini e fine partita</string>
+    <string name="tutorial_alerts_body">Dalla console di un giocatore, «Manda un richiamo» assegna un cartellino giallo o rosso. Viene annunciato su tutti gli schermi, suona solo sul telefono dell\'ammonito, ed è contato sulla sua riga del tabellone, appena prima del punteggio — finché non è stato ammonito non compare nulla. «Cancella i cartellini» gli ripulisce la fedina. Nelle regole della partita, «Termina la partita» proclama il vincitore e il suo punteggio su tutti i telefoni, fuochi d\'artificio compresi. Non si cancella niente: potete continuare a giocare dopo.</string>
+    <string name="tutorial_tips_title">Perché il buzz resti onesto</string>
+    <string name="tutorial_tip_1">Tutti sullo stesso Wi-Fi in modalità locale — nessuno con i dati mobili.</string>
+    <string name="tutorial_tip_2">Attiva «Tieni acceso lo schermo» nelle impostazioni prima di cominciare.</string>
+    <string name="tutorial_tip_3">Lo scarto mostrato tiene conto della latenza di rete: quel che si confronta è l\'istante della pressione, non l\'ordine in cui arrivano i messaggi.</string>
+    <string name="tutorial_tip_4">Sotto l\'incertezza indicata (± qualche ms in locale), due riflessi sono pari: decide il conduttore.</string>
+
+    <!-- Crashlytics diagnostics (debug builds only) -->
+    <string name="diagnostics_label">Diagnostica</string>
+    <string name="diagnostics_hint">Solo nelle build di debug. Verifica che la segnalazione degli errori a Crashlytics funzioni — su entrambe le vie, perché un errore non fatale e un crash viaggiano in modo diverso.</string>
+    <string name="diagnostics_collection_title">Raccolta Crashlytics</string>
+    <string name="diagnostics_collection_subtitle">Disattivata per impostazione predefinita nelle build di debug, per tenere pulita la console</string>
+    <string name="diagnostics_collection_off">La raccolta è disattivata: i pulsanti qui sotto non invieranno niente.</string>
+    <string name="diagnostics_send_non_fatal">Invia un errore non fatale</string>
+    <string name="diagnostics_force_crash">Forza un crash</string>
+    <string name="diagnostics_flush">Carica i rapporti in sospeso</string>
+    <string name="diagnostics_previous_crash_yes">La sessione precedente è finita con un crash</string>
+    <string name="diagnostics_previous_crash_no">Nessun crash nella sessione precedente</string>
+</resources>

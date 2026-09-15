@@ -1,6 +1,7 @@
 package com.osala.BuzzMePlease.ui
 
 import android.content.Context
+import android.view.View
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,7 +20,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.osala.BuzzMePlease.core.AppLanguage
@@ -75,6 +78,11 @@ fun BuzzMeApp(viewModel: AppViewModel = viewModel()) {
     CompositionLocalProvider(
         LocalContext provides localized,
         LocalConfiguration provides localized.resources.configuration,
+        // Le sens de lecture suit la langue choisie, et pas seulement celle du téléphone :
+        // l'arabe s'écrit de droite à gauche, et Compose ne le déduit que de la vue d'accueil,
+        // fixée à la création de l'activité. Sans cette ligne, choisir l'arabe traduirait les
+        // textes en laissant l'interface montée à l'envers.
+        LocalLayoutDirection provides localized.resources.configuration.layoutDirection.toLayoutDirection(),
     ) {
     BuzzMeTheme {
         Box(modifier = Modifier.fillMaxSize()) {
@@ -182,6 +190,10 @@ private fun rememberLocalizedContext(language: AppLanguage): Context {
     val configuration = LocalConfiguration.current
     return remember(base, language, configuration) { AppLocale.wrap(base) }
 }
+
+/** Le sens de lecture d'une configuration Android, dans les termes de Compose. */
+private fun Int.toLayoutDirection(): LayoutDirection =
+    if (this == View.LAYOUT_DIRECTION_RTL) LayoutDirection.Rtl else LayoutDirection.Ltr
 
 /**
  * Nom d'ecran STABLE pour la cle `screen` des rapports Crashlytics.
