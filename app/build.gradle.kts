@@ -21,12 +21,32 @@ android {
         localeFilters += listOf("fr", "en", "de", "es", "it", "ar")
     }
 
+    // Toutes les langues dans l'APK de base, et non une livrée à la demande par langue.
+    //
+    // Par défaut, Google Play découpe le bundle par langue et n'installe que celles du
+    // téléphone. Le sélecteur des réglages désigne alors des traductions absentes de
+    // l'appareil : le jeu retombe sur l'anglais, Play rapatrie le split en arrière-plan,
+    // et le processus ne le voit qu'au lancement suivant — il faut donc relancer le jeu
+    // pour que la langue choisie s'applique. Une application qui choisit sa langue
+    // elle-même ne peut pas laisser Play décider des langues installées d'après celle du
+    // système.
+    //
+    // Le surcoût porte sur l'APK installé, pas sur le bundle, qui contient de toute façon
+    // tout : ce sont cinq traductions de 282 chaînes — environ 145 Ko de XML source —
+    // compilées dans la table des ressources puis compressées, là où l'appareil n'en
+    // recevait qu'une.
+    bundle {
+        language {
+            enableSplit = false
+        }
+    }
+
     defaultConfig {
         applicationId = "com.osala.buzzmeplease"
         minSdk = 26
         targetSdk = 36
-        versionCode = 119
-        versionName = "1.19"
+        versionCode = 120
+        versionName = "1.20"
     }
 
     // Les identifiants de signature vivent hors du dépôt, dans keystore.properties, qui n'est
